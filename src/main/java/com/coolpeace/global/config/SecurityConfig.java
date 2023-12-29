@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.CorsUtils;
 public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
+    private final Environment environment;
 
     @Bean
     public SecurityFilterChain http(HttpSecurity httpSecurity) throws Exception {
@@ -32,12 +34,17 @@ public class SecurityConfig {
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // request matchers settings
-        httpSecurity.authorizeHttpRequests(request ->
-                request
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                        .anyRequest().permitAll() // 임시로 모든 경로 개방
+        httpSecurity.authorizeHttpRequests(request -> {
+                    request
+                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll();
+
+                    if (environment.matchesProfiles("test")) {
+                        request.requestMatchers(PathRequest.toH2Console()).permitAll(); // 테스트 환경일 경우 H2 경로 개방
+                    }
+
+                    request.anyRequest().permitAll(); // 임시로 모든 경로 개방
+                }
         );
 
         return httpSecurity.getOrBuild();
