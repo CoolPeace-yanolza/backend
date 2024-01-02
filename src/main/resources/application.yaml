@@ -26,3 +26,9 @@ spring:
 #    web:
 #      pageable:
 #        one-indexed-parameters: true
+
+service:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    access-expiration: ${JWT_ACCESS_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
