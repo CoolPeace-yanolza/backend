@@ -1,5 +1,6 @@
 package com.coolpeace.domain.member.entity;
 
+import com.coolpeace.domain.member.entity.type.RoleType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

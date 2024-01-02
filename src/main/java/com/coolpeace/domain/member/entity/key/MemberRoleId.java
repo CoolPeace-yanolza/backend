@@ -12,10 +12,10 @@ import java.io.Serializable;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRoleId implements Serializable {
-    @Column(name = "member_id", nullable = false)
+    @Column(nullable = false)
     private Long memberId;
 
-    @Column(name = "role_id", nullable = false)
+    @Column(nullable = false)
     private Long roleId;
 
     public static MemberRoleId of(Long memberId, Long roleId) {

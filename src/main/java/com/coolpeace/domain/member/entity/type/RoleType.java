@@ -1,4 +1,4 @@
-package com.coolpeace.domain.member.entity;
+package com.coolpeace.domain.member.entity.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
