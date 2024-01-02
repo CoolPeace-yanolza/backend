@@ -11,7 +11,7 @@ public enum ErrorCode {
     INVALID_REQUEST_PARAM(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
 
     // MEMBER
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
     // ACCOMMODATION
 
@@ -23,7 +23,13 @@ public enum ErrorCode {
 
     // RESERVATION
 
+    // JWT
+    JWT_EXPIRED_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "만료된 JWT입니다."),
+    JWT_INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "JWT의 시그니처가 올바르지 않습니다."),
+    JWT_MALFORMED_STRUCTURE(HttpStatus.UNAUTHORIZED, "JWT의 구조가 올바르지 않습니다."),
+    JWT_UNSUPPORTED_FORMAT(HttpStatus.UNAUTHORIZED, "지원하지 않는 형식의 JWT입니다."),
     ;
+
     private final HttpStatus httpStatus;
     private final String message;
 }
