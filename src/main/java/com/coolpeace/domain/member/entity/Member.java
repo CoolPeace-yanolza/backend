@@ -3,17 +3,13 @@ package com.coolpeace.domain.member.entity;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.global.common.BaseTimeEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -24,21 +20,25 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
-    private String role;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberRole> roles = new ArrayList<>();
 
-    private boolean isDeleted;
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Accommodation> accommodationList;
+    private List<Accommodation> accommodations;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Coupon> couponList;
+    private List<Coupon> coupons;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<ServiceTerm> serviceTermList;
+    private List<ServiceTerm> serviceTerms;
 
 }
