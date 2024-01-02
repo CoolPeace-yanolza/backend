@@ -32,7 +32,7 @@ public class MemberController {
             @Valid @RequestBody MemberRegisterRequest registerRequest
     ) {
         return ResponseEntity.created(URI.create("/"))
-                .body(MemberRegisterResponse.from(memberService.register(registerRequest)));
+                .body(MemberRegisterResponse.from(memberService.registerAsOwner(registerRequest)));
     }
 
     @GetMapping("/register/check/email")
