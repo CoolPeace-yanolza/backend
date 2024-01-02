@@ -4,9 +4,10 @@ import com.coolpeace.global.jwt.dto.JwtPair;
 
 public record MemberRegisterResponse (
         String accessToken,
-        String refreshToken
+        String refreshToken,
+        long expiresIn
 ) {
     public static MemberRegisterResponse from(JwtPair jwtPair) {
-        return new MemberRegisterResponse(jwtPair.accessToken(), jwtPair.refreshToken());
+        return new MemberRegisterResponse(jwtPair.accessToken(), jwtPair.refreshToken(), jwtPair.expiresIn());
     }
 }

@@ -5,7 +5,7 @@ public record JwtPair (
         String refreshToken,
         long expiresIn
 ) {
-    public static JwtPair create(String accessToken, String refreshToken, long expiresIn) {
-        return new JwtPair(accessToken, refreshToken, expiresIn);
+    public static JwtPair from(String accessToken, String refreshToken, long expiresIn) {
+        return new JwtPair(accessToken, refreshToken, expiresIn / 1000);
     }
 }

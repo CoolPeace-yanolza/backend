@@ -13,6 +13,8 @@ import com.coolpeace.domain.member.exception.MemberWrongPasswordException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.member.repository.RoleRepository;
 import com.coolpeace.global.jwt.dto.JwtPair;
+import com.coolpeace.global.jwt.dto.JwtPayload;
+import com.coolpeace.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    @Transactional(readOnly = true)
+    public Member getMemberByEmail(String email) {
+        return memberRepository.findMemberAndRolesByEmail(email).orElseThrow(MemberNotFoundException::new);
+    }
 
     @Transactional
     public JwtPair login(MemberLoginRequest loginRequest) {
@@ -34,7 +42,8 @@ public class MemberService {
             throw new MemberWrongPasswordException();
         }
 
-        return null;
+        return jwtService.createTokenPair(
+                JwtPayload.fromNow(String.valueOf(storedMember.getId()), storedMember.getEmail()));
     }
 
     @Transactional
@@ -45,7 +54,8 @@ public class MemberService {
                 Member.of(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
         );
 
-        return null;
+        return jwtService.createTokenPair(
+                JwtPayload.fromNow(String.valueOf(newMember.getId()), newMember.getEmail()));
     }
 
     @Transactional(readOnly = true)
@@ -55,12 +65,17 @@ public class MemberService {
 
     @Transactional
     public void logout(String email, String accessToken) {
-
+        jwtService.deleteRefreshToken(email);
     }
 
     @Transactional
     public JwtPair refreshAccessToken(String refreshToken) {
-        return null;
+        JwtPayload jwtPayload = jwtService.verifyRefreshToken(refreshToken);
+
+        // TODO: 저장된 리프레시토큰 확인
+
+        JwtPayload newJwtPayload = JwtPayload.fromNow(jwtPayload.id(), jwtPayload.email());
+        return jwtService.createTokenPair(jwtService.createAccessToken(newJwtPayload), refreshToken);
     }
 
     private void validateMemberEmail(String registerRequest) {

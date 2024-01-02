@@ -1,5 +1,6 @@
 package com.coolpeace.global.jwt.security;
 
+import com.coolpeace.domain.member.entity.Member;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -26,8 +27,16 @@ public class JwtPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static JwtPrincipal from(String memberId, String memberEmail, boolean enabled, List<String> roles) {
-        return new JwtPrincipal(memberId, memberEmail, enabled, AuthorityUtils.createAuthorityList(roles));
+    public static JwtPrincipal from(Member member) {
+        List<String> roles = member.getRoles().stream()
+                .map(memberRole -> memberRole.getRole().getRoleType().getValue())
+                .toList();
+        return new JwtPrincipal(
+                String.valueOf(member.getId()),
+                member.getEmail(),
+                member.isDeleted(),
+                AuthorityUtils.createAuthorityList(roles)
+        );
     }
 
     @Override
