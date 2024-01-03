@@ -8,6 +8,9 @@ import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
 import com.coolpeace.domain.member.dto.response.MemberRegisterResponse;
 import com.coolpeace.domain.member.service.MemberService;
+import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.resolver.AuthJwtCredential;
+import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +49,10 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            String email, String accessToken
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal,
+            @AuthJwtCredential String accessToken
     ) {
-        memberService.logout(email, accessToken);
+        memberService.logout(jwtPrincipal.getMemberEmail(), accessToken);
         return ResponseEntity.ok().build();
     }
 
