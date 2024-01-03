@@ -24,7 +24,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         }
         JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
         JwtPrincipal jwtPrincipal = (JwtPrincipal) jwtUserDetailsService.loadUserByUsername(jwtPayload.email());
-        return JwtAuthenticationToken.authenticated(jwtPrincipal);
+        return JwtAuthenticationToken.authenticated(jwtPrincipal, accessToken);
     }
 
     @Override
