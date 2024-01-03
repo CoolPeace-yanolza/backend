@@ -80,6 +80,9 @@ public class JwtService {
         jwtBlackListRedisRepository.save(JwtBlackListRedisEntity.from(accessToken, refreshTokenExpiredTime));
     }
 
+    public boolean isAccessTokenBlackListed(String accessToken) {
+        return jwtBlackListRedisRepository.findValueByKey(accessToken).isPresent();
+    }
 
     private String createToken(JwtPayload jwtPayload, long expiration) {
         return Jwts.builder()
@@ -90,10 +93,6 @@ public class JwtService {
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + expiration))
                 .signWith(secretKey)
                 .compact();
-    }
-
-    public boolean isAccessTokenBlackListed(String accessToken) {
-        return jwtBlackListRedisRepository.findValueByKey(accessToken).isPresent();
     }
 
     public JwtPayload verifyToken(String jwtToken) {

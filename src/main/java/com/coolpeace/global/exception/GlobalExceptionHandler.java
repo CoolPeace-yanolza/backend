@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleApplicationException(ApplicationException applicationException) {
         ErrorCode errorCode = applicationException.getErrorCode();
         return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(ErrorMessage.of(errorCode));
+                .body(ErrorMessage.from(errorCode));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -22,6 +22,6 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
         String errorMessage = bindingResult.getFieldErrors().stream().findFirst().orElseThrow().getDefaultMessage();
         return ResponseEntity.status(errorCode.getHttpStatus())
-                        .body(ErrorMessage.of(errorCode, errorMessage));
+                        .body(ErrorMessage.from(errorCode, errorMessage));
     }
 }

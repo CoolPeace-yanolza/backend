@@ -51,7 +51,7 @@ public class MemberService {
         validateMemberEmail(registerRequest.email());
         Role role = roleRepository.findByRoleType(RoleType.OWNER).orElseThrow(MemberRoleNotFoundException::new);
         Member newMember = memberRepository.save(
-                Member.of(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
+                Member.from(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
         );
 
         return jwtService.createTokenPair(
