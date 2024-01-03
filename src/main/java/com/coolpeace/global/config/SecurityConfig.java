@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,22 +44,23 @@ public class SecurityConfig {
                 .exceptionHandling(config -> config.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        // security filters
+        httpSecurity.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+
         // request matchers settings
         httpSecurity.authorizeHttpRequests(request -> {
                     request
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll();
+                            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                            .requestMatchers(HttpMethod.POST, "/v1/member/refresh").permitAll();
 
                     if (environment.matchesProfiles("test")) {
                         request.requestMatchers(PathRequest.toH2Console()).permitAll(); // 테스트 환경일 경우 H2 경로 개방
                     }
 
-                    request.anyRequest().permitAll(); // 임시로 모든 경로 개방
+                    request.anyRequest().authenticated();
                 }
         );
-
-        // security filters
-        httpSecurity.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.getOrBuild();
     }
