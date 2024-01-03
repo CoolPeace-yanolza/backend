@@ -22,12 +22,12 @@ public class MemberRole {
     private Role role;
 
     private MemberRole(Member member, Role role) {
-        this.memberRoleId = MemberRoleId.of(member.getId(), role.getId());
+        this.memberRoleId = MemberRoleId.from(member.getId(), role.getId());
         this.member = member;
         this.role = role;
     }
 
-    public static MemberRole of(Member member, Role role) {
+    public static MemberRole from(Member member, Role role) {
         return new MemberRole(member, role);
     }
 }

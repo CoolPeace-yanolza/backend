@@ -29,10 +29,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ErrorMessage errorMessage;
         if (authException instanceof JwtAuthenticationException) {
-            errorMessage = ErrorMessage.of(((JwtAuthenticationException) authException).getErrorCode());
+            errorMessage = ErrorMessage.from(((JwtAuthenticationException) authException).getErrorCode());
         } else {
             log.trace(authException.getMessage());
-            errorMessage = ErrorMessage.of(ErrorCode.INVALID_AUTHORIZATION_REQUEST);
+            errorMessage = ErrorMessage.from(ErrorCode.INVALID_AUTHORIZATION_REQUEST);
         }
         objectMapper.writeValue(response.getOutputStream(), errorMessage);
     }

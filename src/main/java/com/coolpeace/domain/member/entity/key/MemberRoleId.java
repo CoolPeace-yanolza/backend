@@ -18,7 +18,7 @@ public class MemberRoleId implements Serializable {
     @Column(nullable = false)
     private Long roleId;
 
-    public static MemberRoleId of(Long memberId, Long roleId) {
+    public static MemberRoleId from(Long memberId, Long roleId) {
         return new MemberRoleId(memberId, roleId);
     }
 }

@@ -51,7 +51,7 @@ public class MemberService {
         validateMemberEmail(registerRequest.email());
         Role role = roleRepository.findByRoleType(RoleType.OWNER).orElseThrow(MemberRoleNotFoundException::new);
         Member newMember = memberRepository.save(
-                Member.of(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
+                Member.from(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
         );
 
         return jwtService.createTokenPair(
@@ -65,17 +65,12 @@ public class MemberService {
 
     @Transactional
     public void logout(String email, String accessToken) {
+        jwtService.addAccessTokenToBlackList(email, accessToken);
         jwtService.deleteRefreshToken(email);
     }
 
-    @Transactional
     public JwtPair refreshAccessToken(String refreshToken) {
-        JwtPayload jwtPayload = jwtService.verifyRefreshToken(refreshToken);
-
-        // TODO: 저장된 리프레시토큰 확인
-
-        JwtPayload newJwtPayload = JwtPayload.fromNow(jwtPayload.id(), jwtPayload.email());
-        return jwtService.createTokenPair(jwtService.createAccessToken(newJwtPayload), refreshToken);
+        return jwtService.refreshAccessToken(refreshToken);
     }
 
     private void validateMemberEmail(String registerRequest) {

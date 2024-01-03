@@ -34,9 +34,12 @@ public class JwtPrincipal implements UserDetails {
         return new JwtPrincipal(
                 String.valueOf(member.getId()),
                 member.getEmail(),
-                member.isDeleted(),
+                !member.isDeleted(),
                 AuthorityUtils.createAuthorityList(roles)
         );
+    }
+    public static JwtPrincipal emptyPrincipal() {
+        return new JwtPrincipal(null, null, false, AuthorityUtils.NO_AUTHORITIES);
     }
 
     @Override
