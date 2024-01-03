@@ -27,10 +27,10 @@ public class Member extends BaseTimeEntity {
     private String password;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MemberRole> roles = new ArrayList<>();
+    private final List<MemberRole> roles = new ArrayList<>();
 
     @Column(nullable = false)
-    private boolean isDeleted = false;
+    private final boolean isDeleted = false;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Accommodation> accommodations;
@@ -41,4 +41,13 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ServiceTerm> serviceTerms;
 
+    private Member(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.roles.add(MemberRole.of(this, role));
+    }
+
+    public static Member of(String email, String password, Role role) {
+        return new Member(email, password, role);
+    }
 }

@@ -22,13 +22,13 @@ public class Role {
     private RoleType roleType;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<MemberRole> memberRoles = new ArrayList<>();
+    private final List<MemberRole> memberRoles = new ArrayList<>();
 
     private Role(RoleType roleType) {
         this.roleType = roleType;
     }
 
-    public Role of(RoleType roleType) {
+    public static Role of(RoleType roleType) {
         return new Role(roleType);
     }
 }

@@ -33,7 +33,7 @@ public class JwtAuthenticationConverter implements AuthenticationConverter {
 
         String authHeaderValue = rawAuthHeaderValue.trim();
 
-        if (!validateAuthHeader(authHeaderValue)) {
+        if (isValidAuthHeader(authHeaderValue)) {
             throw new InvalidAuthorizationHeaderException();
         }
 
@@ -47,7 +47,7 @@ public class JwtAuthenticationConverter implements AuthenticationConverter {
         return null;
     }
 
-    private static boolean validateAuthHeader(String authHeaderValue) {
+    private static boolean isValidAuthHeader(String authHeaderValue) {
         return !StringUtils.startsWithIgnoreCase(authHeaderValue, AUTHENTICATION_SCHEME_JWT)
                 && authHeaderValue.equalsIgnoreCase(AUTHENTICATION_SCHEME_JWT);
     }

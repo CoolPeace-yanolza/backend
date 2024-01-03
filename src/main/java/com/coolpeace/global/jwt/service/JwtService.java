@@ -37,14 +37,20 @@ public class JwtService {
     }
 
     public JwtPair createTokenPair(JwtPayload jwtPayload) {
-        String accessToken = createToken(jwtPayload, accessExpiration);
-        String refreshToken = createToken(jwtPayload, refreshExpiration);
-        return JwtPair.create(accessToken, refreshToken);
+        return JwtPair.from(createAccessToken(jwtPayload), createRefreshToken(jwtPayload), accessExpiration);
+    }
+
+    public JwtPair createTokenPair(String accessToken, String refreshToken) {
+        return JwtPair.from(accessToken, refreshToken, accessExpiration);
+    }
+
+    public void deleteRefreshToken(String email) {
+        // TODO: 저장된 리프레시 토큰 삭제
     }
 
     public JwtPair refreshAccessToken(String refreshToken, JwtPayload jwtPayload) {
         String accessToken = createToken(jwtPayload, accessExpiration);
-        return JwtPair.create(accessToken, refreshToken);
+        return JwtPair.from(accessToken, refreshToken, accessExpiration);
     }
 
     public JwtPayload verifyAccessToken(String accessToken) {
@@ -55,7 +61,15 @@ public class JwtService {
         return verifyToken(refreshToken, true);
     }
 
-    public String createToken(JwtPayload jwtPayload, long expiration) {
+    public String createAccessToken(JwtPayload jwtPayload) {
+        return createToken(jwtPayload, accessExpiration);
+    }
+
+    public String createRefreshToken(JwtPayload jwtPayload) {
+        return createToken(jwtPayload, refreshExpiration);
+    }
+
+    private String createToken(JwtPayload jwtPayload, long expiration) {
         return Jwts.builder()
                 .claim(CLIENT_ID_KEY, jwtPayload.id())
                 .claim(CLIENT_EMAIL_KEY, jwtPayload.email())

@@ -1,0 +1,8 @@
+### 로그인
+POST http://localhost:8080/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "pass"
+}
