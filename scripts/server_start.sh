@@ -1,8 +1,8 @@
 #!/bin/bash
 
 JAR=coolPeace-0.0.1-SNAPSHOT.jar
-LOG=/dev/null
-#LOG=coolpeace-console.log
+#LOG=/dev/null
+LOG=coolpeace-console.log
 export spring_profiles_active=prod
 
 PID=`ps -ef | grep java | grep jar | awk '{print $2}'`
