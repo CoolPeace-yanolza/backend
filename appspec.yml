@@ -1,0 +1,23 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/server
+    overwrite: yes
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  AfterInstall:
+    - location: scripts/move_server_jar.sh
+      timeout: 60
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/server_start.sh
+      timeout: 60
+      runas: ubuntu
