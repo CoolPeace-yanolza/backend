@@ -9,7 +9,7 @@ name: CD
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "release" ]
 
 permissions:
   contents: read
