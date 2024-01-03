@@ -5,43 +5,39 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Component
-public class JwtRefreshTokenRedisRepository implements RedisRepository<JwtRefreshTokenRedisEntity> {
+public class JwtRefreshTokenRedisRepository extends RedisRepository {
     private final static String JWT_KEY_PREFIX = "jwt:refresh:";
-    private final StringRedisTemplate stringRedisTemplate;
 
     public JwtRefreshTokenRedisRepository(StringRedisTemplate stringRedisTemplate) {
-        stringRedisTemplate.setKeySerializer(new CustomPrefixKeySerializer(JWT_KEY_PREFIX));
-        this.stringRedisTemplate = stringRedisTemplate;
+        super(stringRedisTemplate);
     }
 
     @Override
+    String getPrefix() {
+        return JWT_KEY_PREFIX;
+    }
+
     public void save(JwtRefreshTokenRedisEntity entity) {
         String key = entity.memberEmail();
         String value = entity.refreshToken();
         long expire = entity.expiration();
-        stringRedisTemplate.opsForValue().set(key, value, expire, TimeUnit.MILLISECONDS);
+        super.save(key, value, expire);
     }
 
     @Override
     public Optional<String> findValueByKey(String key) {
-        return Optional.ofNullable(stringRedisTemplate.opsForValue().get(key));
+        return super.findValueByKey(key);
     }
 
     @Override
     public Long getExpire(String key) {
-        Long expireTime = stringRedisTemplate.getExpire(key);
-        if (expireTime == null) {
-            return -1L;
-        } else {
-            return expireTime * 1000;
-        }
+        return super.getExpire(key);
     }
 
     @Override
     public void deleteByKey(String key) {
-        stringRedisTemplate.delete(key);
+        super.deleteByKey(key);
     }
 }
