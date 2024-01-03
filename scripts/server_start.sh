@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR=backend-0.0.1-SNAPSHOT.jar
+JAR=coolPeace-0.0.1-SNAPSHOT.jar
 LOG=/dev/null
 #LOG=coolpeace-console.log
 export spring_profiles_active=prod
