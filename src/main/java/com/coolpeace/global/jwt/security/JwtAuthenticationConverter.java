@@ -37,7 +37,7 @@ public class JwtAuthenticationConverter implements AuthenticationConverter {
             throw new InvalidAuthorizationHeaderException();
         }
 
-        String requestAccessToken = authHeaderValue.substring(AUTHENTICATION_SCHEME_JWT.length() + 1);
+        String requestAccessToken = authHeaderValue.substring(AUTHENTICATION_SCHEME_JWT.length()).trim();
         if (Pattern.matches(JWT_REGEX, requestAccessToken)) {
             JwtAuthenticationToken result = JwtAuthenticationToken.unauthenticated(requestAccessToken);
             result.setDetails(this.authenticationDetailsSource.buildDetails(request));
