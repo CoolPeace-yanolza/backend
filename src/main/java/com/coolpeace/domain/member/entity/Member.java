@@ -44,10 +44,10 @@ public class Member extends BaseTimeEntity {
     private Member(String email, String password, Role role) {
         this.email = email;
         this.password = password;
-        this.roles.add(MemberRole.of(this, role));
+        this.roles.add(MemberRole.from(this, role));
     }
 
-    public static Member of(String email, String password, Role role) {
+    public static Member from(String email, String password, Role role) {
         return new Member(email, password, role);
     }
 }
