@@ -12,4 +12,7 @@ public record JwtRefreshTokenRedisEntity(
         @TimeToLive(unit = TimeUnit.MILLISECONDS)
         long expiration
 ) {
+        public static JwtRefreshTokenRedisEntity from(String memberEmail, String refreshToken, long expiration) {
+                return new JwtRefreshTokenRedisEntity(memberEmail, refreshToken, expiration);
+        }
 }

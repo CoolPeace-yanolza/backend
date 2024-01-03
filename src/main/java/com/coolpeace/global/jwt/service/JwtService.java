@@ -2,10 +2,9 @@ package com.coolpeace.global.jwt.service;
 
 import com.coolpeace.global.jwt.dto.JwtPair;
 import com.coolpeace.global.jwt.dto.JwtPayload;
-import com.coolpeace.global.jwt.exception.JwtExpiredAuthorizationException;
-import com.coolpeace.global.jwt.exception.JwtInvalidSignatureException;
-import com.coolpeace.global.jwt.exception.JwtMalformedStructureException;
-import com.coolpeace.global.jwt.exception.JwtUnsupportedFormatException;
+import com.coolpeace.global.jwt.entity.JwtRefreshTokenRedisEntity;
+import com.coolpeace.global.jwt.exception.*;
+import com.coolpeace.global.jwt.repository.JwtRefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class JwtService {
@@ -30,43 +30,43 @@ public class JwtService {
     @Value("${service.jwt.refresh-expiration}")
     private Long refreshExpiration;
 
+    private final JwtRefreshTokenRedisRepository jwtRefreshTokenRedisRepository;
     private final SecretKey secretKey;
 
-    public JwtService(@Value("${service.jwt.secret-key}") String secretKey) {
+    public JwtService(@Value("${service.jwt.secret-key}") String secretKey,
+                      JwtRefreshTokenRedisRepository jwtRefreshTokenRedisRepository) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.jwtRefreshTokenRedisRepository = jwtRefreshTokenRedisRepository;
     }
 
     public JwtPair createTokenPair(JwtPayload jwtPayload) {
-        return JwtPair.from(createAccessToken(jwtPayload), createRefreshToken(jwtPayload), accessExpiration);
+        String accessToken = createToken(jwtPayload, accessExpiration);
+        String refreshToken = createToken(jwtPayload, refreshExpiration);
+
+        jwtRefreshTokenRedisRepository.save(
+                JwtRefreshTokenRedisEntity.from(jwtPayload.email(), refreshToken, refreshExpiration));
+
+        return JwtPair.from(accessToken, refreshToken, accessExpiration);
     }
 
-    public JwtPair createTokenPair(String accessToken, String refreshToken) {
-        return JwtPair.from(accessToken, refreshToken, accessExpiration);
+    public JwtPair refreshAccessToken(String refreshToken) {
+        JwtPayload jwtPayload = verifyRefreshToken(refreshToken);
+
+        Optional<String> savedRefreshToken = jwtRefreshTokenRedisRepository.findValueByKey(jwtPayload.email());
+        if (savedRefreshToken.isEmpty()) {
+            throw new JwtExpiredRefreshTokenException();
+        }
+        if (refreshToken.equalsIgnoreCase(savedRefreshToken.get())) {
+            throw new JwtInvalidRefreshTokenException();
+        }
+
+        JwtPayload newJwtPayload = JwtPayload.fromNow(jwtPayload.id(), jwtPayload.email());
+        String newAccessToken = createToken(newJwtPayload, accessExpiration);
+        return JwtPair.from(newAccessToken, refreshToken, accessExpiration);
     }
 
     public void deleteRefreshToken(String email) {
-        // TODO: 저장된 리프레시 토큰 삭제
-    }
-
-    public JwtPair refreshAccessToken(String refreshToken, JwtPayload jwtPayload) {
-        String accessToken = createToken(jwtPayload, accessExpiration);
-        return JwtPair.from(accessToken, refreshToken, accessExpiration);
-    }
-
-    public JwtPayload verifyAccessToken(String accessToken) {
-        return verifyToken(accessToken, false);
-    }
-
-    public JwtPayload verifyRefreshToken(String refreshToken) {
-        return verifyToken(refreshToken, true);
-    }
-
-    public String createAccessToken(JwtPayload jwtPayload) {
-        return createToken(jwtPayload, accessExpiration);
-    }
-
-    public String createRefreshToken(JwtPayload jwtPayload) {
-        return createToken(jwtPayload, refreshExpiration);
+        jwtRefreshTokenRedisRepository.deleteByKey(email);
     }
 
     private String createToken(JwtPayload jwtPayload, long expiration) {
@@ -78,6 +78,15 @@ public class JwtService {
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + expiration))
                 .signWith(secretKey)
                 .compact();
+    }
+
+
+    public JwtPayload verifyAccessToken(String accessToken) {
+        return verifyToken(accessToken, false);
+    }
+
+    public JwtPayload verifyRefreshToken(String refreshToken) {
+        return verifyToken(refreshToken, true);
     }
 
     public JwtPayload verifyToken(String jwtToken, boolean isStrict) {

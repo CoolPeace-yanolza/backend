@@ -20,6 +20,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+
     @PostMapping("/login")
     public ResponseEntity<MemberLoginResponse> login(
             @Valid @RequestBody MemberLoginRequest loginRequest

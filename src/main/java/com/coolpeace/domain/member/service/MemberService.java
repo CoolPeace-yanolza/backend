@@ -68,14 +68,8 @@ public class MemberService {
         jwtService.deleteRefreshToken(email);
     }
 
-    @Transactional
     public JwtPair refreshAccessToken(String refreshToken) {
-        JwtPayload jwtPayload = jwtService.verifyRefreshToken(refreshToken);
-
-        // TODO: 저장된 리프레시토큰 확인
-
-        JwtPayload newJwtPayload = JwtPayload.fromNow(jwtPayload.id(), jwtPayload.email());
-        return jwtService.createTokenPair(jwtService.createAccessToken(newJwtPayload), refreshToken);
+        return jwtService.refreshAccessToken(refreshToken);
     }
 
     private void validateMemberEmail(String registerRequest) {
