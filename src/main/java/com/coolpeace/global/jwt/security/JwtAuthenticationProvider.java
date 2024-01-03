@@ -1,6 +1,7 @@
 package com.coolpeace.global.jwt.security;
 
 import com.coolpeace.global.jwt.dto.JwtPayload;
+import com.coolpeace.global.jwt.exception.JwtInvalidAccessTokenException;
 import com.coolpeace.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,7 +19,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String accessToken = (String) authentication.getCredentials();
-        JwtPayload jwtPayload = jwtService.verifyAccessToken(accessToken);
+        if (jwtService.isAccessTokenBlackListed(accessToken)) {
+            throw new JwtInvalidAccessTokenException();
+        }
+        JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
         JwtPrincipal jwtPrincipal = (JwtPrincipal) jwtUserDetailsService.loadUserByUsername(jwtPayload.email());
         return JwtAuthenticationToken.authenticated(jwtPrincipal);
     }

@@ -65,6 +65,7 @@ public class MemberService {
 
     @Transactional
     public void logout(String email, String accessToken) {
+        jwtService.addAccessTokenToBlackList(email, accessToken);
         jwtService.deleteRefreshToken(email);
     }
 

@@ -2,8 +2,10 @@ package com.coolpeace.global.jwt.service;
 
 import com.coolpeace.global.jwt.dto.JwtPair;
 import com.coolpeace.global.jwt.dto.JwtPayload;
+import com.coolpeace.global.jwt.entity.JwtBlackListRedisEntity;
 import com.coolpeace.global.jwt.entity.JwtRefreshTokenRedisEntity;
 import com.coolpeace.global.jwt.exception.*;
+import com.coolpeace.global.jwt.repository.JwtBlackListRedisRepository;
 import com.coolpeace.global.jwt.repository.JwtRefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -31,12 +33,15 @@ public class JwtService {
     private Long refreshExpiration;
 
     private final JwtRefreshTokenRedisRepository jwtRefreshTokenRedisRepository;
+    private final JwtBlackListRedisRepository jwtBlackListRedisRepository;
     private final SecretKey secretKey;
 
     public JwtService(@Value("${service.jwt.secret-key}") String secretKey,
-                      JwtRefreshTokenRedisRepository jwtRefreshTokenRedisRepository) {
+                      JwtRefreshTokenRedisRepository jwtRefreshTokenRedisRepository,
+                      JwtBlackListRedisRepository jwtBlackListRedisRepository) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.jwtRefreshTokenRedisRepository = jwtRefreshTokenRedisRepository;
+        this.jwtBlackListRedisRepository = jwtBlackListRedisRepository;
     }
 
     public JwtPair createTokenPair(JwtPayload jwtPayload) {
@@ -50,13 +55,13 @@ public class JwtService {
     }
 
     public JwtPair refreshAccessToken(String refreshToken) {
-        JwtPayload jwtPayload = verifyRefreshToken(refreshToken);
+        JwtPayload jwtPayload = verifyToken(refreshToken);
 
         Optional<String> savedRefreshToken = jwtRefreshTokenRedisRepository.findValueByKey(jwtPayload.email());
         if (savedRefreshToken.isEmpty()) {
             throw new JwtExpiredRefreshTokenException();
         }
-        if (refreshToken.equalsIgnoreCase(savedRefreshToken.get())) {
+        if (!refreshToken.equalsIgnoreCase(savedRefreshToken.get())) {
             throw new JwtInvalidRefreshTokenException();
         }
 
@@ -69,6 +74,13 @@ public class JwtService {
         jwtRefreshTokenRedisRepository.deleteByKey(email);
     }
 
+    public void addAccessTokenToBlackList(String email, String accessToken) {
+        // 남은 리프레시 토큰 시간만큼을 블랙리스트 시간으로 처리함
+        long refreshTokenExpiredTime = jwtRefreshTokenRedisRepository.getExpire(email);
+        jwtBlackListRedisRepository.save(JwtBlackListRedisEntity.from(accessToken, refreshTokenExpiredTime));
+    }
+
+
     private String createToken(JwtPayload jwtPayload, long expiration) {
         return Jwts.builder()
                 .claim(CLIENT_ID_KEY, jwtPayload.id())
@@ -80,16 +92,11 @@ public class JwtService {
                 .compact();
     }
 
-
-    public JwtPayload verifyAccessToken(String accessToken) {
-        return verifyToken(accessToken, false);
+    public boolean isAccessTokenBlackListed(String accessToken) {
+        return jwtBlackListRedisRepository.findValueByKey(accessToken).isPresent();
     }
 
-    public JwtPayload verifyRefreshToken(String refreshToken) {
-        return verifyToken(refreshToken, true);
-    }
-
-    public JwtPayload verifyToken(String jwtToken, boolean isStrict) {
+    public JwtPayload verifyToken(String jwtToken) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
@@ -101,12 +108,6 @@ public class JwtService {
                     claims.get(CLIENT_EMAIL_KEY, String.class),
                     claims.getIssuedAt());
         } catch (ExpiredJwtException e) {
-            if (!isStrict) {
-                return JwtPayload.from(
-                        e.getClaims().get(CLIENT_ID_KEY, String.class),
-                        e.getClaims().get(CLIENT_EMAIL_KEY, String.class),
-                        e.getClaims().getIssuedAt());
-            }
             throw new JwtExpiredAuthorizationException();
         } catch (MalformedJwtException e) {
             throw new JwtMalformedStructureException();

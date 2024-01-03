@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     // JWT
     JWT_INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
+    JWT_INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 액세스 토큰입니다."),
 
     JWT_EXPIRED_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     JWT_INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "토큰의 시그니처가 올바르지 않습니다."),
