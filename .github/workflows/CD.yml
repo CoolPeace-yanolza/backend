@@ -56,8 +56,8 @@ jobs:
         run: |
           aws deploy create-deployment \
           --region ap-northeast-2 \
-          --application-name coolpeace-api \
+          --application-name coolpeace-cd \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name coolpeace-api-dg \
+          --deployment-group-name coolpeace-cd-group \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
