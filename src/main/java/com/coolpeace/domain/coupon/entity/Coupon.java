@@ -1,5 +1,6 @@
 package com.coolpeace.domain.coupon.entity;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
@@ -25,6 +26,8 @@ public class Coupon extends BaseTimeEntity {
 
     private String title;
 
+    private CouponStatus couponStatus;
+
     private DiscountType discountType;
 
     private int maxDiscount;
@@ -45,9 +48,9 @@ public class Coupon extends BaseTimeEntity {
 
     private LocalDateTime expiration;
 
-    private Boolean isExposure;
-
-    private Boolean isDeleted;
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
+    private Accommodation accommodation;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
