@@ -50,19 +50,16 @@ public class MemberService {
     }
 
     @Transactional
-    public JwtPair registerAsOwner(MemberRegisterRequest registerRequest) {
+    public void registerAsOwner(MemberRegisterRequest registerRequest) {
         validateMemberEmail(registerRequest.email());
         Role role = roleRepository.findByRoleType(RoleType.OWNER).orElseThrow(MemberRoleNotFoundException::new);
-        Member newMember = memberRepository.save(
+        memberRepository.save(
                 Member.from(
                         registerRequest.email(),
                         passwordEncoder.encode(registerRequest.password()),
                         registerRequest.name(),
                         role)
         );
-
-        return jwtService.createTokenPair(
-                JwtPayload.fromNow(String.valueOf(newMember.getId()), newMember.getEmail()));
     }
 
     @Transactional(readOnly = true)
