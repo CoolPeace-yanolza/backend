@@ -4,6 +4,7 @@ import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.converter.CouponRoomTypeConverter;
 import com.coolpeace.domain.coupon.entity.converter.CouponUseConditionDaysTypeConverter;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.domain.member.entity.Member;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,10 +56,10 @@ public class Coupon extends BaseTimeEntity {
     private List<DayOfWeek> couponUseConditionDays;
 
     @Column(nullable = false)
-    private LocalDateTime exposureStartDate;
+    private LocalDate exposureStartDate;
 
     @Column(nullable = false)
-    private LocalDateTime exposureEndDate;
+    private LocalDate exposureEndDate;
 
     @Column(nullable = false)
     private LocalDateTime expirationDate;
