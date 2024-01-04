@@ -1,0 +1,18 @@
+### 쿠폰 등록
+POST http://localhost:8080/v1/coupons/register
+Content-Type: application/json
+#Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIxIiwiY2xpZW50X2VtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlzcyI6ImNvb2xwZWFjZSIsImlhdCI6MTcwNDM3Mjc5MSwiZXhwIjoxNzA0NDA4NzkxfQ.2ecrkacA3ob3EvQUaXE9KEuzU4VzQMNMK1JHcH-1DBN8LQ1j9xvvZGYf1azvOxslBWLaZ84uk2y1aBx-3RgSAQ
+
+{
+  "title": "Example Title",
+  "customer_type": "FIRST_CLIENT",
+  "discount_type": "FIXED_PRICE",
+  "discount_value": 10,
+  "coupon_room_type": ["LODGE", "TWO_NIGHT"],
+  "register_all_room": false,
+  "register_rooms": [1, 2, 3, 4, 5],
+  "minimum_reservation_price": 0,
+  "coupon_use_condition_days": ["MONDAY", "WEDNESDAY"],
+  "exposure_start_date": "2023-04-01",
+  "exposure_end_date": "2023-04-30"
+}
