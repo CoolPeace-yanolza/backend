@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  S3_BUCKET_NAME: coolpeacebucket
+  S3_BUCKET_NAME: coolpeace-s3
 
 jobs:
   build:
@@ -56,8 +56,8 @@ jobs:
         run: |
           aws deploy create-deployment \
           --region ap-northeast-2 \
-          --application-name coolpeace-cd \
+          --application-name coolpeace-codedeploy \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name coolpeace-cd-group \
+          --deployment-group-name coolpeace-deploy-group \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
