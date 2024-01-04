@@ -1,6 +1,11 @@
 package com.coolpeace.domain.coupon.entity;
 
-public enum CouponStatus {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum CouponStatusType {
     EXPOSURE_ON("노출 ON"),
     EXPOSURE_OFF("노출 OFF"),
     EXPOSURE_WAIT("노출 대기중"),
@@ -8,8 +13,4 @@ public enum CouponStatus {
     DELETED("논리 삭제");
 
     private final String value;
-
-    CouponStatus(String value) {
-        this.value = value;
-    }
 }
