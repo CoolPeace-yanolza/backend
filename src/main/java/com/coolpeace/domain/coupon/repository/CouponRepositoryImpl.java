@@ -51,7 +51,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
             .where(coupon.member.id.eq(memberId)
                 .and(coupon.accommodation.id.eq(accommodationId))
                 .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON))
-                .and(coupon.exposeEndDate.before(LocalDateTime.now().plusDays(3))))
+                .and(coupon.exposureEndDate.before(LocalDateTime.now().plusDays(3))))
             .fetch();
     }
 }
