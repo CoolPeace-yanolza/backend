@@ -30,7 +30,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
     }
 
     @Override
-    public Boolean NoRegister(Long memberId, Long accommodationId) {
+    public Boolean noRegister(Long memberId, Long accommodationId) {
 
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
@@ -40,7 +40,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
     }
 
     @Override
-    public Boolean NoExposure(Long memberId, Long accommodationId) {
+    public Boolean noExposure(Long memberId, Long accommodationId) {
 
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
