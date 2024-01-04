@@ -3,21 +3,17 @@ package com.coolpeace.domain.coupon.repository;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.CouponStatusType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 
+@RequiredArgsConstructor
 public class CouponRepositoryImpl implements CouponRepositoryCustom{
 
     private final JPAQueryFactory jpaQueryFactory;
-
-    public CouponRepositoryImpl(EntityManager entityManager) {
-        this.jpaQueryFactory = new JPAQueryFactory(entityManager);
-    }
-
 
     @Override
     public List<Coupon> exposureCoupons(Long memberId, Long accommodationId) {
