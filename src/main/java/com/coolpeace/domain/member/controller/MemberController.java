@@ -28,7 +28,7 @@ public class MemberController {
     public ResponseEntity<MemberLoginResponse> login(
             @Valid @RequestBody MemberLoginRequest loginRequest
     ) {
-        return ResponseEntity.ok(MemberLoginResponse.from(memberService.login(loginRequest)));
+        return ResponseEntity.ok(memberService.login(loginRequest));
     }
 
     @PostMapping("/register")
