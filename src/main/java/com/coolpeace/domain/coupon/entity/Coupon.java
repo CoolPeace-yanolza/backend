@@ -30,14 +30,17 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CouponStatusType couponStatus = CouponStatusType.EXPOSURE_WAIT;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DiscountType discountType = DiscountType.FIXED_PRICE;
 
     private Integer discountValue;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CustomerType customerType = CustomerType.ALL_CLIENT;
 
@@ -51,10 +54,10 @@ public class Coupon extends BaseTimeEntity {
     private List<DayOfWeek> couponUseConditionDays;
 
     @Column(nullable = false)
-    private LocalDateTime exposeStartDate;
+    private LocalDateTime exposureStartDate;
 
     @Column(nullable = false)
-    private LocalDateTime exposeEndDate;
+    private LocalDateTime exposureEndDate;
 
     @Column(nullable = false)
     private LocalDateTime expirationDate;

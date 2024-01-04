@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum DiscountType {
-    FIXED_RATE("정률 할인"),
-    FIXED_PRICE("정액 할인");
+    FIXED_RATE("정률"),
+    FIXED_PRICE("정액");
 
     private final String value;
 
