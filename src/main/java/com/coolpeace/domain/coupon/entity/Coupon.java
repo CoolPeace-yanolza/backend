@@ -1,19 +1,22 @@
 package com.coolpeace.domain.coupon.entity;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.coupon.entity.converter.CouponRoomTypeConverter;
+import com.coolpeace.domain.coupon.entity.converter.CouponUseConditionDaysTypeConverter;
+import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.CustomerType;
+import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -24,40 +27,47 @@ public class Coupon extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
-    private CouponStatus couponStatus;
+    @Column(nullable = false)
+    private CouponStatusType couponStatus = CouponStatusType.EXPOSURE_WAIT;
 
-    private DiscountType discountType;
+    @Column(nullable = false)
+    private DiscountType discountType = DiscountType.FIXED_PRICE;
 
-    private int maxDiscount;
+    private Integer discountValue;
 
-    private MemberType memberType;
+    @Column(nullable = false)
+    private CustomerType customerType = CustomerType.ALL_CLIENT;
 
-    private RoomType roomType;
+    @Convert(converter = CouponRoomTypeConverter.class)
+    @Column(nullable = false)
+    private List<CouponRoomType> couponRoomType;
 
-    private UseCase useCase;
+    private Integer minimumReservationPrice = 0;
 
-    private int usePay;
+    @Convert(converter = CouponUseConditionDaysTypeConverter.class)
+    private List<DayOfWeek> couponUseConditionDays;
 
-    private String useDays;
+    @Column(nullable = false)
+    private LocalDateTime exposeStartDate;
 
-    private LocalDateTime startDate;
+    @Column(nullable = false)
+    private LocalDateTime exposeEndDate;
 
-    private LocalDateTime endDate;
+    @Column(nullable = false)
+    private LocalDateTime expirationDate;
 
-    private LocalDateTime expiration;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
 }

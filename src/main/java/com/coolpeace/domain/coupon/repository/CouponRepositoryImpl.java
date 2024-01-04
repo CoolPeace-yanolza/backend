@@ -1,15 +1,14 @@
 package com.coolpeace.domain.coupon.repository;
 
-import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
-
-import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.domain.coupon.entity.CouponStatus;
-import com.coolpeace.domain.member.entity.Member;
+import com.coolpeace.domain.coupon.entity.CouponStatusType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 
 public class CouponRepositoryImpl implements CouponRepositoryCustom{
 
@@ -25,7 +24,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
                 .and(coupon.accommodation.id.eq(accommodationId))
-                .and(coupon.couponStatus.eq(CouponStatus.EXPOSURE_ON)))
+                .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON)))
             .fetch();
     }
 
@@ -35,7 +34,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
                 .and(coupon.accommodation.id.eq(accommodationId))
-                .and(coupon.couponStatus.ne(CouponStatus.DELETED)))
+                .and(coupon.couponStatus.ne(CouponStatusType.DELETED)))
             .fetch().isEmpty();
     }
 
@@ -45,7 +44,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
                 .and(coupon.accommodation.id.eq(accommodationId))
-                .and(coupon.couponStatus.eq(CouponStatus.EXPOSURE_ON)))
+                .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON)))
             .fetch().isEmpty();
     }
 
@@ -55,8 +54,8 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.member.id.eq(memberId)
                 .and(coupon.accommodation.id.eq(accommodationId))
-                .and(coupon.couponStatus.eq(CouponStatus.EXPOSURE_ON))
-                .and(coupon.endDate.before(LocalDateTime.now().plusDays(3))))
+                .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON))
+                .and(coupon.exposeEndDate.before(LocalDateTime.now().plusDays(3))))
             .fetch();
     }
 }
