@@ -26,6 +26,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String name;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<MemberRole> roles = new ArrayList<>();
 
@@ -41,13 +44,14 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ServiceTerm> serviceTerms;
 
-    private Member(String email, String password, Role role) {
+    private Member(String email, String password, String name, Role role) {
         this.email = email;
         this.password = password;
+        this.name =name;
         this.roles.add(MemberRole.from(this, role));
     }
 
-    public static Member from(String email, String password, Role role) {
-        return new Member(email, password, role);
+    public static Member from(String email, String password, String name, Role role) {
+        return new Member(email, password, name, role);
     }
 }

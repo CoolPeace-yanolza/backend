@@ -3,6 +3,7 @@ package com.coolpeace.domain.member.service;
 import com.coolpeace.domain.member.dto.request.MemberLoginRequest;
 import com.coolpeace.domain.member.dto.request.MemberRegisterEmailCheckRequest;
 import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;
+import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.entity.Role;
 import com.coolpeace.domain.member.entity.type.RoleType;
@@ -34,7 +35,7 @@ public class MemberService {
     }
 
     @Transactional
-    public JwtPair login(MemberLoginRequest loginRequest) {
+    public MemberLoginResponse login(MemberLoginRequest loginRequest) {
         Member storedMember = memberRepository.findByEmail(loginRequest.email())
                 .orElseThrow(MemberNotFoundException::new);
 
@@ -42,20 +43,23 @@ public class MemberService {
             throw new MemberWrongPasswordException();
         }
 
-        return jwtService.createTokenPair(
+        JwtPair newTokenPair = jwtService.createTokenPair(
                 JwtPayload.fromNow(String.valueOf(storedMember.getId()), storedMember.getEmail()));
+
+        return MemberLoginResponse.from(storedMember.getName(), newTokenPair);
     }
 
     @Transactional
-    public JwtPair registerAsOwner(MemberRegisterRequest registerRequest) {
+    public void registerAsOwner(MemberRegisterRequest registerRequest) {
         validateMemberEmail(registerRequest.email());
         Role role = roleRepository.findByRoleType(RoleType.OWNER).orElseThrow(MemberRoleNotFoundException::new);
-        Member newMember = memberRepository.save(
-                Member.from(registerRequest.email(), passwordEncoder.encode(registerRequest.password()), role)
+        memberRepository.save(
+                Member.from(
+                        registerRequest.email(),
+                        passwordEncoder.encode(registerRequest.password()),
+                        registerRequest.name(),
+                        role)
         );
-
-        return jwtService.createTokenPair(
-                JwtPayload.fromNow(String.valueOf(newMember.getId()), newMember.getEmail()));
     }
 
     @Transactional(readOnly = true)

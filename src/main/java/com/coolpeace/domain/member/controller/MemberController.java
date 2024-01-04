@@ -6,7 +6,6 @@ import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;
 import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
-import com.coolpeace.domain.member.dto.response.MemberRegisterResponse;
 import com.coolpeace.domain.member.service.MemberService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtCredential;
@@ -28,15 +27,15 @@ public class MemberController {
     public ResponseEntity<MemberLoginResponse> login(
             @Valid @RequestBody MemberLoginRequest loginRequest
     ) {
-        return ResponseEntity.ok(MemberLoginResponse.from(memberService.login(loginRequest)));
+        return ResponseEntity.ok(memberService.login(loginRequest));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<MemberRegisterResponse> register(
+    public ResponseEntity<Void> register(
             @Valid @RequestBody MemberRegisterRequest registerRequest
     ) {
-        return ResponseEntity.created(URI.create("/"))
-                .body(MemberRegisterResponse.from(memberService.registerAsOwner(registerRequest)));
+        memberService.registerAsOwner(registerRequest);
+        return ResponseEntity.created(URI.create("/")).build();
     }
 
     @GetMapping("/register/check/email")
