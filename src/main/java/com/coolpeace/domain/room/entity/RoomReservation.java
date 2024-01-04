@@ -21,6 +21,8 @@ public class RoomReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int discountPrice;
+
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
