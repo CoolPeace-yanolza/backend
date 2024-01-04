@@ -1,4 +1,4 @@
-package com.coolpeace.domain.coupon.entity;
+package com.coolpeace.domain.coupon.entity.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
