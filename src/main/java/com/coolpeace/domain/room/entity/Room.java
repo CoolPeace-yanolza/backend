@@ -23,7 +23,13 @@ public class Room extends BaseTimeEntity {
 
     private int roomNumber;
 
+    private String roomType;
+
+    private int price;
+
     @ManyToOne
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
+
+
 }
