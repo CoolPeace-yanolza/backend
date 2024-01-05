@@ -195,7 +195,7 @@ public class Coupon extends BaseTimeEntity {
         this.couponNumber = couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
     }
 
-    public void deleteCouponStatus() {
-        this.couponStatus = CouponStatusType.DELETED;
+    public void changeCouponStatus(CouponStatusType couponStatusType) {
+        this.couponStatus = couponStatusType;
     }
 }

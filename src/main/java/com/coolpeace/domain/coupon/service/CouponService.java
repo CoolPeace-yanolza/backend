@@ -9,6 +9,7 @@ import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
@@ -94,13 +95,17 @@ public class CouponService {
     }
 
     public void exposeCoupon(Long memberId, String couponNumber, CouponExposeRequest couponExposeRequest) {
+        validateMemberHasCoupon(memberId, couponNumber);
+        Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
+                .orElseThrow(CouponNotFoundException::new);
+        storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());
     }
 
     public void deleteCoupon(Long memberId, String couponNumber) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
-        storedCoupon.deleteCouponStatus();
+        storedCoupon.changeCouponStatus(CouponStatusType.DELETED);
     }
 
     public void validateMemberHasCoupon(Long memberId, String couponNumber) {
