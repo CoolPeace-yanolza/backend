@@ -10,5 +10,6 @@ import java.util.Optional;
 
 public interface CouponRepository extends JpaRepository<Coupon,Long>,CouponRepositoryCustom {
     Optional<Coupon> findTopByMemberOrderByCreatedAtDesc(Member member);
+    boolean existsByMemberIdAndId(Long memberId, Long id);
     List<Coupon> findAllByMemberAndAccommodation(Member member, Accommodation accommodation);
 }

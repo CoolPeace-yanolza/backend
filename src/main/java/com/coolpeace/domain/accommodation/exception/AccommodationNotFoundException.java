@@ -5,6 +5,6 @@ import com.coolpeace.global.exception.ErrorCode;
 
 public class AccommodationNotFoundException extends ApplicationException {
     public AccommodationNotFoundException() {
-        super(ErrorCode.ACCOMMODATION_NOT_FOUND);
+        super(ErrorCode.COUPON_NOT_FOUND);
     }
 }

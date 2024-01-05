@@ -33,7 +33,7 @@ public class Coupon extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private final CouponStatusType couponStatus = CouponStatusType.EXPOSURE_WAIT;
+    private CouponStatusType couponStatus = CouponStatusType.EXPOSURE_WAIT;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -193,5 +193,9 @@ public class Coupon extends BaseTimeEntity {
 
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
         this.couponNumber = couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
+    }
+
+    public void deleteCouponStatus() {
+        this.couponStatus = CouponStatusType.DELETED;
     }
 }
