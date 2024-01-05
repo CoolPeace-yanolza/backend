@@ -30,7 +30,8 @@ public record CouponRegisterRequest(
 
         // 객실 유형
         @NotNull(message = "객실의 유형을 선택해야 합니다.")
-        List<CouponRoomType> couponRoomType,
+        @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 객실의 유형입니다.")
+        CouponRoomType couponRoomType,
 
         // 숙소 ID
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")

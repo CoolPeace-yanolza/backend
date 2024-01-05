@@ -1,7 +1,6 @@
 package com.coolpeace.domain.coupon.entity;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.coupon.entity.converter.CouponRoomTypeConverter;
 import com.coolpeace.domain.coupon.entity.converter.CouponUseConditionDaysTypeConverter;
 import com.coolpeace.domain.coupon.entity.type.*;
 import com.coolpeace.domain.member.entity.Member;
@@ -46,9 +45,8 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private CustomerType customerType = CustomerType.ALL_CLIENT;
 
-    @Convert(converter = CouponRoomTypeConverter.class)
     @Column(nullable = false)
-    private List<CouponRoomType> couponRoomType;
+    private CouponRoomType couponRoomType;
 
     private Integer minimumReservationPrice = 0;
 
@@ -87,7 +85,7 @@ public class Coupon extends BaseTimeEntity {
                   DiscountType discountType,
                   Integer discountValue,
                   CustomerType customerType,
-                  List<CouponRoomType> couponRoomType,
+                  CouponRoomType couponRoomType,
                   Integer minimumReservationPrice,
                   List<DayOfWeek> couponUseConditionDays,
                   LocalDate exposureStartDate,
@@ -112,7 +110,7 @@ public class Coupon extends BaseTimeEntity {
                   DiscountType discountType,
                   Integer discountValue,
                   CustomerType customerType,
-                  List<CouponRoomType> couponRoomType,
+                  CouponRoomType couponRoomType,
                   Integer minimumReservationPrice,
                   List<DayOfWeek> couponUseConditionDays,
                   LocalDate exposureStartDate,
@@ -137,7 +135,7 @@ public class Coupon extends BaseTimeEntity {
             DiscountType discountType,
             Integer discountValue,
             CustomerType customerType,
-            List<CouponRoomType> couponRoomType,
+            CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
             List<DayOfWeek> couponUseConditionDays,
             LocalDate exposureStartDate,
@@ -165,7 +163,7 @@ public class Coupon extends BaseTimeEntity {
             DiscountType discountType,
             Integer discountValue,
             CustomerType customerType,
-            List<CouponRoomType> couponRoomType,
+            CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
             List<DayOfWeek> couponUseConditionDays,
             LocalDate exposureStartDate,
