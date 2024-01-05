@@ -42,7 +42,4 @@ public class Reservation extends BaseTimeEntity {
     @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY)
     private List<RoomReservation> roomReservations;
 
-    @OneToOne
-    @JoinColumn(name = "accommodation_id")
-    private Accommodation accommodation;
 }
