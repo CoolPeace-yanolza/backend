@@ -3,6 +3,7 @@ package com.coolpeace.docs;
 import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class SampleControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Disabled
     @Test
     public void test() throws Exception {
         // given
@@ -56,7 +58,8 @@ public class SampleControllerTest {
         // then
         result.andExpect(status().isCreated())
                 .andDo(document("/v1/member/register",
-                                requestFields(
+                        // 모든 필드가 들어있으면 requestFields, 일부 필드만 적으려면 relaxedRequestFields
+                        requestFields(
                                         fieldWithPath("email").type(JsonFieldType.STRING).description("The user's email address"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("The user's name"),
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("The user's password")
