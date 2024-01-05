@@ -6,6 +6,7 @@ import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
+import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
@@ -16,10 +17,12 @@ import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.exception.RoomNotFoundException;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -76,8 +79,10 @@ public class CouponService {
         }
     }
 
-    public List<CouponResponse> searchCoupons() {
-        return Collections.emptyList();
+    public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
+        return couponRepository.findAllCoupons(memberId, searchCouponParams,
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
+                .map(CouponResponse::from);
     }
 
     public void updateCoupon(String couponId, CouponUpdateRequest couponExposeRequest) {
