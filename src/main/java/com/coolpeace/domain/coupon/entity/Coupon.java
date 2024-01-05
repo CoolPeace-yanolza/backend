@@ -32,6 +32,9 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private String couponNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CouponStatusType couponStatus = CouponStatusType.EXPOSURE_WAIT;
@@ -63,6 +66,12 @@ public class Coupon extends BaseTimeEntity {
 
     @Column(nullable = false)
     private LocalDateTime expirationDate;
+
+    @Column(nullable = false)
+    private Integer downloadCount = 0;
+
+    @Column(nullable = false)
+    private Integer useCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
