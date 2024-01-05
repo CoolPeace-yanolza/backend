@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -35,8 +36,10 @@ public class CouponService {
     private final RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
-    public Coupon getRecentHistory() {
-        return null;
+    public Optional<CouponResponse> getRecentHistory(Long memberId) {
+        Member storedMember = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        Optional<Coupon> storedRecentCoupon = couponRepository.findTopByMemberOrderByCreatedAtDesc(storedMember);
+        return storedRecentCoupon.map(CouponResponse::from);
     }
 
     public void register(Long memberId, CouponRegisterRequest couponRegisterRequest) {

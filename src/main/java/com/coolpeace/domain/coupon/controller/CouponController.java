@@ -4,7 +4,6 @@ import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
-import com.coolpeace.domain.coupon.dto.response.CouponRecentHistoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponRegisterResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
@@ -19,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/coupons")
@@ -37,8 +37,14 @@ public class CouponController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<CouponRecentHistoryResponse> getCouponRecentHistory() {
-        return ResponseEntity.ok(CouponRecentHistoryResponse.from(couponService.getRecentHistory()));
+    public ResponseEntity<?> getCouponRecentHistory(
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+    ) {
+        Optional<CouponResponse> couponResponse = couponService.getRecentHistory(Long.valueOf(jwtPrincipal.getMemberId()));
+        if (couponResponse.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(couponResponse.get());
     }
 
     @PostMapping("/register")
