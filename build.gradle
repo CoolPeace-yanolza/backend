@@ -80,7 +80,6 @@ openapi3 {
 
 tasks.register("copyToSwaggerUI", Copy) {
     dependsOn "openapi3"
-    delete "src/main/resources/static/swagger-ui/openapi3.yaml"
     from "build/api-spec/openapi3.yaml"
     into "src/main/resources/static/swagger-ui/."
 }
