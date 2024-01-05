@@ -56,29 +56,33 @@ public class CouponController {
         return ResponseEntity.created(URI.create("/")).build();
     }
 
-    @PutMapping("/{coupon_id}")
+    @PutMapping("/{coupon_number}")
     public ResponseEntity<Void> updateCoupon(
-            @PathVariable("coupon_id") String couponId,
-            @Valid @RequestBody CouponUpdateRequest couponUpdateRequest) {
-        couponService.updateCoupon(couponId, couponUpdateRequest);
+            @PathVariable("coupon_number") String couponNumber,
+            @Valid @RequestBody CouponUpdateRequest couponUpdateRequest,
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
+        couponService.updateCoupon(
+                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{coupon_id}/expose")
+    @PutMapping("/{coupon_number}/expose")
     public ResponseEntity<Void> exposeCoupon(
-            @PathVariable("coupon_id") String couponId,
-            @Valid @RequestBody CouponExposeRequest couponExposeRequest
-    ) {
-        couponService.exposeCoupon(couponId, couponExposeRequest);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{coupon_id}")
-    public ResponseEntity<Void> deleteCoupon(
-            @PathVariable("coupon_id") String couponId,
+            @PathVariable("coupon_number") String couponNumber,
+            @Valid @RequestBody CouponExposeRequest couponExposeRequest,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        couponService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), Long.valueOf(couponId));
+        couponService.exposeCoupon(
+                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponExposeRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{coupon_number}")
+    public ResponseEntity<Void> deleteCoupon(
+            @PathVariable("coupon_number") String couponNumber,
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+    ) {
+        couponService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), couponNumber);
         return ResponseEntity.ok().build();
     }
 }

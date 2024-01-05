@@ -90,21 +90,21 @@ public class CouponService {
                 .map(CouponResponse::from);
     }
 
-    public void updateCoupon(String couponId, CouponUpdateRequest couponExposeRequest) {
+    public void updateCoupon(Long memberId, String couponNumber, CouponUpdateRequest couponExposeRequest) {
     }
 
-    public void exposeCoupon(String couponId, CouponExposeRequest couponExposeRequest) {
+    public void exposeCoupon(Long memberId, String couponNumber, CouponExposeRequest couponExposeRequest) {
     }
 
-    public void deleteCoupon(Long memberId, Long couponId) {
-        validateMemberHasCoupon(memberId, couponId);
-        Coupon storedCoupon = couponRepository.findById(couponId)
+    public void deleteCoupon(Long memberId, String couponNumber) {
+        validateMemberHasCoupon(memberId, couponNumber);
+        Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
         storedCoupon.deleteCouponStatus();
     }
 
-    public void validateMemberHasCoupon(Long memberId, Long couponId) {
-        if (!couponRepository.existsByMemberIdAndId(memberId, couponId)) {
+    public void validateMemberHasCoupon(Long memberId, String couponNumber) {
+        if (!couponRepository.existsByMemberIdAndCouponNumber(memberId, couponNumber)) {
             throw new CouponAccessDeniedException();
         }
     }
