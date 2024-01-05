@@ -32,6 +32,10 @@ public record CouponRegisterRequest(
         @NotNull(message = "객실의 유형을 선택해야 합니다.")
         List<CouponRoomType> couponRoomType,
 
+        // 숙소 ID
+        @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
+        Long accommodationId,
+
         // 방 등록
         Boolean registerAllRoom,
         List<Integer> registerRooms,

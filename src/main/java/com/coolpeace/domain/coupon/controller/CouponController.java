@@ -8,6 +8,8 @@ import com.coolpeace.domain.coupon.dto.response.CouponRecentHistoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponRegisterResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
+import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
@@ -45,10 +47,11 @@ public class CouponController {
 
     @PostMapping("/register")
     public ResponseEntity<CouponRegisterResponse> registerCoupon(
-            @Valid @RequestBody CouponRegisterRequest couponRegisterRequest
-    ) {
-        return ResponseEntity.created(URI.create("/"))
-                .body(couponService.register(couponRegisterRequest));
+            @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+            ) {
+        couponService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
+        return ResponseEntity.created(URI.create("/")).build();
     }
 
     @PutMapping("/{coupon_id}")
