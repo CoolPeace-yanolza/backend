@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -186,11 +187,6 @@ public class Coupon extends BaseTimeEntity {
         );
     }
 
-    @PostPersist
-    private void postPersist() {
-        this.generateCouponNumber(CouponIssuerType.OWNER, this.id);
-    }
-
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
         this.couponNumber = couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
     }
@@ -198,4 +194,32 @@ public class Coupon extends BaseTimeEntity {
     public void changeCouponStatus(CouponStatusType couponStatusType) {
         this.couponStatus = couponStatusType;
     }
+
+    public void updateCoupon(
+            String title,
+            DiscountType discountType,
+            Integer discountValue,
+            CustomerType customerType,
+            CouponRoomType couponRoomType,
+            Integer minimumReservationPrice,
+            List<DayOfWeek> couponUseConditionDays,
+            LocalDate exposureStartDate,
+            LocalDate exposureEndDate
+    ) {
+        this.title = Optional.ofNullable(title).orElse(this.title);
+        this.discountType = Optional.ofNullable(discountType).orElse(this.discountType);
+        this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
+        this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
+        this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
+        this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);
+        this.couponUseConditionDays = Optional.ofNullable(couponUseConditionDays).orElse(this.couponUseConditionDays);
+        this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
+        this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
+    }
+
+    @PostPersist
+    private void postPersist() {
+        this.generateCouponNumber(CouponIssuerType.OWNER, this.id);
+    }
+
 }

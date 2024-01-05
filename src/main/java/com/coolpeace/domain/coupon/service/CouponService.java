@@ -39,12 +39,20 @@ public class CouponService {
     private final RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
+    public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
+        return couponRepository.findAllCoupons(memberId, searchCouponParams,
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
+                .map(CouponResponse::from);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<CouponResponse> getRecentHistory(Long memberId) {
         Member storedMember = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Optional<Coupon> storedRecentCoupon = couponRepository.findTopByMemberOrderByCreatedAtDesc(storedMember);
         return storedRecentCoupon.map(CouponResponse::from);
     }
 
+    @Transactional
     public void register(Long memberId, CouponRegisterRequest couponRegisterRequest) {
         Member storedMember = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Accommodation accommodation = accommodationRepository.findById(couponRegisterRequest.accommodationId())
@@ -85,15 +93,25 @@ public class CouponService {
         }
     }
 
-    public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
-        return couponRepository.findAllCoupons(memberId, searchCouponParams,
-                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
-                .map(CouponResponse::from);
+    @Transactional
+    public void updateCoupon(Long memberId, String couponNumber, CouponUpdateRequest couponUpdateRequest) {
+        validateMemberHasCoupon(memberId, couponNumber);
+        Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
+                .orElseThrow(CouponNotFoundException::new);
+        storedCoupon.updateCoupon(
+                couponUpdateRequest.title(),
+                couponUpdateRequest.discountType(),
+                couponUpdateRequest.discountValue(),
+                couponUpdateRequest.customerType(),
+                couponUpdateRequest.couponRoomType(),
+                couponUpdateRequest.minimumReservationPrice(),
+                couponUpdateRequest.couponUseConditionDays(),
+                couponUpdateRequest.exposureStartDate(),
+                couponUpdateRequest.exposureEndDate()
+        );
     }
 
-    public void updateCoupon(Long memberId, String couponNumber, CouponUpdateRequest couponExposeRequest) {
-    }
-
+    @Transactional
     public void exposeCoupon(Long memberId, String couponNumber, CouponExposeRequest couponExposeRequest) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
@@ -101,6 +119,7 @@ public class CouponService {
         storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());
     }
 
+    @Transactional
     public void deleteCoupon(Long memberId, String couponNumber) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)

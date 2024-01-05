@@ -15,7 +15,7 @@ import java.util.List;
 
 public record CouponRegisterRequest(
         @NotBlank(message = "쿠폰의 이름을 입력해야 합니다.")
-        @Size(message = "쿠폰의 이름은 20자 내외로 입력해야 합니다.")
+        @Size(max = 20, message = "쿠폰의 이름은 20자 내외로 입력해야 합니다.")
         String title,
         @NotNull(message = "고객의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = CustomerType.class, message = "올바르지 않은 고객의 유형입니다.")
