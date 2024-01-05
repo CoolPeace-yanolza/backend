@@ -3,41 +3,37 @@ package com.coolpeace.domain.coupon.controller;
 import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
-import com.coolpeace.domain.coupon.dto.request.validator.CouponRegisterRequestValidator;
+import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.response.CouponRecentHistoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponRegisterResponse;
-import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
+import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-
-import static org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 
 @RestController
 @RequestMapping("/v1/coupons")
 @RequiredArgsConstructor
 public class CouponController {
-    private final CouponRegisterRequestValidator couponRegisterRequestValidator;
     private final CouponService couponService;
 
-    @InitBinder
-    public void init(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(couponRegisterRequestValidator);
-    }
-
     @GetMapping
-    public ResponseEntity<CouponSearchResponse> searchCoupons(
-            @PageableDefault Pageable pageable
+    public ResponseEntity<Page<CouponResponse>> searchCoupons(
+            SearchCouponParams searchCouponParams,
+            @PageableDefault(size = 6) Pageable pageable,
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        return ResponseEntity.ok(CouponSearchResponse.from(couponService.searchCoupons()));
+        return ResponseEntity.ok(couponService.searchCoupons(
+                Long.valueOf(jwtPrincipal.getMemberId()), searchCouponParams, pageable));
     }
 
     @GetMapping("/recent")
@@ -49,7 +45,7 @@ public class CouponController {
     public ResponseEntity<CouponRegisterResponse> registerCoupon(
             @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
-            ) {
+    ) {
         couponService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
         return ResponseEntity.created(URI.create("/")).build();
     }
