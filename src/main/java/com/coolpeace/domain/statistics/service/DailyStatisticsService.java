@@ -39,7 +39,7 @@ public class DailyStatisticsService {
             int totalSales = 0;
             int couponTotalSales = 0;
             List<Reservation> reservations = reservationRepository
-                .findAllByAccommodation(accommodation);
+                .findByAccommodation(accommodation);
             for (Reservation reservation : reservations) {
                 totalSales += reservation.getTotalPrice();
                 couponTotalSales += reservation.getTotalPrice()- reservation.getDiscountPrice();
@@ -66,7 +66,7 @@ public class DailyStatisticsService {
             * */
             DailyStatistics dailyStatistics = dailyStatisticsRepository
                 .findByMemberAndStatisticsDay(member,day)
-                .orElseThrow(DailyStatisticsNotFoundException::new);
+                .orElse(new DailyStatistics(day,member, accommodation));
             dailyStatistics.setCoupon(downloadCount, usedCount);
         }
 
