@@ -33,24 +33,26 @@ public class DailyStatisticsService {
     public void updateSales(){
         List<Accommodation> accommodations = accommodationRepository.findAll();
         int day = LocalDate.now().getDayOfMonth();
-
-        for (Accommodation accommodation : accommodations) {
+        accommodations.forEach(accommodation -> {
             Member member = accommodation.getMember();
-            int totalSales = 0;
-            int couponTotalSales = 0;
-            List<Reservation> reservations = reservationRepository
-                .findByAccommodation(accommodation);
-            for (Reservation reservation : reservations) {
-                totalSales += reservation.getTotalPrice();
-                couponTotalSales += reservation.getTotalPrice()- reservation.getDiscountPrice();
-            }
-            DailyStatistics dailyStatistics = dailyStatisticsRepository
-                .findByMemberAndStatisticsDay(member,day)
-                .orElse(dailyStatisticsRepository
-                    .save(new DailyStatistics(day,member, accommodation)));
 
-            dailyStatistics.setSales(totalSales,couponTotalSales);
-        }
+            List<Reservation> reservations = reservationRepository.findByAccommodation(accommodation);
+
+            int totalSales = reservations.stream()
+                .mapToInt(Reservation::getTotalPrice)
+                .sum();
+
+            int couponTotalSales = reservations.stream()
+                .mapToInt(reservation -> reservation.getTotalPrice() - reservation.getDiscountPrice())
+                .sum();
+
+            DailyStatistics dailyStatistics = dailyStatisticsRepository
+                .findByMemberAndStatisticsDay(member, day)
+                .orElseGet(() -> dailyStatisticsRepository
+                    .save(new DailyStatistics(day, member, accommodation)));
+
+            dailyStatistics.setSales(totalSales, couponTotalSales);});
+
     }
 
     public void updateCoupon(){
