@@ -1,9 +1,15 @@
 package com.coolpeace.domain.statistics.entity;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.member.entity.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,18 +24,26 @@ public class MonthlyStatistics {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 1,max = 12)
+    @Min(value = 2000)
+    private int statisticsYear;
+
+    @Size(min = 1, max = 12)
     private int statisticsMonth;
 
-    private int totalSales;
+    @Column(nullable = false)
+    private int totalSales = 0;
 
-    private int couponTotalSales;
+    @Column(nullable = false)
+    private int couponTotalSales = 0;
 
-    private int downloadCount;
+    @Column(nullable = false)
+    private int downloadCount = 0;
 
-    private int usedCount;
+    @Column(nullable = false)
+    private int usedCount = 0;
 
-    private int settlementAmount;
+    @Column(nullable = false)
+    private int settlementAmount = 0;
 
     private String firstCouponTitle;
 
@@ -37,4 +51,27 @@ public class MonthlyStatistics {
 
     private String thirdCouponTitle;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
+    private Accommodation accommodation;
+
+    public MonthlyStatistics(int statisticsYear, int statisticsMonth, Member member, Accommodation accommodation) {
+        this.statisticsYear = statisticsYear;
+        this.statisticsMonth = statisticsMonth;
+        this.member = member;
+        this.accommodation = accommodation;
+    }
+
+    public void setMonthlySum(int totalSales, int couponTotalSales, int downloadCount,
+        int usedCount, int settlementAmount) {
+        this.totalSales += totalSales;
+        this.couponTotalSales += couponTotalSales;
+        this.downloadCount += downloadCount;
+        this.usedCount += usedCount;
+        this.settlementAmount += settlementAmount;
+    }
 }
