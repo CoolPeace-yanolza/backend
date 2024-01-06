@@ -32,6 +32,10 @@ public enum ErrorCode {
 
     // RESERVATION
 
+    //statistics
+    DAILY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일별 통계를 찾을 수 없습니다."),
+    MONTHLY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 월별 통계를 찾을 수 없습니다."),
+
     // JWT
     JWT_INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     JWT_INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 액세스 토큰입니다."),

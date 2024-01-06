@@ -30,4 +30,11 @@ public class MonthlyStatistics {
     private int usedCount;
 
     private int settlementAmount;
+
+    private String firstCouponTitle;
+
+    private String secondCouponTitle;
+
+    private String thirdCouponTitle;
+
 }
