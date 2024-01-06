@@ -20,7 +20,7 @@ public class SettlementTasklet implements Tasklet, StepExecutionListener {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
-
+        log.info("정산 Tasklet 시작");
         dailyStatisticsService.updateSettlement();
 
         return RepeatStatus.FINISHED;

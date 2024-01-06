@@ -24,6 +24,7 @@ public class BatchScheduler {
     private final PlatformTransactionManager platformTransactionManager;
     @Scheduled(cron = "0 0 0 * * *")
     public void runDailyJob() throws Exception {
+        log.info("daily scheduler start");
         jobLauncher.run(statisticsJob.dailyStaticsJob(jobRepository, platformTransactionManager),
             new JobParameters());
     }

@@ -20,7 +20,7 @@ public class CouponTasklet implements Tasklet, StepExecutionListener {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
-
+        log.info("쿠폰 Tasklet 시작");
         dailyStatisticsService.updateCoupon();
 
         return RepeatStatus.FINISHED;

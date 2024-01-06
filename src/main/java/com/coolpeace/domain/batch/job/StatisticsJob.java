@@ -25,6 +25,7 @@ public class StatisticsJob {
     @Bean(name = "dailyStaticsJob")
     public Job dailyStaticsJob(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) throws Exception {
+        log.info("일간 통계 집계 시작");
         return new JobBuilder("dailyStaticsJob", jobRepository)
             .start(saleStep(jobRepository, platformTransactionManager))
             .next(couponStep(jobRepository, platformTransactionManager))
@@ -35,6 +36,7 @@ public class StatisticsJob {
     @Bean
     public Step saleStep(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) throws  Exception{
+        log.info("sale step start");
         return new StepBuilder("saleStep", jobRepository)
             .tasklet(new ReservationTasklet(dailyStatisticsService),platformTransactionManager)
             .build();
@@ -43,6 +45,7 @@ public class StatisticsJob {
     @Bean
     public Step couponStep(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) {
+        log.info("coupon step start");
         return new StepBuilder("couponStep", jobRepository)
             .tasklet(new CouponTasklet(dailyStatisticsService),platformTransactionManager)
             .build();
@@ -51,6 +54,7 @@ public class StatisticsJob {
     @Bean
     public Step settlementStep(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) {
+        log.info("settlement step start");
         return new StepBuilder("settlementStep", jobRepository)
             .tasklet(new SettlementTasklet(dailyStatisticsService), platformTransactionManager)
             .build();
