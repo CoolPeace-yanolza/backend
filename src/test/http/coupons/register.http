@@ -10,7 +10,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIyIiwiY2xpZW50X2VtY
   "discount_value": 20,
   "coupon_room_type": "TWO_NIGHT",
   "accommodation_id": 1,
-  "register_all_room": true,
+  "register_all_room": false,
   "register_rooms": [101, 102],
   "minimum_reservation_price": 0,
   "coupon_use_condition_days": ["MONDAY", "WEDNESDAY"],

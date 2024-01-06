@@ -4,7 +4,6 @@ import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
-import com.coolpeace.domain.coupon.dto.response.CouponRegisterResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
@@ -48,7 +47,7 @@ public class CouponController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CouponRegisterResponse> registerCoupon(
+    public ResponseEntity<Void> registerCoupon(
             @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {

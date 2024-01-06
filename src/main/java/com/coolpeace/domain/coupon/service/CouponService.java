@@ -87,6 +87,7 @@ public class CouponService {
                     couponRegisterRequest.couponUseConditionDays(),
                     couponRegisterRequest.exposureStartDate(),
                     couponRegisterRequest.exposureEndDate(),
+                    accommodation,
                     room,
                     storedMember
             )));

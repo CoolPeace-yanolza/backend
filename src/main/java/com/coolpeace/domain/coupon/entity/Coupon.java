@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class Coupon extends BaseTimeEntity {
     private LocalDate exposureEndDate;
 
     @Column(nullable = false)
-    private final LocalDateTime expirationDate = LocalDateTime.now().plusDays(14);
+    private final Integer couponExpiration = 14;
 
     @Column(nullable = false)
     private final Integer downloadCount = 0;
@@ -116,6 +115,7 @@ public class Coupon extends BaseTimeEntity {
                   List<DayOfWeek> couponUseConditionDays,
                   LocalDate exposureStartDate,
                   LocalDate exposureEndDate,
+                  Accommodation accommodation,
                   Room room,
                   Member member) {
         this.title = title;
@@ -127,6 +127,7 @@ public class Coupon extends BaseTimeEntity {
         this.couponUseConditionDays = couponUseConditionDays;
         this.exposureStartDate = exposureStartDate;
         this.exposureEndDate = exposureEndDate;
+        this.accommodation = accommodation;
         this.room = room;
         this.member = member;
     }
@@ -141,6 +142,7 @@ public class Coupon extends BaseTimeEntity {
             List<DayOfWeek> couponUseConditionDays,
             LocalDate exposureStartDate,
             LocalDate exposureEndDate,
+            Accommodation accommodation,
             Room room,
             Member member
     ) {
@@ -154,6 +156,7 @@ public class Coupon extends BaseTimeEntity {
                 couponUseConditionDays,
                 exposureStartDate,
                 exposureEndDate,
+                accommodation,
                 room,
                 member
         );
