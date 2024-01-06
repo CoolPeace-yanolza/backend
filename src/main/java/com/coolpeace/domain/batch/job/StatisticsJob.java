@@ -2,7 +2,7 @@ package com.coolpeace.domain.batch.job;
 
 import com.coolpeace.domain.batch.tasklet.MonthlySumTasklet;
 import com.coolpeace.domain.batch.tasklet.SettlementTasklet;
-import com.coolpeace.domain.batch.tasklet.localCouponDownloadTasklet;
+import com.coolpeace.domain.batch.tasklet.LocalCouponDownloadTasklet;
 import com.coolpeace.domain.statistics.service.DailyStatisticsService;
 import com.coolpeace.domain.batch.tasklet.CouponTasklet;
 import com.coolpeace.domain.batch.tasklet.ReservationTasklet;
@@ -16,7 +16,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
@@ -90,7 +89,7 @@ public class StatisticsJob {
         PlatformTransactionManager platformTransactionManager) {
         log.info("localCouponDownload step start");
         return new StepBuilder("localCouponDownloadStep", jobRepository)
-            .tasklet(new localCouponDownloadTasklet(monthlyStatisticsService),
+            .tasklet(new LocalCouponDownloadTasklet(monthlyStatisticsService),
                 platformTransactionManager).build();
     }
 
