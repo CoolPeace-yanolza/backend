@@ -25,8 +25,15 @@ public class BatchScheduler {
     @Scheduled(cron = "0 0 0 * * *")
     public void runDailyJob() throws Exception {
         log.info("daily scheduler start");
-        jobLauncher.run(statisticsJob.dailyStaticsJob(jobRepository, platformTransactionManager),
+        jobLauncher.run(statisticsJob.dailyStatisticsJob(jobRepository, platformTransactionManager),
             new JobParameters());
     }
+    @Scheduled(cron = "0 0 0 11 * *")
+    public void runMonthlyJob() throws Exception {
+        log.info("monthly scheduler start");
+        jobLauncher.run(statisticsJob.monthlyStatisticsJob(jobRepository, platformTransactionManager),
+            new JobParameters());
+    }
+
 
 }
