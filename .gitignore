@@ -39,3 +39,4 @@ out/
 
 ### Private Files ###
 .env
+**/static/swagger-ui/openapi3.**

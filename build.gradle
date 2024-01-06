@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.7'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com'
@@ -9,6 +11,7 @@ version = '0.0.1-SNAPSHOT'
 
 ext {
     JJWT_VERSION = "0.12.3"
+    RESTDOCS_API_SPEC_VERSION = "0.18.2"
 }
 
 java {
@@ -49,14 +52,15 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-
+    // RestDocs
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${RESTDOCS_API_SPEC_VERSION}"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
 }
-
 
 tasks.named('bootBuildImage') {
     builder = 'paketobuildpacks/builder-jammy-base:latest'
@@ -65,4 +69,23 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     systemProperty "spring.profiles.active", "test"
     useJUnitPlatform()
+}
+
+// Swagger UI 설정
+openapi3 {
+    server = "https://localhost:8080"
+    title = "CoolPeace API"
+    description = "CoolPeace API description"
+    version = "0.0.1"
+    format = "yaml"
+}
+
+tasks.register("copyToSwaggerUI", Copy) {
+    dependsOn "openapi3"
+    from "build/api-spec/openapi3.yaml"
+    into "src/main/resources/static/swagger-ui/."
+}
+
+test {
+    finalizedBy copyToSwaggerUI
 }

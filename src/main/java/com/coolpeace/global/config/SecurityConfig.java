@@ -52,6 +52,7 @@ public class SecurityConfig {
                     request
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                            .requestMatchers("/swagger-ui/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/v1/member/login", "/v1/member/register").permitAll()
                             .requestMatchers(HttpMethod.GET, "/v1/member/register/check/*").permitAll()
                             .requestMatchers(HttpMethod.POST, "/v1/member/refresh").permitAll();
