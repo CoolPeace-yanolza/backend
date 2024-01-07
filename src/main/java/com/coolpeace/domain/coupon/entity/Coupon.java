@@ -142,7 +142,6 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public void updateCoupon(
-            String title,
             DiscountType discountType,
             Integer discountValue,
             CustomerType customerType,
@@ -153,7 +152,6 @@ public class Coupon extends BaseTimeEntity {
             LocalDate exposureStartDate,
             LocalDate exposureEndDate
     ) {
-        this.title = Optional.ofNullable(title).orElse(this.title);
         this.discountType = Optional.ofNullable(discountType).orElse(this.discountType);
         this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);

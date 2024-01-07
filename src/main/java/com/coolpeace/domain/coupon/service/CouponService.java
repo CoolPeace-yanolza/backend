@@ -100,12 +100,16 @@ public class CouponService {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
-        List<Room> rooms = couponUpdateRequest.registerRooms()
-                .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
-                        .orElseThrow(RoomNotFoundException::new))
-                .toList();
+        List<Room> rooms;
+        if (couponUpdateRequest.registerRooms() != null) {
+            rooms = couponUpdateRequest.registerRooms()
+                    .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
+                            .orElseThrow(RoomNotFoundException::new))
+                    .toList();
+        } else {
+            rooms = Collections.emptyList();
+        }
         storedCoupon.updateCoupon(
-                couponUpdateRequest.title(),
                 couponUpdateRequest.discountType(),
                 couponUpdateRequest.discountValue(),
                 couponUpdateRequest.customerType(),
