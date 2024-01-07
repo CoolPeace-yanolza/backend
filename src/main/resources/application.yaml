@@ -1,10 +1,16 @@
 spring:
+
   config:
     import: optional:file:.env[.properties]
   application:
     name: coolpeace
   jackson:
     property-naming-strategy: SNAKE_CASE
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      name: dailyStatisticsJob
 
   datasource:
     url: jdbc:mysql://${MYSQL_URL:localhost}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true

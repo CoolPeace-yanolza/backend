@@ -1,5 +1,7 @@
 spring:
   batch:
+    jdbc:
+      initialize-schema: always
     job:
       name: dailyStatisticsJob
   jpa:
