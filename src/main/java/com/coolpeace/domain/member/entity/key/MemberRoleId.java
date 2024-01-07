@@ -1,6 +1,5 @@
 package com.coolpeace.domain.member.entity.key;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
