@@ -1,8 +1,14 @@
 spring:
+  batch:
+    job:
+      name: dailyStatisticsJob
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: create
+  datasource:
+    url: jdbc:h2:mem:board;mode=mysql
+    driver-class-name: org.h2.Driver
 
 logging:
   level:
