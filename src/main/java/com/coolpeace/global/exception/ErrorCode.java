@@ -20,12 +20,13 @@ public enum ErrorCode {
     MEMBER_ALREADY_EXISTED(HttpStatus.BAD_REQUEST, "이미 회원가입이 되어 있는 이메일입니다."),
 
     // ACCOMMODATION
-    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰의 정보를 찾을 수 없습니다."),
+    ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 정보를 찾을 수 없습니다."),
 
     // ROOM
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 방의 정보를 찾을 수 없습니다."),
 
     // COUPON
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰의 정보를 찾을 수 없습니다."),
     COUPON_ACCESS_DENIED(HttpStatus.NOT_FOUND, "해당 쿠폰에 대한 편집 권한이 없습니다."),
 
     // SETTLEMENT
