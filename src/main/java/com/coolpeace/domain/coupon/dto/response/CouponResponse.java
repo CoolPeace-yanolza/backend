@@ -27,11 +27,11 @@ public record CouponResponse(
         Integer downloadCount,
         Integer useCount,
         Long accommodationId,
-        Long roomId,
+        List<Integer> registerRoomNumbers,
         LocalDateTime createdDate
 ) {
 
-    public static CouponResponse from(Coupon coupon) {
+    public static CouponResponse from(Coupon coupon, List<Integer> registerRoomNumbers) {
         return new CouponResponse(
                 coupon.getTitle(),
                 coupon.getCouponNumber(),
@@ -48,7 +48,7 @@ public record CouponResponse(
                 coupon.getDownloadCount(),
                 coupon.getUseCount(),
                 coupon.getAccommodation() != null ? coupon.getAccommodation().getId() : null,
-                coupon.getRoom() != null ? coupon.getRoom().getId() : null,
+                registerRoomNumbers,
                 coupon.getCreatedAt()
         );
     }

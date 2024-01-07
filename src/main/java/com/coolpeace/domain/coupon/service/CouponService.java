@@ -9,10 +9,12 @@ import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
+import com.coolpeace.domain.coupon.repository.CouponRoomsRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,7 @@ public class CouponService {
 
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
+    private final CouponRoomsRepository couponRoomsRepository;
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
 
@@ -42,14 +46,20 @@ public class CouponService {
     public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
-                .map(CouponResponse::from);
+                .map(coupon -> CouponResponse.from(coupon,
+                        couponRoomsRepository.findByCoupon(coupon).stream()
+                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                );
     }
 
     @Transactional(readOnly = true)
     public Optional<CouponResponse> getRecentHistory(Long memberId) {
-        Member storedMember = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-        Optional<Coupon> storedRecentCoupon = couponRepository.findTopByMemberOrderByCreatedAtDesc(storedMember);
-        return storedRecentCoupon.map(CouponResponse::from);
+        memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        return couponRepository.findRecentCouponByMemberId(memberId)
+                .map(coupon -> CouponResponse.from(coupon,
+                        couponRoomsRepository.findByCoupon(coupon).stream()
+                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                );
     }
 
     @Transactional
@@ -58,40 +68,31 @@ public class CouponService {
         Accommodation accommodation = accommodationRepository.findById(couponRegisterRequest.accommodationId())
                 .orElseThrow(AccommodationNotFoundException::new);
 
-        if (couponRegisterRequest.registerAllRoom()) {
-            couponRepository.save(Coupon.from(
-                    couponRegisterRequest.title(),
-                    couponRegisterRequest.discountType(),
-                    couponRegisterRequest.discountValue(),
-                    couponRegisterRequest.customerType(),
-                    couponRegisterRequest.couponRoomType(),
-                    couponRegisterRequest.minimumReservationPrice(),
-                    couponRegisterRequest.couponUseConditionDays(),
-                    couponRegisterRequest.exposureStartDate(),
-                    couponRegisterRequest.exposureEndDate(),
-                    accommodation,
-                    storedMember
-            ));
-        } else {
-            List<Room> rooms = couponRegisterRequest.registerRooms()
+        List<Room> rooms;
+        if (!couponRegisterRequest.registerAllRoom()) {
+            rooms = couponRegisterRequest.registerRooms()
                     .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
                             .orElseThrow(RoomNotFoundException::new))
                     .toList();
-            rooms.forEach(room -> couponRepository.save(Coupon.from(
-                    couponRegisterRequest.title(),
-                    couponRegisterRequest.discountType(),
-                    couponRegisterRequest.discountValue(),
-                    couponRegisterRequest.customerType(),
-                    couponRegisterRequest.couponRoomType(),
-                    couponRegisterRequest.minimumReservationPrice(),
-                    couponRegisterRequest.couponUseConditionDays(),
-                    couponRegisterRequest.exposureStartDate(),
-                    couponRegisterRequest.exposureEndDate(),
-                    accommodation,
-                    room,
-                    storedMember
-            )));
+        } else {
+            rooms = Collections.emptyList();
         }
+
+        Coupon savedCoupon = couponRepository.save(Coupon.from(
+                couponRegisterRequest.title(),
+                couponRegisterRequest.discountType(),
+                couponRegisterRequest.discountValue(),
+                couponRegisterRequest.customerType(),
+                couponRegisterRequest.couponRoomType(),
+                couponRegisterRequest.minimumReservationPrice(),
+                couponRegisterRequest.couponUseConditionDays(),
+                couponRegisterRequest.exposureStartDate(),
+                couponRegisterRequest.exposureEndDate(),
+                accommodation,
+                rooms,
+                storedMember
+        ));
+        savedCoupon.generateCouponNumber(CouponIssuerType.OWNER, savedCoupon.getId());
     }
 
     @Transactional
@@ -99,6 +100,10 @@ public class CouponService {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
+        List<Room> rooms = couponUpdateRequest.registerRooms()
+                .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
+                        .orElseThrow(RoomNotFoundException::new))
+                .toList();
         storedCoupon.updateCoupon(
                 couponUpdateRequest.title(),
                 couponUpdateRequest.discountType(),
@@ -107,6 +112,7 @@ public class CouponService {
                 couponUpdateRequest.couponRoomType(),
                 couponUpdateRequest.minimumReservationPrice(),
                 couponUpdateRequest.couponUseConditionDays(),
+                rooms,
                 couponUpdateRequest.exposureStartDate(),
                 couponUpdateRequest.exposureEndDate()
         );
