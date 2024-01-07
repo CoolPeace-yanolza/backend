@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 
@@ -58,18 +59,28 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         }
 
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
-                .leftJoin(coupon.accommodation)
-                .leftJoin(coupon.room)
                 .where(searchCouponPredicate);
 
-        JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count())
-                .from(coupon)
-                .leftJoin(coupon.accommodation)
-                .leftJoin(coupon.room)
+        JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count()).from(coupon)
                 .where(searchCouponPredicate);
 
         List<Coupon> coupons = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, couponJPAQuery).fetch();
         return PageableExecutionUtils.getPage(coupons, pageable, totalQuery::fetchOne);
+    }
+
+    @Override
+    public Optional<Coupon> findRecentCouponByMemberId(Long memberId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(coupon)
+                .where(coupon.member.id.eq(memberId))
+                .orderBy(coupon.createdAt.desc())
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<Coupon> findByCouponNumber(String couponNumber) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(coupon)
+                .where(coupon.couponNumber.eq(couponNumber))
+                .fetchOne());
     }
 
     @Override
