@@ -1,5 +1,8 @@
 package com.coolpeace.domain.statistics.service;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
+import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
@@ -7,6 +10,7 @@ import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundException;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
@@ -26,6 +30,7 @@ public class MonthlyStatisticsService {
     private final MonthlyStatisticsRepository monthlyStatisticsRepository;
     private final CouponRepository couponRepository;
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
+    private final AccommodationRepository accommodationRepository;
 
     public void updateMonthlySum() {
         int month = LocalDate.now().getMonthValue();
@@ -38,7 +43,7 @@ public class MonthlyStatisticsService {
 
             if (!dailyStatisticsList.isEmpty()) {
                 MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository.save(
-                    new MonthlyStatistics(year,month, member,
+                    new MonthlyStatistics(year, month, member,
                         dailyStatisticsList.get(0).getAccommodation()));
 
                 dailyStatisticsList.forEach(dailyStatistics -> monthlyStatistics.setMonthlySum(
@@ -54,6 +59,25 @@ public class MonthlyStatisticsService {
         });
     }
 
+    /* 숙소 지역 로직 구현되면, 변경 예정 */
+    public void updateCouponDownloadTop3() {
+        int month = LocalDate.now().getMonthValue();
+        int year = LocalDate.now().getYear();
+        List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository.findAll();
+        localCouponDownloads.forEach(localCouponDownload -> {
+            List<Accommodation> accommodations = accommodationRepository.findByAddress(
+                localCouponDownload.getRegion());
+            accommodations.forEach(
+                accommodation -> {
+                    monthlyStatisticsRepository
+                    .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, year, month)
+                    .orElseThrow(MonthlyStatisticsNotFoundException::new)
+                    .setLocalCouponDownloadTop3(localCouponDownload);});
+
+        });
+    }
+
+    /* 숙소 지역 로직 구현되면, 변경 예정 */
     public void updateLocalCouponDownload() {
         localCouponDownloadRepository.deleteAllInBatch();
         List<Coupon> coupons = couponRepository.findAll();
@@ -63,7 +87,7 @@ public class MonthlyStatisticsService {
                 address).orElseGet(
                 () -> localCouponDownloadRepository.save(new LocalCouponDownload(address)));
 
-            if(setLocalCouponTitle(coupon, localCouponDownload)){
+            if (setLocalCouponTitle(coupon, localCouponDownload)) {
                 return;
             }
             updateLocalCouponTitle(coupon, localCouponDownload);
