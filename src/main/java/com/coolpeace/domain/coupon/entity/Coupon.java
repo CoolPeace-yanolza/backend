@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 @Entity
@@ -72,15 +70,13 @@ public class Coupon extends BaseTimeEntity {
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @OneToMany(mappedBy = "coupon", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CouponRooms> couponRooms = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 모든 방에 적용할 경우
     public Coupon(String title,
                   DiscountType discountType,
                   Integer discountValue,
@@ -91,6 +87,7 @@ public class Coupon extends BaseTimeEntity {
                   LocalDate exposureStartDate,
                   LocalDate exposureEndDate,
                   Accommodation accommodation,
+                  List<Room> rooms,
                   Member member) {
         this.title = title;
         this.discountType = discountType;
@@ -102,33 +99,7 @@ public class Coupon extends BaseTimeEntity {
         this.exposureStartDate = exposureStartDate;
         this.exposureEndDate = exposureEndDate;
         this.accommodation = accommodation;
-        this.member = member;
-    }
-
-    // 특정 방을 선택했을 경우
-    public Coupon(String title,
-                  DiscountType discountType,
-                  Integer discountValue,
-                  CustomerType customerType,
-                  CouponRoomType couponRoomType,
-                  Integer minimumReservationPrice,
-                  List<DayOfWeek> couponUseConditionDays,
-                  LocalDate exposureStartDate,
-                  LocalDate exposureEndDate,
-                  Accommodation accommodation,
-                  Room room,
-                  Member member) {
-        this.title = title;
-        this.discountType = discountType;
-        this.discountValue = discountValue;
-        this.customerType = customerType;
-        this.couponRoomType = couponRoomType;
-        this.minimumReservationPrice = minimumReservationPrice;
-        this.couponUseConditionDays = couponUseConditionDays;
-        this.exposureStartDate = exposureStartDate;
-        this.exposureEndDate = exposureEndDate;
-        this.accommodation = accommodation;
-        this.room = room;
+        rooms.forEach(room -> this.couponRooms.add(CouponRooms.from(this, room)));
         this.member = member;
     }
 
@@ -143,7 +114,7 @@ public class Coupon extends BaseTimeEntity {
             LocalDate exposureStartDate,
             LocalDate exposureEndDate,
             Accommodation accommodation,
-            Room room,
+            List<Room> room,
             Member member
     ) {
         return new Coupon(
@@ -158,34 +129,6 @@ public class Coupon extends BaseTimeEntity {
                 exposureEndDate,
                 accommodation,
                 room,
-                member
-        );
-    }
-
-    public static Coupon from(
-            String title,
-            DiscountType discountType,
-            Integer discountValue,
-            CustomerType customerType,
-            CouponRoomType couponRoomType,
-            Integer minimumReservationPrice,
-            List<DayOfWeek> couponUseConditionDays,
-            LocalDate exposureStartDate,
-            LocalDate exposureEndDate,
-            Accommodation accommodation,
-            Member member
-    ) {
-        return new Coupon(
-                title,
-                discountType,
-                discountValue,
-                customerType,
-                couponRoomType,
-                minimumReservationPrice,
-                couponUseConditionDays,
-                exposureStartDate,
-                exposureEndDate,
-                accommodation,
                 member
         );
     }
@@ -206,6 +149,7 @@ public class Coupon extends BaseTimeEntity {
             CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
             List<DayOfWeek> couponUseConditionDays,
+            List<Room> rooms,
             LocalDate exposureStartDate,
             LocalDate exposureEndDate
     ) {
@@ -216,13 +160,10 @@ public class Coupon extends BaseTimeEntity {
         this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
         this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);
         this.couponUseConditionDays = Optional.ofNullable(couponUseConditionDays).orElse(this.couponUseConditionDays);
+        if (rooms != null) {
+            this.couponRooms = rooms.stream().map(room -> CouponRooms.from(this, room)).toList();
+        }
         this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
     }
-
-    @PostPersist
-    private void postPersist() {
-        this.generateCouponNumber(CouponIssuerType.OWNER, this.id);
-    }
-
 }

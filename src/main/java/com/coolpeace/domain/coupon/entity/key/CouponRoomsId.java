@@ -1,6 +1,5 @@
-package com.coolpeace.domain.member.entity.key;
+package com.coolpeace.domain.coupon.entity.key;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,11 +12,11 @@ import java.io.Serializable;
 @Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberRoleId implements Serializable {
-    private Long memberId;
-    private Long roleId;
+public class CouponRoomsId implements Serializable {
+    private Long couponId;
+    private Long roomId;
 
-    public static MemberRoleId from(Long memberId, Long roleId) {
-        return new MemberRoleId(memberId, roleId);
+    public static CouponRoomsId from(Long couponId, Long accommodationId) {
+        return new CouponRoomsId(couponId, accommodationId);
     }
 }
