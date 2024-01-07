@@ -22,6 +22,8 @@ public class DailyStatisticsConfig {
 
     private final DailyStatisticsService dailyStatisticsService;
 
+    private final CustomStepListener customStepListener;
+
     
     @Bean(name = "dailyStatisticsJob")
     public Job dailyStatisticsJob(JobRepository jobRepository,
@@ -42,6 +44,7 @@ public class DailyStatisticsConfig {
         log.info("sale step start");
         return new StepBuilder("saleStep", jobRepository)
             .tasklet(new ReservationTasklet(dailyStatisticsService),platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 
@@ -51,6 +54,7 @@ public class DailyStatisticsConfig {
         log.info("coupon step start");
         return new StepBuilder("couponStep", jobRepository)
             .tasklet(new CouponTasklet(dailyStatisticsService),platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 
@@ -60,6 +64,7 @@ public class DailyStatisticsConfig {
         log.info("settlement step start");
         return new StepBuilder("settlementStep", jobRepository)
             .tasklet(new SettlementTasklet(dailyStatisticsService), platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 

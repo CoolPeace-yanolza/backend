@@ -1,5 +1,6 @@
 package com.coolpeace.domain.batch.job;
 
+import com.coolpeace.domain.batch.tasklet.CouponDownloadTop3Tasklet;
 import com.coolpeace.domain.batch.tasklet.LocalCouponDownloadTasklet;
 import com.coolpeace.domain.batch.tasklet.MonthlySumTasklet;
 import com.coolpeace.domain.statistics.service.MonthlyStatisticsService;
@@ -20,6 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class MonthlyStatisticsConfig {
 
     private final MonthlyStatisticsService monthlyStatisticsService;
+    private final CustomStepListener customStepListener;
 
     @Bean(name = "monthlyStatisticsJob")
     public Job monthlyStatisticsJob(JobRepository jobRepository,
@@ -28,6 +30,7 @@ public class MonthlyStatisticsConfig {
         return new JobBuilder("monthlyStatisticsJob", jobRepository)
             .start(monthlySumStep(jobRepository, platformTransactionManager))
             .next(localCouponDownloadStep(jobRepository, platformTransactionManager))
+            .next(couponDownloadTop3Step(jobRepository,platformTransactionManager))
             .build();
     }
 
@@ -37,6 +40,7 @@ public class MonthlyStatisticsConfig {
         log.info("monthlySum step start");
         return new StepBuilder("monthlySumStep", jobRepository)
             .tasklet(new MonthlySumTasklet(monthlyStatisticsService), platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 
@@ -46,7 +50,20 @@ public class MonthlyStatisticsConfig {
         log.info("localCouponDownload step start");
         return new StepBuilder("localCouponDownloadStep", jobRepository)
             .tasklet(new LocalCouponDownloadTasklet(monthlyStatisticsService),
-                platformTransactionManager).build();
+                platformTransactionManager)
+            .listener(customStepListener)
+            .build();
+    }
+
+    @Bean
+    public Step couponDownloadTop3Step(JobRepository jobRepository,
+        PlatformTransactionManager platformTransactionManager) {
+        log.info("getCouponDownloadTop3 step start");
+        return new StepBuilder("CouponDownloadTop3Step", jobRepository)
+            .tasklet(new CouponDownloadTop3Tasklet(monthlyStatisticsService),
+                platformTransactionManager)
+            .listener(customStepListener)
+            .build();
     }
 
 
