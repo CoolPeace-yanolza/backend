@@ -9,8 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,8 @@ public class MonthlyStatistics {
     @Min(value = 2000)
     private int statisticsYear;
 
-    @Size(min = 1, max = 12)
+    @Min(value = 1)
+    @Max(value = 12)
     private int statisticsMonth;
 
     @Column(nullable = false)
@@ -45,12 +46,6 @@ public class MonthlyStatistics {
     @Column(nullable = false)
     private int settlementAmount = 0;
 
-    private String firstCouponTitle;
-
-    private String secondCouponTitle;
-
-    private String thirdCouponTitle;
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -58,6 +53,10 @@ public class MonthlyStatistics {
     @ManyToOne
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
+
+    @ManyToOne
+    @JoinColumn(name = "localCouponDownload_id")
+    private LocalCouponDownload localCouponDownload;
 
     public MonthlyStatistics(int statisticsYear, int statisticsMonth, Member member, Accommodation accommodation) {
         this.statisticsYear = statisticsYear;
@@ -73,5 +72,9 @@ public class MonthlyStatistics {
         this.downloadCount += downloadCount;
         this.usedCount += usedCount;
         this.settlementAmount += settlementAmount;
+    }
+
+    public void setLocalCouponDownloadTop3(LocalCouponDownload localCouponDownload) {
+        this.localCouponDownload = localCouponDownload;
     }
 }
