@@ -47,7 +47,7 @@ public class DailyStatisticsService {
                 .sum();
 
             DailyStatistics dailyStatistics = dailyStatisticsRepository
-                .findStatisticsDayAndAccommodation(accommodation, day)
+                .findByAccommodationAndStatisticsDay(accommodation, day)
                 .orElseGet(() -> dailyStatisticsRepository
                     .save(new DailyStatistics(day, member, accommodation)));
 
@@ -67,7 +67,7 @@ public class DailyStatisticsService {
             * ...
             * */
             DailyStatistics dailyStatistics = dailyStatisticsRepository
-                .findStatisticsDayAndAccommodation(accommodation,day)
+                .findByAccommodationAndStatisticsDay(accommodation,day)
                 .orElse(new DailyStatistics(day,member, accommodation));
             dailyStatistics.setCoupon(downloadCount, usedCount);
         }
@@ -85,7 +85,7 @@ public class DailyStatisticsService {
 //            settlementRepository.findAllByAccommodation(accommodation).stream()
 //                .map(settlement -> {settlement.getCo})
             DailyStatistics dailyStatistics = dailyStatisticsRepository
-                .findStatisticsDayAndAccommodation(accommodation,day)
+                .findByAccommodationAndStatisticsDay(accommodation,day)
                 .orElseThrow(DailyStatisticsNotFoundException::new);
             dailyStatistics.setSettlement(settlementAmount);
         }
