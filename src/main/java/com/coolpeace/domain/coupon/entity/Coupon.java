@@ -99,8 +99,9 @@ public class Coupon extends BaseTimeEntity {
         this.exposureStartDate = exposureStartDate;
         this.exposureEndDate = exposureEndDate;
         this.accommodation = accommodation;
-        rooms.forEach(room -> this.couponRooms.add(CouponRooms.from(this, room)));
         this.member = member;
+        updateCouponStatusByExposureDate();
+        rooms.forEach(room -> this.couponRooms.add(CouponRooms.from(this, room)));
     }
 
     public static Coupon from(
@@ -141,6 +142,18 @@ public class Coupon extends BaseTimeEntity {
         this.couponStatus = couponStatusType;
     }
 
+    private boolean betweenExposureDate(LocalDate localDate) {
+        return !(localDate.isBefore(exposureStartDate) || localDate.isAfter(exposureEndDate));
+    }
+
+    private void updateCouponStatusByExposureDate() {
+        if (this.betweenExposureDate(LocalDate.now())) {
+            this.changeCouponStatus(CouponStatusType.EXPOSURE_ON);
+        } else {
+            this.changeCouponStatus(CouponStatusType.EXPOSURE_WAIT);
+        }
+    }
+
     public void updateCoupon(
             DiscountType discountType,
             Integer discountValue,
@@ -163,5 +176,6 @@ public class Coupon extends BaseTimeEntity {
         }
         this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
+        updateCouponStatusByExposureDate();
     }
 }
