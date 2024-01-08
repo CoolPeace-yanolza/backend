@@ -28,10 +28,9 @@ spring:
     redis:
       host: localhost
       port: ${REDIS_PORT}
-# 1페이지부터 시작하려면 아래 설정 적용
-#    web:
-#      pageable:
-#        one-indexed-parameters: true
+    web:
+      pageable:
+        one-indexed-parameters: true
 
 service:
   jwt:
