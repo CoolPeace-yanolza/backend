@@ -1,5 +1,6 @@
 package com.coolpeace.domain.statistics.repository;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import java.util.List;
@@ -9,7 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DailyStatisticsRepository extends JpaRepository<DailyStatistics,Long> {
 
-    Optional<DailyStatistics> findByMemberAndStatisticsDay(Member member, int statisticsDay);
+    Optional<DailyStatistics> findStatisticsDayAndAccommodation
+        (Accommodation accommodation, int statisticsDay);
 
     List<DailyStatistics> findAllByMember(Member member);
 
