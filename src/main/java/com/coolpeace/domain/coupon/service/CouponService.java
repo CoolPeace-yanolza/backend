@@ -128,14 +128,15 @@ public class CouponService {
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
 
-        // 노출 기간인데 대기중을 요청한 경우
-        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
+        // 노출 기간 이후인데 대기중을 요청한 경우 예외처리
+        boolean isAfterExposureDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
         boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT);
-        if (isBetweenExposureDate && isWaitRequest) {
+        if (isAfterExposureDate && isWaitRequest) {
             throw new InvalidCouponStateInsideExposureDateException();
         }
 
-        // 노출 기간이 아닌데 ON/OFF를 요청한 경우
+        // 노출 기간이 아닌데 ON/OFF를 요청한 경우 예외처리
+        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
         boolean isONOFFRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON)
                 || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF);
         if (!isBetweenExposureDate && isONOFFRequest) {
