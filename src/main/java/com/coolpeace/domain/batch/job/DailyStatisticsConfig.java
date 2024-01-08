@@ -18,27 +18,33 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class StatisticsJob {
+public class DailyStatisticsConfig {
 
     private final DailyStatisticsService dailyStatisticsService;
 
-    @Bean(name = "dailyStaticsJob")
-    public Job dailyStaticsJob(JobRepository jobRepository,
+    private final CustomStepListener customStepListener;
+
+    
+    @Bean(name = "dailyStatisticsJob")
+    public Job dailyStatisticsJob(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) throws Exception {
         log.info("일간 통계 집계 시작");
-        return new JobBuilder("dailyStaticsJob", jobRepository)
+        return new JobBuilder("dailyStatisticsJob", jobRepository)
             .start(saleStep(jobRepository, platformTransactionManager))
             .next(couponStep(jobRepository, platformTransactionManager))
             .next(settlementStep(jobRepository, platformTransactionManager))
             .build();
     }
+    
 
+    
     @Bean
     public Step saleStep(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) throws  Exception{
         log.info("sale step start");
         return new StepBuilder("saleStep", jobRepository)
             .tasklet(new ReservationTasklet(dailyStatisticsService),platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 
@@ -48,6 +54,7 @@ public class StatisticsJob {
         log.info("coupon step start");
         return new StepBuilder("couponStep", jobRepository)
             .tasklet(new CouponTasklet(dailyStatisticsService),platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
 
@@ -57,8 +64,8 @@ public class StatisticsJob {
         log.info("settlement step start");
         return new StepBuilder("settlementStep", jobRepository)
             .tasklet(new SettlementTasklet(dailyStatisticsService), platformTransactionManager)
+            .listener(customStepListener)
             .build();
     }
-
 
 }
