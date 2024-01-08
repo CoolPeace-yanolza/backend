@@ -30,7 +30,7 @@ public class BatchScheduler {
 
     private final PlatformTransactionManager platformTransactionManager;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     public void runDailyJob() throws Exception {
         log.info("---------{}---------", LocalDateTime.now());
         log.info("daily scheduler start");
@@ -40,7 +40,7 @@ public class BatchScheduler {
             dailyStatisticsConfig.dailyStatisticsJob(jobRepository, platformTransactionManager),
             jobParameters);
     }
-    @Scheduled(cron = "0 0 0 11 * *")
+    @Scheduled(cron = "0 0 0 10 * *")
     public void runMonthlyJob() throws Exception {
         log.info("---------{}---------", LocalDateTime.now());
         log.info("monthly scheduler start");
