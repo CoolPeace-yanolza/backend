@@ -2,6 +2,9 @@ package com.coolpeace.global.jwt.security;
 
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.service.MemberService;
+import com.coolpeace.global.exception.ApplicationException;
+import com.coolpeace.global.exception.ErrorCode;
+import com.coolpeace.global.jwt.exception.JwtAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +19,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member storedMember = memberService.getMemberByEmail(email);
-        return JwtPrincipal.from(storedMember);
+        try {
+            Member storedMember = memberService.getMemberByEmail(email);
+            return JwtPrincipal.from(storedMember);
+        } catch (ApplicationException e) {
+            throw new JwtAuthenticationException(ErrorCode.MEMBER_NOT_FOUND);
+        }
     }
 }

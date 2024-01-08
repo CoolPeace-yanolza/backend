@@ -22,6 +22,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -69,6 +70,17 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     systemProperty "spring.profiles.active", "test"
     useJUnitPlatform()
+}
+
+// QueryDSL 설정
+def querydslDir = "build/generated/querydsl"
+
+tasks.withType(JavaCompile).configureEach {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
 }
 
 // Swagger UI 설정
