@@ -13,6 +13,8 @@ import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateInsideExposureDateException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateOutsideExposureDateException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -124,6 +127,21 @@ public class CouponService {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
+
+        // 노출 기간인데 대기중을 요청한 경우
+        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
+        boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT);
+        if (isBetweenExposureDate && isWaitRequest) {
+            throw new InvalidCouponStateInsideExposureDateException();
+        }
+
+        // 노출 기간이 아닌데 ON/OFF를 요청한 경우
+        boolean isONOFFRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON)
+                || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF);
+        if (!isBetweenExposureDate && isONOFFRequest) {
+            throw new InvalidCouponStateOutsideExposureDateException();
+        }
+
         storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());
     }
 

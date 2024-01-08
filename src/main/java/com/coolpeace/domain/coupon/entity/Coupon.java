@@ -142,7 +142,7 @@ public class Coupon extends BaseTimeEntity {
         this.couponStatus = couponStatusType;
     }
 
-    private boolean betweenExposureDate(LocalDate localDate) {
+    public boolean betweenExposureDate(LocalDate localDate) {
         return !(localDate.isBefore(exposureStartDate) || localDate.isAfter(exposureEndDate));
     }
 
