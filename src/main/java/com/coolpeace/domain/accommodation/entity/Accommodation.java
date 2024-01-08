@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,11 +24,18 @@ public class Accommodation extends BaseTimeEntity {
 
     private String name;
 
-    private String address;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Sido sido;
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Sigungu sigungu;
+
+    private String addressDetail;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
 
 }
