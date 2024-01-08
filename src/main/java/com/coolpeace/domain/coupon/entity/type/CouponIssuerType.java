@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CouponIssuerType {
-    YANOLJA("YP"),
-    OWNER("CP");
+    YANOLJA("YC"),
+    OWNER("CC");
 
     private final String value;
 }

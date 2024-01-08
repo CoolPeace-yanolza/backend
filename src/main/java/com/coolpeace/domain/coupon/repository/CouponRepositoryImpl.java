@@ -18,6 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
+import static com.coolpeace.domain.coupon.entity.QCouponRooms.couponRooms;
+import static com.coolpeace.domain.room.entity.QRoom.room;
 
 public class CouponRepositoryImpl extends QuerydslRepositorySupport implements CouponRepositoryCustom {
 
@@ -59,6 +61,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         }
 
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
+                .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
+                .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(searchCouponPredicate);
 
         JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count()).from(coupon)
@@ -70,17 +74,23 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
 
     @Override
     public Optional<Coupon> findRecentCouponByMemberId(Long memberId) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(coupon)
+        List<Coupon> coupons = jpaQueryFactory.selectFrom(coupon)
+                .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
+                .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(coupon.member.id.eq(memberId))
                 .orderBy(coupon.createdAt.desc())
-                .fetchOne());
+                .fetch();
+        return Optional.ofNullable(coupons.get(0));
     }
 
     @Override
     public Optional<Coupon> findByCouponNumber(String couponNumber) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(coupon)
+        List<Coupon> coupons = jpaQueryFactory.selectFrom(coupon)
+                .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
+                .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(coupon.couponNumber.eq(couponNumber))
-                .fetchOne());
+                .fetch();
+        return Optional.ofNullable(coupons.get(0));
     }
 
     @Override

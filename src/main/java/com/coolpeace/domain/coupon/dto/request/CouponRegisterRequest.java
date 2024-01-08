@@ -38,6 +38,7 @@ public record CouponRegisterRequest(
         Long accommodationId,
 
         // 방 등록
+        @NotNull(message = "객실 등록 여부를 입력해야 합니다.")
         Boolean registerAllRoom,
         List<Integer> registerRooms,
 

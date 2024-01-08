@@ -13,8 +13,9 @@ import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateInsideExposureDateException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateOutsideExposureDateException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
-import com.coolpeace.domain.coupon.repository.CouponRoomsRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,6 @@ public class CouponService {
 
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
-    private final CouponRoomsRepository couponRoomsRepository;
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
 
@@ -47,18 +48,17 @@ public class CouponService {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
                 .map(coupon -> CouponResponse.from(coupon,
-                        couponRoomsRepository.findByCoupon(coupon).stream()
-                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                        coupon.getCouponRooms().stream()
+                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
                 );
     }
 
     @Transactional(readOnly = true)
     public Optional<CouponResponse> getRecentHistory(Long memberId) {
-        memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         return couponRepository.findRecentCouponByMemberId(memberId)
                 .map(coupon -> CouponResponse.from(coupon,
-                        couponRoomsRepository.findByCoupon(coupon).stream()
-                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                        coupon.getCouponRooms().stream()
+                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
                 );
     }
 
@@ -127,6 +127,22 @@ public class CouponService {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
+
+        // 노출 기간 이후인데 대기중을 요청한 경우 예외처리
+        boolean isAfterExposureDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
+        boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT);
+        if (isAfterExposureDate && isWaitRequest) {
+            throw new InvalidCouponStateInsideExposureDateException();
+        }
+
+        // 노출 기간이 아닌데 ON/OFF를 요청한 경우 예외처리
+        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
+        boolean isONOFFRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON)
+                || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF);
+        if (!isBetweenExposureDate && isONOFFRequest) {
+            throw new InvalidCouponStateOutsideExposureDateException();
+        }
+
         storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());
     }
 
