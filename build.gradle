@@ -85,20 +85,27 @@ sourceSets {
 }
 
 // Swagger UI 설정
+def openapi3Path = "build/api-spec/openapi3.yaml"
+
 openapi3 {
-    server = "https://localhost:8080"
+    server = "http://localhost:8080"
     title = "CoolPeace API"
-    description = "CoolPeace API description"
+    description = "CoolPeace API Document"
     version = "0.0.1"
     format = "yaml"
 }
 
 tasks.register("copyToSwaggerUI", Copy) {
     dependsOn "openapi3"
-    from "build/api-spec/openapi3.yaml"
+    from openapi3Path
     into "src/main/resources/static/swagger-ui/."
 }
 
 test {
     finalizedBy copyToSwaggerUI
+    doLast {
+        def openapi3File = file(openapi3Path)
+        def securityFile = file("src/test/resources/security.yaml")
+        openapi3File.append securityFile.text
+    }
 }
