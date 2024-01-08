@@ -14,7 +14,6 @@ import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
-import com.coolpeace.domain.coupon.repository.CouponRoomsRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
@@ -38,7 +37,6 @@ public class CouponService {
 
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
-    private final CouponRoomsRepository couponRoomsRepository;
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
 
@@ -47,18 +45,17 @@ public class CouponService {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
                 .map(coupon -> CouponResponse.from(coupon,
-                        couponRoomsRepository.findByCoupon(coupon).stream()
-                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                        coupon.getCouponRooms().stream()
+                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
                 );
     }
 
     @Transactional(readOnly = true)
     public Optional<CouponResponse> getRecentHistory(Long memberId) {
-        memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         return couponRepository.findRecentCouponByMemberId(memberId)
                 .map(coupon -> CouponResponse.from(coupon,
-                        couponRoomsRepository.findByCoupon(coupon).stream()
-                                .map(couponRoom -> couponRoom.getRoom().getRoomNumber()).toList())
+                        coupon.getCouponRooms().stream()
+                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
                 );
     }
 
