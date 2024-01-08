@@ -10,7 +10,7 @@ import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.exception.DailyStatisticsNotFoundException;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
