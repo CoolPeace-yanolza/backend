@@ -12,5 +12,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation,Lon
 
     List<Accommodation> findAllByMember(Member member);
 
+    List<Accommodation> findAllByMemberId(Integer memberId);
+
     List<Accommodation> findByAddress(String address);
 }

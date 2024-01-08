@@ -32,7 +32,7 @@ public class Accommodation extends BaseTimeEntity {
     @JoinColumn(name = "id")
     private Sigungu sigungu;
 
-    private String addressDetail;
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

@@ -18,7 +18,7 @@ public class AccomodationResponse {
 
     private String sigungu;
 
-    private String addressDetail;
+    private String address;
 
     public static AccomodationResponse fromEntity(Accommodation accommodation){
         return AccomodationResponse.builder()
@@ -28,7 +28,7 @@ public class AccomodationResponse {
             .sigungu(accommodation.getSigungu().getName())
             .sidoId(accommodation.getSido().getId())
             .sido(accommodation.getSido().getName())
-            .addressDetail(accommodation.getAddressDetail())
+            .address(accommodation.getAddress())
             .build();
     }
 

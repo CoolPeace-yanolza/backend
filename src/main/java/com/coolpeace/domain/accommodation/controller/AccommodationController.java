@@ -1,6 +1,7 @@
 package com.coolpeace.domain.accommodation.controller;
 
 import com.coolpeace.domain.accommodation.dto.response.AccomodationResponse;
+import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.service.AccomodationService;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +27,14 @@ public class AccommodationController {
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ){
         return ResponseEntity.ok(accomodationService.getAccommodations(jwtPrincipal));
+    }
+
+    @GetMapping("/{accommodationId}")
+    public ResponseEntity<List<RoomResponse>> rooms(
+        @AuthJwtPrincipal JwtPrincipal jwtPrincipal,
+        @PathVariable Long accommodationId
+    ){
+        return ResponseEntity.ok(accomodationService.getRooms(jwtPrincipal, accommodationId));
     }
 
 }
