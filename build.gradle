@@ -101,11 +101,13 @@ tasks.register("copyToSwaggerUI", Copy) {
     into "src/main/resources/static/swagger-ui/."
 }
 
+tasks.register("copyTextToSecurity") {
+    dependsOn copyToSwaggerUI
+    def openapi3File = file(openapi3Path)
+    def securityFile = file("src/test/resources/security.yaml")
+    openapi3File.append securityFile.text
+}
+
 test {
-    finalizedBy copyToSwaggerUI
-    doLast {
-        def openapi3File = file(openapi3Path)
-        def securityFile = file("src/test/resources/security.yaml")
-        openapi3File.append securityFile.text
-    }
+    finalizedBy copyTextToSecurity
 }
