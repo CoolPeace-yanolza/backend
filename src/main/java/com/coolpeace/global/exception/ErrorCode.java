@@ -21,7 +21,7 @@ public enum ErrorCode {
 
     // ACCOMMODATION
     ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 정보를 찾을 수 없습니다."),
-
+    ACCOMMODATION_NOT_MATCH_MEMBER(HttpStatus.FORBIDDEN, "숙박업체에 등록된 회원과 정보가 일치하지 않습니다."),
     // ROOM
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 방의 정보를 찾을 수 없습니다."),
 
