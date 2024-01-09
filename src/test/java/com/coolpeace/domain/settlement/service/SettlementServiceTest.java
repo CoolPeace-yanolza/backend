@@ -182,9 +182,9 @@ public class SettlementServiceTest {
             Accommodation accommodation =
                 new Accommodation(1L, "신라호텔", "주소주소", member);
             Settlement settlement1 = new Settlement(1L, LocalDate.now(), 10,
-                1000, 0, 0, 1000, LocalDate.now().plusMonths(1));
+                1000, 0, 0, 1000, LocalDate.now().plusMonths(1),accommodation);
             Settlement settlement2 = new Settlement(2L, LocalDate.now(), 10,
-                1000, 0, 0, 1000, LocalDate.now().plusMonths(1));
+                1000, 0, 0, 1000, LocalDate.now().plusMonths(1),accommodation);
             List<Settlement> settlements = new ArrayList<>();
             settlements.add(settlement1);
             settlements.add(settlement2);
@@ -197,7 +197,7 @@ public class SettlementServiceTest {
                 Optional.of(accommodation));
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
                     (any(Pageable.class), any(Accommodation.class), any(LocalDate.class),
                         any(LocalDate.class))).willReturn(settlementPage);
             //when
