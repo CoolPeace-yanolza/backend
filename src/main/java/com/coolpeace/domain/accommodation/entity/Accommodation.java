@@ -45,4 +45,11 @@ public class Accommodation extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
+
+    public Accommodation(Long id, String name, String address, Member member) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.member = member;
+    }
 }
