@@ -1,12 +1,13 @@
 package com.coolpeace.domain.statistics.service;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.repository.MemberRepository;
+import com.coolpeace.domain.settlement.entity.Settlement;
+import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
@@ -14,11 +15,11 @@ import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundExcept
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,15 +32,17 @@ public class MonthlyStatisticsService {
     private final CouponRepository couponRepository;
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
     private final AccommodationRepository accommodationRepository;
+    private final SettlementRepository settlementRepository;
 
     public void updateMonthlySum() {
         int month = LocalDate.now().getMonthValue();
         int year = LocalDate.now().getYear();
-        List<Member> members = memberRepository.findAll();
+        List<Accommodation> accommodations = accommodationRepository.findAll();
 
-        members.forEach(member -> {
-            List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository.findAllByMember(
-                member);
+        accommodations.forEach(accommodation -> {
+            Member member = accommodation.getMember();
+            List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
+                .findAllByAccommodation(accommodation);
 
             if (!dailyStatisticsList.isEmpty()) {
                 MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository.save(
@@ -55,6 +58,19 @@ public class MonthlyStatisticsService {
                 ));
 
                 dailyStatisticsRepository.deleteAllInBatch(dailyStatisticsList);
+            }
+        });
+    }
+
+    public void completeSettlement(){
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+
+        accommodations.forEach(accommodation -> {
+            List<Settlement> settlements = settlementRepository
+                .findAllByAccommodationForDailyUpdate(accommodation);
+
+            for (Settlement settlement : settlements) {
+                settlement.completeSettlement();
             }
         });
     }

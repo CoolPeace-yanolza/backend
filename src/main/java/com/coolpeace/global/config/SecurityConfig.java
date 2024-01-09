@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -29,7 +28,6 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final Environment environment;
 
     @Bean
     public SecurityFilterChain http(HttpSecurity httpSecurity) throws Exception {
@@ -56,10 +54,6 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/v1/member/login", "/v1/member/register").permitAll()
                             .requestMatchers(HttpMethod.GET, "/v1/member/register/check/*").permitAll()
                             .requestMatchers(HttpMethod.POST, "/v1/member/refresh").permitAll();
-
-                    if (environment.matchesProfiles("test")) {
-                        request.requestMatchers(PathRequest.toH2Console()).permitAll(); // 테스트 환경일 경우 H2 경로 개방
-                    }
 
                     request.anyRequest().authenticated();
                 }

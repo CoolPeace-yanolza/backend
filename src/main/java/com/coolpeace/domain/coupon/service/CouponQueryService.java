@@ -1,6 +1,5 @@
 package com.coolpeace.domain.coupon.service;
 
-import com.coolpeace.domain.coupon.dto.request.CouponDailyRequest;
 import com.coolpeace.domain.coupon.dto.response.CouponDailyResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.CouponDailyCondition;
@@ -18,9 +17,7 @@ public class CouponQueryService {
     private final CouponRepository couponRepository;
 
     /* 메소드 복잡도를 낮추는 방법 고안 중 */
-    public CouponDailyResponse dailyReport(CouponDailyRequest request) {
-        Long memberId = request.memberId();
-        Long accommodationId = request.accommodationId();
+    public CouponDailyResponse dailyReport(Long memberId, Long accommodationId) {
 
         if (couponRepository.noRegister(memberId, accommodationId)) {
             return CouponDailyResponse.from(CouponDailyCondition.NO_REGISTER);

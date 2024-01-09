@@ -1,12 +1,20 @@
 package com.coolpeace.domain.settlement.repository;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.settlement.entity.Settlement;
-import java.util.List;
+import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SettlementRepository extends JpaRepository<Settlement, Long> {
+public interface SettlementRepository extends JpaRepository<Settlement, Long>,SettlementRepositoryCustom {
+    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPrice
+        (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
+    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAt
+        (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
+    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCount
+        (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
+    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate
+        (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
 
-    List<Settlement> findAllByAccommodation(Accommodation accommodation);
 }
