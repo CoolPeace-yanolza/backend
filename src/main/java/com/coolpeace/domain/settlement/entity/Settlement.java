@@ -47,7 +47,7 @@ public class Settlement extends BaseTimeEntity {
     private Accommodation accommodation;
 
     public Settlement(Long id, LocalDate couponUseDate, int couponCount, int discountPrice,
-        int cancelPrice, int supplyPrice, int sumPrice, LocalDate completeAt) {
+        int cancelPrice, int supplyPrice, int sumPrice, LocalDate completeAt,Accommodation accommodation) {
         this.id = id;
         this.couponUseDate = couponUseDate;
         this.couponCount = couponCount;
@@ -56,6 +56,7 @@ public class Settlement extends BaseTimeEntity {
         this.supplyPrice = supplyPrice;
         this.sumPrice = sumPrice;
         this.completeAt = completeAt;
+        this.accommodation = accommodation;
     }
 
     public void completeSettlement() {
