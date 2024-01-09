@@ -22,6 +22,7 @@ public enum ErrorCode {
     // ACCOMMODATION
     ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 정보를 찾을 수 없습니다."),
     ACCOMMODATION_NOT_MATCH_MEMBER(HttpStatus.FORBIDDEN, "숙박업체에 등록된 회원과 정보가 일치하지 않습니다."),
+
     // ROOM
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 방의 정보를 찾을 수 없습니다."),
 
@@ -30,6 +31,7 @@ public enum ErrorCode {
     COUPON_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 쿠폰에 대한 편집 권한이 없습니다."),
     INVALID_COUPON_STATE_OUTSIDE_EXPOSURE_DATE(HttpStatus.BAD_REQUEST, "노출 날짜 기간 내에서만 ON/OFF일 수 있습니다."),
     INVALID_COUPON_STATE_INSIDE_EXPOSURE_DATE(HttpStatus.BAD_REQUEST, "노출 날짜 기간 이전에만 대기중일 수 있습니다."),
+
 
     // SETTLEMENT
 

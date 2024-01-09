@@ -7,3 +7,4 @@ public class AccommodationNotMatchMemberException extends ApplicationException {
 
     public AccommodationNotMatchMemberException() { super(ErrorCode.ACCOMMODATION_NOT_MATCH_MEMBER);}
 }
+
