@@ -1,7 +1,6 @@
 package com.coolpeace.domain.statistics.service;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
@@ -14,11 +13,11 @@ import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundExcept
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
