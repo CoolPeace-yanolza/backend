@@ -7,9 +7,11 @@ import com.github.javafaker.Faker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Locale;
+
 public class MemberTestBuilder {
     private final static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final Faker faker = new Faker();
+    private final Faker faker = new Faker(Locale.KOREA);
     private String password;
     private boolean isEncodedPassword = false;
     private Role role = Role.of(RoleType.OWNER);
@@ -41,7 +43,7 @@ public class MemberTestBuilder {
         }
 
         return Member.from(
-                faker.internet().emailAddress(),
+                new Faker().internet().emailAddress(),
                 memberPass,
                 faker.name().firstName(),
                 role
