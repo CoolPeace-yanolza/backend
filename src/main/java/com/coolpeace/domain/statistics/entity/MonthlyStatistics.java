@@ -58,11 +58,37 @@ public class MonthlyStatistics {
     @JoinColumn(name = "localCouponDownload_id")
     private LocalCouponDownload localCouponDownload;
 
+    public MonthlyStatistics(Long id, int statisticsYear, int statisticsMonth, int totalSales,
+        int couponTotalSales, int downloadCount, int usedCount, int settlementAmount, Member member,
+        Accommodation accommodation) {
+        this.id = id;
+        this.statisticsYear = statisticsYear;
+        this.statisticsMonth = statisticsMonth;
+        this.totalSales = totalSales;
+        this.couponTotalSales = couponTotalSales;
+        this.downloadCount = downloadCount;
+        this.usedCount = usedCount;
+        this.settlementAmount = settlementAmount;
+        this.member = member;
+        this.accommodation = accommodation;
+    }
+
     public MonthlyStatistics(int statisticsYear, int statisticsMonth, Member member, Accommodation accommodation) {
         this.statisticsYear = statisticsYear;
         this.statisticsMonth = statisticsMonth;
         this.member = member;
         this.accommodation = accommodation;
+    }
+
+    public MonthlyStatistics(int statisticsYear, int statisticsMonth, int totalSales,
+        int couponTotalSales, int downloadCount, int usedCount, int settlementAmount) {
+        this.statisticsYear = statisticsYear;
+        this.statisticsMonth = statisticsMonth;
+        this.totalSales = totalSales;
+        this.couponTotalSales = couponTotalSales;
+        this.downloadCount = downloadCount;
+        this.usedCount = usedCount;
+        this.settlementAmount = settlementAmount;
     }
 
     public void setMonthlySum(int totalSales, int couponTotalSales, int downloadCount,
@@ -77,4 +103,9 @@ public class MonthlyStatistics {
     public void setLocalCouponDownloadTop3(LocalCouponDownload localCouponDownload) {
         this.localCouponDownload = localCouponDownload;
     }
+
+    public static MonthlyStatistics emptyMonthlyStatistics(){
+        return new MonthlyStatistics(0, 0, 0, 0, 0, 0, 0);
+    }
+
 }
