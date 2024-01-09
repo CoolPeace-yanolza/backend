@@ -19,6 +19,9 @@ public class Sido {
     private String name;
 
     @OneToMany(mappedBy = "sido", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Sigungu> sigungus;
+
+    @OneToMany(mappedBy = "sido", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Accommodation> accommodation;
 
     private Sido(String name) {
