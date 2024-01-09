@@ -2,7 +2,7 @@ package com.coolpeace.domain.member.repository;
 
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.global.common.QueryDSLRepositoryTest;
-import com.coolpeace.global.factory.MemberTestBuilder;
+import com.coolpeace.global.builder.MemberTestBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

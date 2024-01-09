@@ -1,4 +1,4 @@
-package com.coolpeace.global.factory;
+package com.coolpeace.global.builder;
 
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.entity.Role;
