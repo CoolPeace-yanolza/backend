@@ -3,6 +3,7 @@ package com.coolpeace.domain.coupon.dto.request;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.DayOfWeek;
@@ -20,7 +21,9 @@ public record CouponUpdateRequest(
         List<Integer> registerRooms,
         Integer minimumReservationPrice,
         List<DayOfWeek> couponUseConditionDays,
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate exposureStartDate,
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate exposureEndDate
 ) {
 }

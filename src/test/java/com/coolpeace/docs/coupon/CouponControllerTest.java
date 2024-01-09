@@ -4,13 +4,16 @@ import com.coolpeace.docs.utils.AccommodationTestUtil;
 import com.coolpeace.docs.utils.MemberTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
+import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.entity.Member;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,9 +48,9 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
@@ -321,4 +325,133 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         }
     }
 
+    @DisplayName("쿠폰 수정")
+    @Test
+    void updateCoupon_success() throws Exception {
+        // given
+        MemberLoginResponse loginResponse = MemberTestUtil
+                .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
+        coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+        CouponUpdateRequest request = new CouponUpdateRequest(
+                accommodation.getId(),
+                coupon.getCustomerType(),
+                coupon.getDiscountType(),
+                coupon.getDiscountValue(),
+                coupon.getCouponRoomType(),
+                coupon.getCouponRooms().isEmpty(),
+                coupon.getCouponRooms().stream().map(room -> room.getRoom().getRoomNumber()).toList(),
+                coupon.getMinimumReservationPrice() + 10000,
+                coupon.getCouponUseConditionDays(),
+                coupon.getExposureStartDate(),
+                coupon.getExposureEndDate()
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(put(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
+                .content(objectMapper.writeValueAsString(request))
+        );
+        // then
+        result
+                    .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("coupon-update",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(RESOURCE_TAG)
+                                .description("쿠폰 수정 API")
+                                .requestSchema(Schema.schema(CouponUpdateRequest.class.getSimpleName()))
+                                .requestFields(
+                                        fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
+                                        fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형").optional(),
+                                        fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형").optional(),
+                                        fieldWithPath("discount_value").type(JsonFieldType.NUMBER).description("할인의 값").optional(),
+                                        fieldWithPath("coupon_room_type").type(JsonFieldType.STRING).description("객실의 유형").optional(),
+                                        fieldWithPath("register_all_room").type(JsonFieldType.BOOLEAN).description("객실 등록 여부").optional(),
+                                        fieldWithPath("register_rooms").type(JsonFieldType.ARRAY).description("등록될 객실의 리스트").optional(),
+                                        fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격").optional(),
+                                        fieldWithPath("coupon_use_condition_days").type(JsonFieldType.ARRAY).description("쿠폰 사용 가능 요일").optional(),
+                                        fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜").optional(),
+                                        fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜").optional()
+                                )
+                                .build()
+                        )
+                ));
+    }
+
+    @DisplayName("쿠폰 노출 여부 수정")
+    @Test
+    void exposeCoupon_success() throws Exception {
+        // given
+        MemberLoginResponse loginResponse = MemberTestUtil
+                .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
+        coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+        CouponExposeRequest request;
+        if (coupon.betweenExposureDate(LocalDate.now())) {
+            request = new CouponExposeRequest(CouponStatusType.EXPOSURE_OFF);
+        } else {
+            if (coupon.getExposureEndDate().isBefore(LocalDate.now())) {
+                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_END);
+            } else {
+                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_WAIT);
+            }
+        }
+
+        // when
+        ResultActions result = mockMvc.perform(put(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber() + "/expose")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
+                .content(objectMapper.writeValueAsString(request))
+        );
+        // then
+        result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("coupon-expose",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(RESOURCE_TAG)
+                                .description("쿠폰 노출 여부 수정 API")
+                                .requestSchema(Schema.schema(CouponExposeRequest.class.getSimpleName()))
+                                .requestFields(
+                                        fieldWithPath("coupon_status").type(JsonFieldType.STRING).description("쿠폰 상태")
+                                )
+                                .build()
+                        )
+                ));
+    }
+
+    @DisplayName("쿠폰 삭제")
+    @Test
+    void deleteCoupon_success() throws Exception {
+        // given
+        MemberLoginResponse loginResponse = MemberTestUtil
+                .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
+        coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+
+        // when
+        ResultActions result = mockMvc.perform(delete(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
+        );
+        // then
+        result
+//                    .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("coupon-delete",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(RESOURCE_TAG)
+                                .description("쿠폰 삭제 API")
+                                .build()
+                        )
+                ));
+    }
 }
