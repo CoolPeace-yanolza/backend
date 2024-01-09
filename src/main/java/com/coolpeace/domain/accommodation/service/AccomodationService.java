@@ -8,10 +8,8 @@ import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
-import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +37,7 @@ public class AccomodationService {
     public List<RoomResponse> getRooms(JwtPrincipal jwtPrincipal, Long accommodationId) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());
-        Member member =memberRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
 
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
