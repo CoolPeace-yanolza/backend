@@ -31,7 +31,7 @@ public class SettlementController {
     @GetMapping("/{accommodation_id}")
     public ResponseEntity<?> searchSettlement(
         @PathVariable("accommodation_id") Long accommodationId,
-        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int pageSize,
         SearchSettlementParams searchSettlementParams,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
