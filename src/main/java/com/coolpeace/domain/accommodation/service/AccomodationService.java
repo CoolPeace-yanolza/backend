@@ -5,11 +5,9 @@ import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class AccomodationService {
             = accommodationRepository.findAllByMemberId(memberId);
 
         List<AccomodationResponse> accomodationResponses = new ArrayList<>();
-        for(Accommodation accommodation : accommodations){
+        for (Accommodation accommodation : accommodations) {
             accomodationResponses.add(AccomodationResponse.fromEntity(accommodation));
         }
 
@@ -46,7 +44,7 @@ public class AccomodationService {
         List<Room> rooms = roomRepository.findAllByAccommodation(accommodation);
 
         List<RoomResponse> roomResponses = new ArrayList<>();
-        for(Room room : rooms){
+        for (Room room : rooms) {
             roomResponses.add(RoomResponse.fromEntity(room));
         }
 
