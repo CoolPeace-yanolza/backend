@@ -18,10 +18,11 @@ public class AccommodationTestBuilder {
     }
 
     public Accommodation build() {
+        Sido sido = Sido.from(faker.address().state());
         return Accommodation.from(
                 faker.name().firstName(),
-                Sido.from(faker.address().state()),
-                Sigungu.from(faker.address().cityName()),
+                sido,
+                Sigungu.from(faker.address().cityName(), sido),
                 faker.address().streetName(),
                 member);
     }

@@ -1,11 +1,12 @@
 package com.coolpeace.domain.accommodation.entity;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -18,18 +19,19 @@ public class Sigungu {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "sido")
     private Sido sido;
 
     @OneToMany(mappedBy = "sigungu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Accommodation> accommodations = new ArrayList<>();
+    private final List<Accommodation> accommodations = new ArrayList<>();
 
-    private Sigungu(String name) {
+    private Sigungu(String name, Sido sido) {
         this.name = name;
+        this.sido = sido;
     }
 
-    public static Sigungu from(String name) {
-        return new Sigungu(name);
+    public static Sigungu from(String name, Sido sido) {
+        return new Sigungu(name, sido);
     }
 }
