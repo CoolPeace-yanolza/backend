@@ -25,9 +25,9 @@ import com.coolpeace.global.common.RestDocsIntegrationTest;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -47,16 +47,13 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class CouponControllerTest extends RestDocsIntegrationTest {
     private static final String RESOURCE_TAG = "쿠폰";
     private static final String URL_DOMAIN_PREFIX = "/v1/coupons";
     private static final String BEARER_PREFIX = "Bearer ";
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -148,7 +145,6 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
     @DisplayName("쿠폰 검색")
     @Test
-    @Transactional
     void searchCoupon_success() throws Exception {
         // given
         MemberLoginResponse loginResponse = MemberTestUtil
@@ -157,8 +153,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         for (int i = 0; i < 10; i++) {
             List<Room> randomRooms;
             if (i % 3 == 0) {
-                randomRooms = AccommodationTestUtil.getRandomRooms(this.rooms)
-                        .stream().map(entityManager::merge).toList();
+                randomRooms = AccommodationTestUtil.getRandomRooms(this.rooms);
             } else {
                 randomRooms = Collections.emptyList();
             }
@@ -175,7 +170,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
         // then
         result
-                .andDo(print())
+//                .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("coupon-search",
                         resource(ResourceSnippetParameters.builder()
@@ -230,8 +225,6 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                 .build()
                         )
                 ));
-
-
     }
 
     private static MultiValueMap<String, String> createCouponSearchParams() {
@@ -249,4 +242,83 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         requestParams.add("page", "1");
         return requestParams;
     }
+
+    @DisplayName("이전 쿠폰 등록 내역 조회")
+    @Nested
+    class GetCouponRecentHistoryTest {
+        @DisplayName("이전 쿠폰 등록 내역 조회 - 조회 성공")
+        @Test
+        void getCouponRecentHistory_success() throws Exception {
+            // given
+            MemberLoginResponse loginResponse = MemberTestUtil
+                    .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+            List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+            Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
+            coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+
+            // when
+            ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/recent")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken()));
+
+            // then
+            result
+//                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andDo(document("coupon-recent-history",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(RESOURCE_TAG)
+                                    .description("이전 쿠폰 등록 내역 조회 API")
+                                    .responseSchema(Schema.schema(CouponResponse.class.getSimpleName()))
+                                    .responseFields(
+                                            fieldWithPath("title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
+                                            fieldWithPath("coupon_number").type(JsonFieldType.STRING).description("쿠폰 번호"),
+                                            fieldWithPath("coupon_status").type(JsonFieldType.STRING).description("쿠폰 상태"),
+                                            fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형"),
+                                            fieldWithPath("discount_value").type(JsonFieldType.NUMBER).description("할인의 값"),
+                                            fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형"),
+                                            fieldWithPath("coupon_room_type").type(JsonFieldType.STRING).description("객실의 유형"),
+                                            fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격"),
+                                            fieldWithPath("coupon_use_condition_days").type(JsonFieldType.ARRAY).description("쿠폰 사용 가능 요일"),
+                                            fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜"),
+                                            fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜"),
+                                            fieldWithPath("coupon_expiration").type(JsonFieldType.NUMBER).description("쿠폰 만료 일자"),
+                                            fieldWithPath("download_count").type(JsonFieldType.NUMBER).description("다운로드 횟수"),
+                                            fieldWithPath("use_count").type(JsonFieldType.NUMBER).description("사용 수"),
+                                            fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
+                                            fieldWithPath("register_room_numbers").type(JsonFieldType.ARRAY).description("등록된 객실 번호"),
+                                            fieldWithPath("created_date").type(JsonFieldType.STRING).description("생성 날짜")
+                                    )
+                                    .build()
+                            )
+                    ));
+        }
+
+        @DisplayName("이전 쿠폰 등록 내역 조회 - 조회 결과 없음")
+        @Test
+        void getCouponRecentHistory_success_no_content() throws Exception {
+            // given
+            MemberLoginResponse loginResponse = MemberTestUtil
+                    .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+            // when
+            ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/recent")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken()));
+
+            // then
+            result
+//                    .andDo(print())
+                    .andExpect(status().isNoContent())
+                    .andDo(document("coupon-recent-history-no-content",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(RESOURCE_TAG)
+                                    .description("이전 쿠폰 등록 내역 조회 API")
+                                    .build()
+                            )
+                    ));
+        }
+    }
+
 }
