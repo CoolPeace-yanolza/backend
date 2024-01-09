@@ -39,4 +39,6 @@ out/
 
 ### Private Files ###
 .env
+coolpeace-api/.env
+
 **/static/swagger-ui/openapi3.**

@@ -1,1 +1,3 @@
 rootProject.name = 'coolPeace'
+include 'coolpeace-api'
+
