@@ -57,6 +57,7 @@ dependencies {
     testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
     testImplementation "com.epages:restdocs-api-spec-mockmvc:${RESTDOCS_API_SPEC_VERSION}"
 
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
