@@ -12,6 +12,6 @@ public interface DailyStatisticsRepository extends JpaRepository<DailyStatistics
     Optional<DailyStatistics> findByAccommodationAndStatisticsDay
         (Accommodation accommodation, int statisticsDay);
 
-    List<DailyStatistics> findAllByMember(Member member);
+    List<DailyStatistics> findAllByAccommodation(Accommodation accommodation);
 
 }

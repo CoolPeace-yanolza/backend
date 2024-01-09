@@ -6,6 +6,7 @@ import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.reservation.entity.Reservation;
 import com.coolpeace.domain.reservation.repository.ReservationRepository;
+import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.exception.DailyStatisticsNotFoundException;
@@ -76,20 +77,27 @@ public class DailyStatisticsService {
 
     public void updateSettlement(){
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int settlementAmount = 0;
         int day = LocalDate.now().getDayOfMonth();
 
-        for (Accommodation accommodation : accommodations) {
-            Member member = accommodation.getMember();
-//            정산쪽 확정되면 로직 구현 예정
-//            settlementRepository.findAllByAccommodation(accommodation).stream()
-//                .map(settlement -> {settlement.getCo})
+        accommodations.forEach(accommodation -> {
+            List<Settlement> settlements = settlementRepository
+                .findAllByAccommodationForDailyUpdate(accommodation);
+
+            int sumSettlement = 0;
+
+            for (Settlement settlement : settlements) {
+                settlement.sumPrice();
+                sumSettlement += settlement.getSumPrice();
+            }
+
             DailyStatistics dailyStatistics = dailyStatisticsRepository
                 .findByAccommodationAndStatisticsDay(accommodation,day)
                 .orElseThrow(DailyStatisticsNotFoundException::new);
-            dailyStatistics.setSettlement(settlementAmount);
+            dailyStatistics.setSettlement(sumSettlement);
+        });
+
         }
     }
 
 
-}
+
