@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoomReservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,4 +35,5 @@ public class RoomReservation {
     @OneToOne
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
 }
