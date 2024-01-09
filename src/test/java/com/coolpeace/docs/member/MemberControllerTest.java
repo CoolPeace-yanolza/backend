@@ -122,7 +122,8 @@ public class MemberControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("access_token").type(JsonFieldType.STRING).description("JWT 액세스 토큰"),
                                         fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("JWT 리프레시 토큰"),
                                         fieldWithPath("expires_in").type(JsonFieldType.NUMBER).description("JWT 액세스 토큰 만료 시간(초 단위)"),
-                                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름")
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("회원 이메일")
                                 )
                                 .build()
                         )
