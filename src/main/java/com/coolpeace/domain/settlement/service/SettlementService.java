@@ -63,16 +63,16 @@ public class SettlementService {
 
         Page<Settlement> settlements = switch (searchSettlementParams.orderBy()) {
             case COMPLETE_AT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAt
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAtDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case SUM_PRICE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPrice
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPriceDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_USE_DATE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_COUNT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCount
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCountDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
         };
         return settlements.stream().map(SettlementResponse::from).toList();
