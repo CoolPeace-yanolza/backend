@@ -1,4 +1,4 @@
-package com.coolpeace.global.config;
+package com.coolpeace.global.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

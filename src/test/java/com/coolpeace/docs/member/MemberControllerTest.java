@@ -6,7 +6,7 @@ import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
 import com.coolpeace.domain.member.entity.Member;
-import com.coolpeace.global.config.RestDocsIntegrationTest;
+import com.coolpeace.global.common.RestDocsIntegrationTest;
 import com.coolpeace.global.factory.MemberTestBuilder;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
