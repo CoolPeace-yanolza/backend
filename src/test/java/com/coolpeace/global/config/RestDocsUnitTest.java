@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-public class RestDocsUnitTest {
+public abstract class RestDocsUnitTest {
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper = new ObjectMapper()
         .setPropertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy());
