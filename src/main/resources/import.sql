@@ -2,10 +2,6 @@ INSERT INTO `fc_coolpeace`.role (role_type) VALUES ('ADMIN');
 INSERT INTO `fc_coolpeace`.role (role_type) VALUES ('OWNER');
 INSERT INTO `fc_coolpeace`.role (role_type) VALUES ('USER');
 
-INSERT INTO fc_coolpeace.member (is_deleted, email, name, password) VALUES (0, 'testowner@test.com', 'testowner', 'pass123');
-INSERT INTO fc_coolpeace.accommodation (member_id, address, name) VALUES (1, '123 Main St', 'Accommodation 1');
-INSERT INTO fc_coolpeace.room (accommodation_id, room_number, price, room_type) VALUES (1, 101, 50000, 'Single'), (1, 102, 60000, 'Double'), (1, 103, 70000, 'Suite');
-
 -- SIDO 데이터
 INSERT INTO fc_coolpeace.sido(id, name) values (1, '서울특별시'), (2, '부산광역시'), (3, '대구광역시'), (4, '인천광역시'), (5, '광주광역시'), (6, '대전광역시'), (7, '울산광역시'), (8, '세종특별자치시'), (9, '경기도'), (10, '북부출장소'), (11, '충청북도'), (12, '충청남도'), (13, '전라북도'), (14, '전라남도'), (15, '경상북도'), (16, '경상남도'), (17, '제주특별자치도'), (18, '강원특별자치도'), (19, '동해출장소');
 
@@ -28,6 +24,58 @@ INSERT INTO fc_coolpeace.sigungu(id, sido, name) values (239, 16, ''), (240, 16,
 INSERT INTO fc_coolpeace.sigungu(id, sido, name) values (264, 17, ''), (265, 17, '제주시'), (266, 17, '서귀포시');
 INSERT INTO fc_coolpeace.sigungu(id, sido, name) values (268, 19, '');
 INSERT INTO fc_coolpeace.sigungu(id, sido, name) values (267, 18, ''), (269, 18, '춘천시'), (270, 18, '원주시'), (271, 18, '강릉시'), (272, 18, '동해시'), (273, 18, '태백시'), (274, 18, '속초시'), (275, 18, '삼척시'), (276, 18, '홍천군'), (277, 18, '횡성군'), (278, 18, '영월군'), (279, 18, '평창군'), (280, 18, '정선군'), (281, 18, '철원군'), (282, 18, '화천군'), (283, 18, '양구군'), (284, 18, '인제군'), (285, 18, '고성군'), (286, 18, '양양군');
+
+--회원 추가
+INSERT INTO fc_coolpeace.member (is_deleted, email, name, password) VALUES (0, 'testowner@test.com', 'testowner', 'pass123');
+
+--1번회원 숙소 2개 추가
+insert into fc_coolpeace.accommodation (member_id, name, sido, sigungu, address) values (1, '테스트숙박1', 1, 2, '테스트 상세 주소 1번지'), (1, '테스트숙박2', 1, 2, '테스트 상세 주소 2번지');
+
+--숙소당 객실 2개 추가
+insert into room (price, room_number, accommodation_id, created_at, room_type) values (100000, 101, 1, now(), '테스트룸타입1-1'), (150000, 102, 1, now(), '테스트룸타입1-2');
+insert into room (price, room_number, accommodation_id, created_at, room_type) values (200000, 201, 2, now(), '테스트룸타입1-1'), (250000, 202, 1, now(), '테스트룸타입2-2');
+
+
+--쿠폰 추가
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (14, 0, 3, 30000, 100, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 100000, 30, 1, now(), 1, 'CC0000001', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_PRICE', '테스트쿠폰1');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (21, 1, 127, 30, 200, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 50000, 40, 1, now(), 1, 'CC0000002', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_RATE', '테스트쿠폰2');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (14, 0, 99, 10000, 300, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 200000, 20, 2, now(), 1, 'CC0000003', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_PRICE', '테스트쿠폰3');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (14, 2, 124, 20, 400, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 100000, 50, 2, now(), 1, 'CC0000004', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_RATE', '테스트쿠폰4');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (7, 1, 107, 10000, 300, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 10000, 100, 1, now(), 1, 'CC0000005', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_PRICE', '테스트쿠폰5');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (3, 1, 55, 10, 500, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 100000, 43, 1, now(), 1, 'CC0000006', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_RATE', '테스트쿠폰6');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (30, 0, 123, 10000, 1000, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 250000, 160, 2, now(), 1, 'CC0000007', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_PRICE', '테스트쿠폰7');
+insert into coupon(coupon_expiration, coupon_room_type, coupon_use_condition_days, discount_value, download_count, exposure_end_date, exposure_start_date, minimum_reservation_price, use_count, accommodation_id, created_at, member_id, coupon_number, coupon_status, customer_type, discount_type, title) values (100, 2, 26, 10, 50, '2024-12-31 00:00:00', '2024-01-01 00:00:00', 60000, 50, 2, now(), 1, 'CC0000008', 'EXPOSURE_ON', 'ALL_CLIENT', 'FIXED_RATE', '테스트쿠폰8');
+
+--예약(reservaion) 추가
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (10000, 100000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (20000, 100000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (10000, 150000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (20000, 150000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (10000, 200000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (20000, 200000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (10000, 250000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+insert into reservation(discount_price, total_price, created_at, end_date, start_date) values (20000, 250000, now(), '2024-12-31 23:00:00', '2024-12-01 07:00:00');
+
+--예약 객실(room_servervaion)
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (10000, 1, 1, 1);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (20000, 2, 2, 1);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (30000, 3, 3, 2);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (40000, 4, 4, 2);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (10000, 5, 5, 3);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (20000, 6, 6, 3);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (30000, 7, 7, 4);
+insert into room_reservation(discount_price, coupon_id, reservation_id, room_id) values (40000, 8, 8, 4);
+
+-- INSERT INTO fc_coolpeace.room (accommodation_id, room_number, price, room_type) VALUES (1, 101, 50000, 'Single'), (1, 102, 60000, 'Double'), (1, 103, 70000, 'Suite');
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 2, '2024-01-02 00:00:00', 10000, 20000, 3000, 1, 1, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 3, '2024-01-17 00:00:00', 5000, 15000, 2000, 2, 2, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 4, '2024-01-05 00:00:00', 20000, 80000, 330000, 1, 3, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 5, '2024-01-10 00:00:00', 30000, 100000, 32000, 2, 4, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 6, '2024-01-11 00:00:00', 40000, 200000, 31000, 1, 5, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 7, '2024-01-30 00:00:00', 50000, 350000, 20000, 2, 6, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 8, '2024-01-21 00:00:00', 60000, 490000, 300000, 1, 7, now() );
+insert into settlement(cancel_price, complete_at, coupon_count, coupon_use_date, discount_price, sum_price, supply_price, accommodation_id, coupon_id, created_at) values (0, '2024-02-01 00:00:00', 9, '2024-01-16 00:00:00', 70000, 420000, 100000, 2, 8, now() );
+
 
 
 -- INSERT INTO fc_coolpeace.coupon (id, coupon_number, custom_title, title, coupon_status, discount_type, discount_value, coupon_room_type, customer_type, coupon_use_room, coupon_room_type, minimum_reservation_price, coupon_use_condition_days, exposure_start_date, exposure_end_date, expiration_date, download_count, use_count)
