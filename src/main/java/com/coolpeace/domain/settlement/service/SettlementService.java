@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +54,7 @@ public class SettlementService {
     }
 
     public List<SettlementResponse> searchSettlement(Long memberId, Long accommodationId,
-        SearchSettlementParams searchSettlementParams, int page, int pageSize) {
+        SearchSettlementParams searchSettlementParams, Pageable pageable) {
 
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         LocalDate startDate = LocalDate.parse(searchSettlementParams.startDate());
@@ -63,16 +63,16 @@ public class SettlementService {
         Page<Settlement> settlements = switch (searchSettlementParams.orderBy()) {
             case COMPLETE_AT -> settlementRepository
                 .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAt
-                    (PageRequest.of(page, pageSize), accommodation, startDate, endDate);
+                    (pageable, accommodation, startDate, endDate);
             case SUM_PRICE -> settlementRepository
                 .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPrice
-                    (PageRequest.of(page, pageSize), accommodation, startDate, endDate);
+                    (pageable, accommodation, startDate, endDate);
             case COUPON_USE_DATE -> settlementRepository
                 .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate
-                    (PageRequest.of(page, pageSize), accommodation, startDate, endDate);
+                    (pageable, accommodation, startDate, endDate);
             case COUPON_COUNT -> settlementRepository
                 .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCount
-                    (PageRequest.of(page, pageSize), accommodation, startDate, endDate);
+                    (pageable, accommodation, startDate, endDate);
         };
         return settlements.stream().map(SettlementResponse::from).toList();
     }

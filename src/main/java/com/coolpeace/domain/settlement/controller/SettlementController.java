@@ -5,6 +5,8 @@ import com.coolpeace.domain.settlement.service.SettlementService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,17 +25,17 @@ public class SettlementController {
     public ResponseEntity<?> sumSettlement(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
         return ResponseEntity.ok().body(settlementService.sumSettlement
-                (Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            (Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
     }
+
     @GetMapping("/{accommodation_id}/summary")
     public ResponseEntity<?> searchSettlement(
         @PathVariable("accommodation_id") Long accommodationId,
-        @RequestParam(defaultValue = "0")int page,
-        @RequestParam(defaultValue = "10")int pageSize,
+        @PageableDefault Pageable pageable,
         SearchSettlementParams searchSettlementParams,
-        @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
+        @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
         return ResponseEntity.ok().body(settlementService.searchSettlement(Long.valueOf
-            (jwtPrincipal.getMemberId()),accommodationId, searchSettlementParams, page,pageSize));
+            (jwtPrincipal.getMemberId()), accommodationId, searchSettlementParams,pageable));
     }
 
 }
