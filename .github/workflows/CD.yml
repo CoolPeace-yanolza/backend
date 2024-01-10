@@ -11,9 +11,6 @@ on:
   push:
     branches: [ "release" ]
 
-permissions:
-  contents: read
-
 env:
   S3_BUCKET_NAME: coolpeace-s3
 
