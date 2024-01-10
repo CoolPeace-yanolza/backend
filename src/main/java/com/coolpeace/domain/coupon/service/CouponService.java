@@ -49,19 +49,12 @@ public class CouponService {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                                 pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+                .map(CouponResponse::from);
     }
 
     @Transactional(readOnly = true)
     public Optional<CouponResponse> getRecentHistory(Long memberId) {
-        return couponRepository.findRecentCouponByMemberId(memberId)
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+        return couponRepository.findRecentCouponByMemberId(memberId).map(CouponResponse::from);
     }
 
     @Transactional

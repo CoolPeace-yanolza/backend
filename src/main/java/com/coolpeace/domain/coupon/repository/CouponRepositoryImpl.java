@@ -39,7 +39,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         if (params.status() != null) {
             searchCouponPredicate.and(switch (params.status()) {
                 case EXPOSURE_ON -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON);
-                case EXPOSURE_OFF -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_OFF);
+                case EXPOSURE_OFF -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_OFF)
+                        .or(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT));
                 case EXPIRED -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END)
                         .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
                 case All -> coupon.couponStatus.isNotNull();
