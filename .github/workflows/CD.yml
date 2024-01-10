@@ -30,8 +30,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Gradle 빌드
+      - name: .env.example 파일을 .env로 복사
+        run: cp .env.example .env
+        shell: bash
+
+      - name: gradlew에 실행권한 부여
         run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Gradle 빌드 및 테스트 실행
+        run: ./gradlew build
+        shell: bash
+
+      - name: .env 파일 제거
+        run: rm .env
         shell: bash
 
       - name: Spring boot jar 생성
