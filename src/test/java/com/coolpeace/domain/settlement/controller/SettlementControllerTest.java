@@ -15,7 +15,6 @@ import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
 import com.coolpeace.domain.settlement.service.SettlementService;
-import com.coolpeace.global.jwt.security.JwtPrincipal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

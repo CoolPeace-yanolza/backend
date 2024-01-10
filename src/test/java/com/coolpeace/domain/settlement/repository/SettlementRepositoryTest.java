@@ -10,7 +10,7 @@ import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
-import com.coolpeace.global.factory.MemberTestBuilder;
+import com.coolpeace.global.builder.MemberTestBuilder;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @SpringBootTest
 
-public class SettlementRepositoryTest {
+class SettlementRepositoryTest {
 
     @Autowired
     private MonthlyStatisticsRepository monthlyStatisticsRepository;

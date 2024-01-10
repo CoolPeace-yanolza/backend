@@ -24,7 +24,7 @@ import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
-import com.coolpeace.global.factory.MemberTestBuilder;
+import com.coolpeace.global.builder.MemberTestBuilder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @ExtendWith(MockitoExtension.class)
-public class SettlementServiceTest {
+class SettlementServiceTest {
 
     @InjectMocks
     private SettlementService settlementService;
