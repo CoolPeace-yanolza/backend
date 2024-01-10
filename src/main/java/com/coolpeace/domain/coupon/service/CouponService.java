@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,8 @@ public class CouponService {
     @Transactional(readOnly = true)
     public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
-                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
                 .map(coupon -> CouponResponse.from(coupon,
                         coupon.getCouponRooms().stream()
                                 .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
