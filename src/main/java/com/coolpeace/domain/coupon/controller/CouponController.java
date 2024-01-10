@@ -27,7 +27,7 @@ public class CouponController {
 
     @GetMapping
     public ResponseEntity<Page<CouponResponse>> searchCoupons(
-            SearchCouponParams searchCouponParams,
+            @Valid SearchCouponParams searchCouponParams,
             @PageableDefault Pageable pageable,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
