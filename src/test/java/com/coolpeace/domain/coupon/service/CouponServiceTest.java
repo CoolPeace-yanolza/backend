@@ -4,12 +4,16 @@ import com.coolpeace.docs.utils.AccommodationTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
+import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.*;
+import com.coolpeace.domain.coupon.exception.*;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
@@ -28,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -40,6 +45,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -171,7 +178,7 @@ class CouponServiceTest {
 
         @DisplayName("이전 쿠폰 등록 내역을 조회할 수 있다.")
         @Test
-        void no_filter_success() {
+        void getRecentHistory_success() {
             // given
             given(couponRepository.findRecentCouponByMemberId(anyLong())).willReturn(
                     coupons.stream().limit(4).toList());
@@ -183,6 +190,22 @@ class CouponServiceTest {
             verify(couponRepository).findRecentCouponByMemberId(anyLong());
 
             assertThat(result).isNotNull();
+        }
+
+        @DisplayName("이전 쿠폰 등록 내역이 없으면 빈 리스트를 반환한다.")
+        @Test
+        void getRecentHistory_empty_success() {
+            // given
+            given(couponRepository.findRecentCouponByMemberId(anyLong())).willReturn(
+                    coupons.stream().limit(0).toList());
+
+            // when
+            List<CouponResponse> result = couponService.getRecentHistory(member.getId());
+
+            // then
+            verify(couponRepository).findRecentCouponByMemberId(anyLong());
+
+            assertThat(result).isEmpty();
         }
     }
 
@@ -302,6 +325,260 @@ class CouponServiceTest {
         }
     }
 
+    @DisplayName("쿠폰 수정")
+    @Nested
+    class CouponUpdateTest {
+        private Coupon couponA, couponB;
+
+        @BeforeEach
+        void beforeEach() {
+            this.couponA = Coupon.from(
+                    "titleA",
+                    DiscountType.FIXED_PRICE,
+                    10000,
+                    CustomerType.ALL_CLIENT,
+                    CouponRoomType.LODGE,
+                    0,
+                    Collections.emptyList(),
+                    LocalDate.now().plusDays(100),
+                    LocalDate.now().plusDays(130),
+                    accommodation,
+                    Collections.emptyList(),
+                    member
+            );
+            ReflectionTestUtils.setField(couponA, "id", 1234L);
+            couponA.generateCouponNumber(CouponIssuerType.OWNER, couponA.getId());
+
+            this.couponB = Coupon.from(
+                    "titleB",
+                    DiscountType.FIXED_RATE,
+                    20,
+                    CustomerType.FIRST_CLIENT,
+                    CouponRoomType.RENTAL,
+                    1000,
+                    List.of(DayOfWeek.MONDAY),
+                    LocalDate.now().plusDays(30),
+                    LocalDate.now().plusDays(60),
+                    accommodation,
+                    Collections.emptyList(),
+                    member
+            );
+            ReflectionTestUtils.setField(couponB, "id", 1234L);
+            couponB.generateCouponNumber(CouponIssuerType.OWNER, couponB.getId());
+        }
+        
+        @DisplayName("단일 변경 - 올바른 요청으로 쿠폰을 수정할 수 있다.")
+        @Test
+        void updateCoupon_mono_update_success() {
+
+            //when
+            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+                    couponB.getCustomerType(),
+                    null,
+                    null,
+                    couponB.getCouponRoomType(),
+                    null,
+                    null,
+                    couponB.getMinimumReservationPrice(),
+                    couponB.getCouponUseConditionDays(),
+                    couponB.getExposureStartDate(),
+                    couponB.getExposureEndDate()
+            ));
+
+            //then
+            assertThat(couponA.getCustomerType()).isEqualTo(couponB.getCustomerType());
+            assertThat(couponA.getCouponRoomType()).isEqualTo(couponB.getCouponRoomType());
+            assertThat(couponA.getMinimumReservationPrice()).isEqualTo(couponB.getMinimumReservationPrice());
+            assertThat(couponA.getCouponUseConditionDays()).isEqualTo(couponB.getCouponUseConditionDays());
+            assertThat(couponA.getExposureStartDate()).isEqualTo(couponB.getExposureStartDate());
+            assertThat(couponA.getExposureEndDate()).isEqualTo(couponB.getExposureEndDate());
+        }
+
+        @DisplayName("discountType - 올바른 요청으로 쿠폰을 수정할 수 있다.")
+        @Test
+        void updateCoupon_discountType_update_success() {
+
+            //when
+            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+                    null,
+                    couponB.getDiscountType(),
+                    couponB.getDiscountValue(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ));
+
+            //then
+            assertThat(couponA.getDiscountType()).isEqualTo(couponB.getDiscountType());
+            assertThat(couponA.getDiscountValue()).isEqualTo(couponB.getDiscountValue());
+        }
+
+        private void executeUpdateCoupon(CouponUpdateRequest request) {
+            //given
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(couponA));
+            if (request.registerRooms() != null) {
+                given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.of(rooms.get(0)));
+            }
+
+            //when
+            couponService.updateCoupon(member.getId(), couponA.getCouponNumber(), request);
+        }
+    }
+
+    @DisplayName("쿠폰 노출 여부 변경")
+    @Nested
+    class CouponExposeTest {
+        private Coupon coupon;
+
+        @DisplayName("올바른 요청으로 쿠폰 노출 여부 변경을 할 수 있다.")
+        @Test
+        void _success() {
+            //given
+            generateCouponOfBetweenExposureDate();
+
+            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_OFF;
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
+
+            //when
+            couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request);
+
+            //then
+            assertThat(coupon.getCouponStatus()).isEqualTo(expectedCouponState);
+        }
+
+        @DisplayName("노출 시작 이후로 대기중을 요청할 경우 쿠폰 노출 여부 변경을 할 수 없다.")
+        @Test
+        void after_exposure_start_date_but_request_exposure_wait_fail() {
+            //given
+            generateCouponOfBetweenExposureDate();
+
+            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_WAIT;
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
+
+            //when
+            //then
+            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
+                    .isInstanceOf(InvalidCouponStateWaitExposureDateException.class);
+        }
+
+        @DisplayName("노출 기간이 아닌데 ON/OFF를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
+        @ParameterizedTest
+        @EnumSource(value = CouponStatusType.class,
+                mode = EnumSource.Mode.INCLUDE,
+                names = {"EXPOSURE_ON", "EXPOSURE_OFF"})
+        void not_between_exposure_date_but_request_exposure_OnOff_fail(CouponStatusType expectedCouponState) {
+            //given
+            generateCouponOfBeforeExposureDate();
+
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
+
+            //when
+            //then
+            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
+                    .isInstanceOf(InvalidCouponStateOutsideExposureDateException.class);
+        }
+
+        @DisplayName("노출 종료 이전에 종료를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
+        @Test
+        void before_exposure_end_date_but_request_exposure_end_fail() {
+            //given
+            generateCouponOfBetweenExposureDate();
+
+            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_END;
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
+
+            //when
+            //then
+            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
+                    .isInstanceOf(InvalidCouponStateEndExposureDateException.class);
+        }
+
+        void generateCouponOfBeforeExposureDate() {
+            LocalDate exposureStartDate = LocalDate.now().minusDays(7);
+            LocalDate exposureEndDate = exposureStartDate.plusDays(1);
+            generateCoupon(exposureStartDate, exposureEndDate);
+        }
+
+        void generateCouponOfBetweenExposureDate() {
+            LocalDate exposureStartDate = LocalDate.now().minusDays(1);
+            LocalDate exposureEndDate = exposureStartDate.plusDays(7);
+            generateCoupon(exposureStartDate, exposureEndDate);
+        }
+
+        private void generateCoupon(LocalDate startDate, LocalDate endDate) {
+            coupon = new CouponTestBuilder(accommodation, member, Collections.emptyList())
+                    .exposureDates(startDate, endDate)
+                    .build();
+            ReflectionTestUtils.setField(coupon, "id", 4321L);
+            coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+        }
+    }
+
+    @DisplayName("쿠폰 삭제")
+    @Nested
+    class CouponDeleteTest {
+        private Coupon coupon;
+
+        @BeforeEach
+        void beforeEach() {
+            coupon = new CouponTestBuilder(accommodation, member, Collections.emptyList()).build();
+            ReflectionTestUtils.setField(coupon, "id", 4321L);
+            coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+        }
+
+        @DisplayName("올바른 요청으로 쿠폰을 삭제할 수 있다.")
+        @Test
+        void _success() {
+            //given
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
+
+            //when
+            couponService.deleteCoupon(member.getId(), coupon.getCouponNumber());
+
+            //then
+            assertThat(coupon.getCouponStatus()).isEqualTo(CouponStatusType.DELETED);
+        }
+
+        @DisplayName("쿠폰에 해당하는 멤버 ID가 다르면 쿠폰을 삭제할 수 없다.")
+        @Test
+        void diff_coupon_and_member_fail() {
+            //given
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(false);
+
+            //when
+            //then
+            assertThatThrownBy(() -> couponService.deleteCoupon(member.getId(), coupon.getCouponNumber()))
+                    .isInstanceOf(CouponAccessDeniedException.class);
+        }
+
+        @DisplayName("해당하는 쿠폰 번호가 없으면 쿠폰을 삭제할 수 없다.")
+        @Test
+        void coupon_not_found_fail() {
+            //given
+            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
+            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.empty());
+
+            //when
+            //then
+            assertThatThrownBy(() -> couponService.deleteCoupon(member.getId(), coupon.getCouponNumber()))
+                    .isInstanceOf(CouponNotFoundException.class);
+        }
+    }
+
     public List<Coupon> getTestCoupons() {
         return IntStream.range(0, 20)
                 .mapToObj(i -> {
@@ -309,6 +586,7 @@ class CouponServiceTest {
                     Coupon coupon = new CouponTestBuilder(accommodation, member, registerRooms).build();
                     ReflectionTestUtils.setField(coupon, "id", 4321L);
                     ReflectionTestUtils.setField(coupon, "createdAt", LocalDateTime.now());
+                    coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
                     return coupon;
                 })
                 .toList();

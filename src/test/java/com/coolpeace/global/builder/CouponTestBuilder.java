@@ -22,10 +22,19 @@ public class CouponTestBuilder {
     private final Member member;
     private final List<Room> registerRooms;
 
+    private LocalDate exposureStartDate;
+    private LocalDate exposureEndDate;
+
     public CouponTestBuilder(Accommodation accommodation, Member member, List<Room> registerRooms) {
         this.accommodation = accommodation;
         this.member = member;
         this.registerRooms = registerRooms;
+    }
+
+    public CouponTestBuilder exposureDates(LocalDate exposureStartDate, LocalDate exposureEndDate) {
+        this.exposureStartDate = exposureStartDate;
+        this.exposureEndDate = exposureEndDate;
+        return this;
     }
 
     public Coupon build() {
@@ -53,10 +62,12 @@ public class CouponTestBuilder {
             useConditionDays = Collections.emptyList();
         }
 
-        long startDate = faker.number().numberBetween(-200, 200);
-        long period = faker.random().nextInt(100);
-        LocalDate exposureStartDate = LocalDate.now().plusDays(startDate);
-        LocalDate exposureEndDate = exposureStartDate.plusDays(period);
+        if (exposureStartDate == null || exposureEndDate == null) {
+            long startDate = faker.number().numberBetween(-200, 200);
+            long period = faker.random().nextInt(100);
+            this.exposureStartDate = LocalDate.now().plusDays(startDate);
+            this.exposureEndDate = exposureStartDate.plusDays(period);
+        }
 
         return Coupon.from(
                 title,
