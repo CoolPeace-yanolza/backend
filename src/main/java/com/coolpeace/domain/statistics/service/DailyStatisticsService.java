@@ -2,6 +2,7 @@ package com.coolpeace.domain.statistics.service;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.reservation.entity.Reservation;
@@ -58,21 +59,22 @@ public class DailyStatisticsService {
 
     public void updateCoupon(){
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int downloadCount = 0;
-        int usedCount = 0;
         int day = LocalDate.now().getDayOfMonth();
-
-        for (Accommodation accommodation : accommodations) {
+        accommodations.forEach(accommodation -> {
+            int downloadCount = 0;
+            int usedCount = 0;
             Member member = accommodation.getMember();
-            /* 쿠폰 변경 후, 적용 예정
-            * ...
-            * */
+            List<Coupon> coupons = couponRepository
+                .findAllByAccommodationAndMember(accommodation, member);
+            for (Coupon coupon : coupons) {
+                downloadCount += coupon.getDownloadCount();
+                usedCount += coupon.getUseCount();
+            }
             DailyStatistics dailyStatistics = dailyStatisticsRepository
                 .findByAccommodationAndStatisticsDay(accommodation,day)
                 .orElse(new DailyStatistics(day,member, accommodation));
             dailyStatistics.setCoupon(downloadCount, usedCount);
-        }
-
+        });
     }
 
     public void updateSettlement(){
