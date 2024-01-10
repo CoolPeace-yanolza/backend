@@ -1,10 +1,16 @@
 spring:
+
   config:
     import: optional:file:.env[.properties]
   application:
     name: coolpeace
   jackson:
     property-naming-strategy: SNAKE_CASE
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      name: dailyStatisticsJob
 
   datasource:
     url: jdbc:mysql://${MYSQL_URL:localhost}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
@@ -22,10 +28,9 @@ spring:
     redis:
       host: localhost
       port: ${REDIS_PORT}
-# 1페이지부터 시작하려면 아래 설정 적용
-#    web:
-#      pageable:
-#        one-indexed-parameters: true
+    web:
+      pageable:
+        one-indexed-parameters: true
 
 service:
   jwt:

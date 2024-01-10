@@ -20,14 +20,26 @@ public enum ErrorCode {
     MEMBER_ALREADY_EXISTED(HttpStatus.BAD_REQUEST, "이미 회원가입이 되어 있는 이메일입니다."),
 
     // ACCOMMODATION
+    ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 정보를 찾을 수 없습니다."),
+    ACCOMMODATION_NOT_MATCH_MEMBER(HttpStatus.FORBIDDEN, "숙박업체에 등록된 회원과 정보가 일치하지 않습니다."),
 
     // ROOM
+    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 숙박업체의 방의 정보를 찾을 수 없습니다."),
 
     // COUPON
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰의 정보를 찾을 수 없습니다."),
+    COUPON_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 쿠폰에 대한 편집 권한이 없습니다."),
+    INVALID_COUPON_STATE_OUTSIDE_EXPOSURE_DATE(HttpStatus.BAD_REQUEST, "노출 날짜 기간 내에서만 ON/OFF일 수 있습니다."),
+    INVALID_COUPON_STATE_INSIDE_EXPOSURE_DATE(HttpStatus.BAD_REQUEST, "노출 날짜 기간 이전에만 대기중일 수 있습니다."),
+
 
     // SETTLEMENT
 
     // RESERVATION
+
+    //statistics
+    DAILY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일별 통계를 찾을 수 없습니다."),
+    MONTHLY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 월별 통계를 찾을 수 없습니다."),
 
     // JWT
     JWT_INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),

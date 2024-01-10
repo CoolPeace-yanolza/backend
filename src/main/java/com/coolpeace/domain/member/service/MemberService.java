@@ -46,7 +46,7 @@ public class MemberService {
         JwtPair newTokenPair = jwtService.createTokenPair(
                 JwtPayload.fromNow(String.valueOf(storedMember.getId()), storedMember.getEmail()));
 
-        return MemberLoginResponse.from(storedMember.getName(), newTokenPair);
+        return MemberLoginResponse.from(storedMember.getName(), storedMember.getEmail(), newTokenPair);
     }
 
     @Transactional

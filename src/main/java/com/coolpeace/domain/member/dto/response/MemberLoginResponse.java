@@ -6,9 +6,15 @@ public record MemberLoginResponse (
         String accessToken,
         String refreshToken,
         String name,
+        String email,
         long expiresIn
 ) {
-    public static MemberLoginResponse from(String name, JwtPair jwtPair) {
-        return new MemberLoginResponse(jwtPair.accessToken(), jwtPair.refreshToken(), name, jwtPair.expiresIn());
+    public static MemberLoginResponse from(String name, String email, JwtPair jwtPair) {
+        return new MemberLoginResponse(
+                jwtPair.accessToken(),
+                jwtPair.refreshToken(),
+                name,
+                email,
+                jwtPair.expiresIn());
     }
 }
