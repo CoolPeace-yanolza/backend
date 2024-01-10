@@ -49,10 +49,6 @@ jobs:
         run: rm .env
         shell: bash
 
-      - name: Spring boot jar 생성
-        run: ./gradlew build
-        shell: bash
-
       - name: zip file 생성
         run: zip -r ./$GITHUB_SHA.zip .
         shell: bash
