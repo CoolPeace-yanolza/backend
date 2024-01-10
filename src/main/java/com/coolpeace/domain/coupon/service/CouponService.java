@@ -20,6 +20,7 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.room.entity.Room;
+import com.coolpeace.domain.room.exception.RegisterRoomsEmptyException;
 import com.coolpeace.domain.room.exception.RoomNotFoundException;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -70,6 +72,9 @@ public class CouponService {
 
         List<Room> rooms;
         if (!couponRegisterRequest.registerAllRoom()) {
+            if (CollectionUtils.isEmpty(couponRegisterRequest.registerRooms())) {
+                throw new RegisterRoomsEmptyException();
+            }
             rooms = couponRegisterRequest.registerRooms()
                     .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
                             .orElseThrow(RoomNotFoundException::new))
