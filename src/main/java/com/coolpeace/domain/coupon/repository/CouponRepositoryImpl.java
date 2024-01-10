@@ -39,7 +39,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         if (params.status() != null) {
             searchCouponPredicate.and(switch (params.status()) {
                 case EXPOSURE_ON -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON);
-                case EXPOSURE_OFF -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_OFF);
+                case EXPOSURE_OFF -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_OFF)
+                        .or(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT));
                 case EXPIRED -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END)
                         .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
                 case All -> coupon.couponStatus.isNotNull();
@@ -73,18 +74,14 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Optional<Coupon> findRecentCouponByMemberId(Long memberId) {
-        List<Coupon> coupons = jpaQueryFactory.selectFrom(coupon)
+    public List<Coupon> findRecentCouponByMemberId(Long memberId) {
+        return jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(coupon.member.id.eq(memberId))
                 .orderBy(coupon.createdAt.desc())
+                .limit(4)
                 .fetch();
-        if (coupons.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(coupons.get(0));
-        }
     }
 
     @Override
