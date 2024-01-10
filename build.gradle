@@ -117,7 +117,7 @@ tasks.register("copyTextToSecurity") {
 }
 
 clean {
-    delete srcStaticDirPath + "openapi3.yaml"
+    delete "$srcStaticDirPath/openapi3.yaml"
 }
 
 test.finalizedBy copyTextToSecurity
