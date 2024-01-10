@@ -1,7 +1,8 @@
-package com.coolpeace.global.config;
+package com.coolpeace.global.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 public abstract class RestDocsIntegrationTest {
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
             .setPropertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy());
 
     @BeforeEach

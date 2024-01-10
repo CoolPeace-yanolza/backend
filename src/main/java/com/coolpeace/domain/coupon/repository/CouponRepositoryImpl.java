@@ -80,7 +80,11 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .where(coupon.member.id.eq(memberId))
                 .orderBy(coupon.createdAt.desc())
                 .fetch();
-        return Optional.ofNullable(coupons.get(0));
+        if (coupons.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(coupons.get(0));
+        }
     }
 
     @Override
