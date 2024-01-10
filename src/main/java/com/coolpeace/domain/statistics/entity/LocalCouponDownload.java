@@ -33,4 +33,12 @@ public class LocalCouponDownload {
         this.region = region;
     }
 
+    public LocalCouponDownload(Long id, String region, String firstCouponTitle,
+        String secondCouponTitle, String thirdCouponTitle) {
+        this.id = id;
+        this.region = region;
+        this.firstCouponTitle = firstCouponTitle;
+        this.secondCouponTitle = secondCouponTitle;
+        this.thirdCouponTitle = thirdCouponTitle;
+    }
 }

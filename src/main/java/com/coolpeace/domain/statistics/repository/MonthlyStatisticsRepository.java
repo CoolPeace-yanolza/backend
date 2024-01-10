@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MonthlyStatisticsRepository extends JpaRepository<MonthlyStatistics, Long> {
+public interface MonthlyStatisticsRepository extends JpaRepository<MonthlyStatistics, Long>,MonthlyStatisticsRepositoryCustom {
 
     Optional<MonthlyStatistics> findByAccommodationAndStatisticsYearAndStatisticsMonth(
         Accommodation accommodation, @Min(value = 2000) int statisticsYear,
@@ -18,5 +18,5 @@ public interface MonthlyStatisticsRepository extends JpaRepository<MonthlyStatis
         Accommodation accommodation, @Min(value = 2000) int statisticsYear);
 
     List<MonthlyStatistics> findAllByAccommodation(Accommodation accommodation);
-    
+
 }
