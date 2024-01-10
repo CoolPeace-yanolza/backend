@@ -1,6 +1,6 @@
 package com.coolpeace.domain.accommodation.service;
 
-import com.coolpeace.domain.accommodation.dto.response.AccomodationResponse;
+import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
@@ -22,7 +22,7 @@ public class AccomodationService {
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
 
-    public List<AccomodationResponse> getAccommodations(JwtPrincipal jwtPrincipal) {
+    public List<AccommodationResponse> getAccommodations(JwtPrincipal jwtPrincipal) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());
         Member member = memberRepository.findById(memberId)
@@ -30,7 +30,7 @@ public class AccomodationService {
 
         return accommodationRepository.findAllByMember(member)
             .stream()
-            .map(AccomodationResponse::fromEntity)
+            .map(AccommodationResponse::fromEntity)
             .toList();
     }
 
