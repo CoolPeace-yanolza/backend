@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,7 +35,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -48,20 +48,15 @@ public class CouponService {
     @Transactional(readOnly = true)
     public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
-                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
+                .map(CouponResponse::from);
     }
 
     @Transactional(readOnly = true)
-    public Optional<CouponResponse> getRecentHistory(Long memberId) {
+    public List<CouponResponse> getRecentHistory(Long memberId) {
         return couponRepository.findRecentCouponByMemberId(memberId)
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+                .stream().map(CouponResponse::from).toList();
     }
 
     @Transactional

@@ -178,4 +178,11 @@ public class Coupon extends BaseTimeEntity {
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
         updateCouponStatusByExposureDate();
     }
+
+    public String getConcatTitle() {
+        return switch (this.discountType) {
+            case FIXED_PRICE -> String.format("%s %d원 할인", customerType.getValue(), discountValue);
+            case FIXED_RATE -> String.format("%s %d%% 할인", customerType.getValue(), discountValue);
+        };
+    }
 }
