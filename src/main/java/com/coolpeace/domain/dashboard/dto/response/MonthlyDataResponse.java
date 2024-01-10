@@ -10,9 +10,16 @@ public record MonthlyDataResponse(
     int couponTotalSales,
     int downloadCount,
     int usedCount,
-    int settlementAmount) {
+    int settlementAmount,
+    int conversionRate) {
 
     public static MonthlyDataResponse from(MonthlyStatistics monthlyStatistics) {
+        String conversionRate ="0";
+        if(monthlyStatistics.getDownloadCount() !=0){
+            conversionRate = String.format("%.0f",
+                ((double) monthlyStatistics.getUsedCount() /
+                    monthlyStatistics.getDownloadCount()) * 100);
+        }
         return new MonthlyDataResponse(
             monthlyStatistics.getStatisticsYear(),
             monthlyStatistics.getStatisticsMonth(),
@@ -20,7 +27,8 @@ public record MonthlyDataResponse(
             monthlyStatistics.getCouponTotalSales(),
             monthlyStatistics.getDownloadCount(),
             monthlyStatistics.getUsedCount(),
-            monthlyStatistics.getSettlementAmount()
+            monthlyStatistics.getSettlementAmount(),
+            Integer.parseInt(conversionRate)
         );
     }
 }
