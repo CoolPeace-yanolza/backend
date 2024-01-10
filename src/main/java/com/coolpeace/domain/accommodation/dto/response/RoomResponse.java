@@ -4,16 +4,17 @@ import com.coolpeace.domain.room.entity.Room;
 import lombok.Builder;
 
 @Builder
-public class RoomResponse {
+public record RoomResponse(
 
-    private Long id;
+    Long id,
 
-    private Integer roomNumber;
+    Integer roomNumber,
 
-    private String roomType;
+    String roomType,
 
-    private Integer price;
-
+    Integer price
+)
+{
     public static RoomResponse fromEntity(Room room) {
         return RoomResponse.builder()
             .id(room.getId())
