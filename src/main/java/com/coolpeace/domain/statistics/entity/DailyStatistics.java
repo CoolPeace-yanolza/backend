@@ -64,4 +64,18 @@ public class DailyStatistics {
     public void setSettlement(int settlementAmount) {
         this.settlementAmount += settlementAmount;
     }
+
+    public DailyStatistics(Long id, int statisticsDay, int totalSales, int couponTotalSales,
+        int downloadCount, int usedCount, int settlementAmount, Member member,
+        Accommodation accommodation) {
+        this.id = id;
+        this.statisticsDay = statisticsDay;
+        this.totalSales = totalSales;
+        this.couponTotalSales = couponTotalSales;
+        this.downloadCount = downloadCount;
+        this.usedCount = usedCount;
+        this.settlementAmount = settlementAmount;
+        this.member = member;
+        this.accommodation = accommodation;
+    }
 }
