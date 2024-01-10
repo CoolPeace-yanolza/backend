@@ -1,17 +1,17 @@
 package com.coolpeace.docs.member;
 
+import com.coolpeace.docs.utils.MemberTestUtil;
 import com.coolpeace.domain.member.dto.request.MemberLoginRequest;
 import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;
 import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
 import com.coolpeace.domain.member.entity.Member;
-import com.coolpeace.global.config.RestDocsIntegrationTest;
-import com.coolpeace.global.factory.MemberTestBuilder;
+import com.coolpeace.global.common.RestDocsIntegrationTest;
+import com.coolpeace.global.builder.MemberTestBuilder;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -24,7 +24,6 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -97,7 +96,7 @@ public class MemberControllerTest extends RestDocsIntegrationTest {
     @Test
     void memberLogin_success() throws Exception {
         // given
-        Member member = registerNewTestMember();
+        Member member = MemberTestUtil.registerNewTestMember(mockMvc, objectMapper);
         MemberLoginRequest request = new MemberLoginRequest(member.getEmail(), member.getPassword());
 
         // when
@@ -134,7 +133,7 @@ public class MemberControllerTest extends RestDocsIntegrationTest {
     @Test
     void memberLogout_success() throws Exception {
         // given
-        MemberLoginResponse loginResponse = obtainAccessTokenOfNewTestMember();
+        MemberLoginResponse loginResponse = MemberTestUtil.obtainAccessTokenOfNewTestMember(mockMvc, objectMapper);
 
         // when
         ResultActions result = this.mockMvc.perform(post(URL_DOMAIN_PREFIX + "/logout")
@@ -156,7 +155,7 @@ public class MemberControllerTest extends RestDocsIntegrationTest {
     @Test
     void memberRefreshAccessToken_success() throws Exception {
         // given
-        MemberLoginResponse loginResponse = obtainAccessTokenOfNewTestMember();
+        MemberLoginResponse loginResponse = MemberTestUtil.obtainAccessTokenOfNewTestMember(mockMvc, objectMapper);
         RefreshAccessTokenRequest request = new RefreshAccessTokenRequest(loginResponse.refreshToken());
 
         // when
@@ -185,32 +184,5 @@ public class MemberControllerTest extends RestDocsIntegrationTest {
                                 .build()
                         )
                 ));
-    }
-
-    private Member registerNewTestMember() throws Exception {
-        Member member = new MemberTestBuilder().build();
-
-        MemberRegisterRequest registerRequest =
-                new MemberRegisterRequest(member.getEmail(), member.getPassword(), member.getName());
-        int registerStatus = mockMvc.perform(post(URL_DOMAIN_PREFIX + "/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andReturn().getResponse().getStatus();
-
-        if (registerStatus != CREATED.value()) {
-            Assertions.fail("멤버 회원가입 실패 : " + registerStatus);
-        }
-        return member;
-    }
-
-    private MemberLoginResponse obtainAccessTokenOfNewTestMember() throws Exception {
-        Member member = registerNewTestMember();
-
-        MemberLoginRequest loginRequest = new MemberLoginRequest(member.getEmail(), member.getPassword());
-        String loginResultStr = mockMvc.perform(post(URL_DOMAIN_PREFIX + "/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(loginResultStr, MemberLoginResponse.class);
     }
 }

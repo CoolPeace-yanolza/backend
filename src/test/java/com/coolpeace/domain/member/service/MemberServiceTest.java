@@ -6,7 +6,7 @@ import com.coolpeace.domain.member.entity.Role;
 import com.coolpeace.domain.member.entity.type.RoleType;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.member.repository.RoleRepository;
-import com.coolpeace.global.factory.MemberTestBuilder;
+import com.coolpeace.global.builder.MemberTestBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
