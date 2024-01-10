@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -53,8 +52,9 @@ public class CouponService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<CouponResponse> getRecentHistory(Long memberId) {
-        return couponRepository.findRecentCouponByMemberId(memberId).map(CouponResponse::from);
+    public List<CouponResponse> getRecentHistory(Long memberId) {
+        return couponRepository.findRecentCouponByMemberId(memberId)
+                .stream().map(CouponResponse::from).toList();
     }
 
     @Transactional

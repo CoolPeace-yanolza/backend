@@ -74,18 +74,14 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Optional<Coupon> findRecentCouponByMemberId(Long memberId) {
-        List<Coupon> coupons = jpaQueryFactory.selectFrom(coupon)
+    public List<Coupon> findRecentCouponByMemberId(Long memberId) {
+        return jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(coupon.member.id.eq(memberId))
                 .orderBy(coupon.createdAt.desc())
+                .limit(4)
                 .fetch();
-        if (coupons.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(coupons.get(0));
-        }
     }
 
     @Override
