@@ -101,7 +101,7 @@ tasks.register("copyToSwaggerUI") {
     doLast {
         copy {
             from openapi3Path
-            into "resources/static/swagger-ui/."
+            into "src/main/resources/static/swagger-ui/"
         }
     }
 }
