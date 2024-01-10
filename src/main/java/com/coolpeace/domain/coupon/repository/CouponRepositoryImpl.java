@@ -132,7 +132,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
-                        .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON))
+                        .and(coupon.couponStatus.ne(CouponStatusType.DELETED))
                         .and(coupon.exposureEndDate.before(LocalDate.now().plusDays(3))))
                 .fetch();
     }
