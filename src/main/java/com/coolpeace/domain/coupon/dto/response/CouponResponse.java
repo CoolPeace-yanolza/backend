@@ -35,7 +35,7 @@ public record CouponResponse(
                 coupon.getCouponNumber(),
                 coupon.getCouponStatus().getValue(),
                 false, // 프로모션이 개발되면 추후 수정 예정
-                coupon.getConcatTitle(),
+                coupon.getCouponTitle(),
                 coupon.getDiscountType().getValue(),
                 coupon.getDiscountValue(),
                 coupon.getCustomerType().getValue(),
