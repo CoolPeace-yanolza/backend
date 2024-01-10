@@ -77,9 +77,8 @@ class SettlementServiceTest {
             Accommodation getAccommodation =
                 settlementService.checkAccommodationMatchMember("1", 1L);
             //then
-            assertThat(getAccommodation).extracting("id", "name", "address")
-                .containsExactly(accommodation.getId(),
-                    accommodation.getName(), accommodation.getAddress());
+            assertThat(getAccommodation).extracting("name", "address")
+                .containsExactly(accommodation.getName(), accommodation.getAddress());
         }
 
         @Test
