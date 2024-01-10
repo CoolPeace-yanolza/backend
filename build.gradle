@@ -88,7 +88,7 @@ sourceSets {
 def openapi3Path = "build/api-spec/openapi3.yaml"
 
 openapi3 {
-    server = [ { url = "http://localhost:8080" }, { url = "https://coolpeace.store" }  ]
+    servers = [ { url = "http://localhost:8080" }, { url = "https://coolpeace.store" }  ]
     title = "CoolPeace API"
     description = "CoolPeace API Document"
     version = "0.0.1"
