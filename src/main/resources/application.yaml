@@ -32,8 +32,23 @@ spring:
       pageable:
         one-indexed-parameters: true
 
+
 service:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     access-expiration: ${JWT_ACCESS_EXPIRATION}
     refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+management:
+  endpoints:
+    enabled-by-default: false
+    jmx:
+      exposure:
+        exclude: '*'
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
