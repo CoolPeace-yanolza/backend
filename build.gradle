@@ -85,9 +85,11 @@ sourceSets {
     main.java.srcDir querydslDir
 }
 
+def isProd = project.hasProperty('prod')
+
 // Swagger UI 설정
 openapi3 {
-    servers = [ { url = "http://localhost:8080" }, { url = "https://coolpeace.store" }  ]
+    server = isProd ? "https://coolpeace.store" : "http://localhost:8080"
     title = "CoolPeace API"
     description = "CoolPeace API Document"
     version = "0.0.1"
