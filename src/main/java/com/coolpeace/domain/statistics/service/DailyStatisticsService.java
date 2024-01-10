@@ -64,8 +64,7 @@ public class DailyStatisticsService {
             int downloadCount = 0;
             int usedCount = 0;
             Member member = accommodation.getMember();
-            List<Coupon> coupons = couponRepository
-                .findAllByAccommodationAndMember(accommodation, member);
+            List<Coupon> coupons = couponRepository.findAllByAccommodationAndMember(accommodation, member);
             for (Coupon coupon : coupons) {
                 downloadCount += coupon.getDownloadCount();
                 usedCount += coupon.getUseCount();

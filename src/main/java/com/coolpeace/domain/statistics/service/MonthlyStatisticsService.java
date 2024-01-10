@@ -63,9 +63,8 @@ public class MonthlyStatisticsService {
         List<Accommodation> accommodations = accommodationRepository.findAll();
 
         accommodations.forEach(accommodation -> {
-            List<Settlement> settlements = settlementRepository
-                .findAllByAccommodationForDailyUpdate(accommodation);
-
+            List<Settlement> settlements = settlementRepository.
+                findAllByAccommodationForDailyUpdate(accommodation);
             for (Settlement settlement : settlements) {
                 settlement.completeSettlement();
             }
