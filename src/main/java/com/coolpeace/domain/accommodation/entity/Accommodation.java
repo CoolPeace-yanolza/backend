@@ -3,20 +3,13 @@ package com.coolpeace.domain.accommodation.entity;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -29,11 +22,11 @@ public class Accommodation extends BaseTimeEntity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "sido")
     private Sido sido;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "sigungu")
     private Sigungu sigungu;
 
@@ -45,6 +38,13 @@ public class Accommodation extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
+
+    public Accommodation(Long id, String name, String address, Member member) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.member = member;
+    }
 
     public Accommodation(String name, Sido sido, Sigungu sigungu, String address, Member member) {
         this.name = name;
@@ -58,10 +58,4 @@ public class Accommodation extends BaseTimeEntity {
         return new Accommodation(name, sido, sigungu, address, member);
     }
 
-    public Accommodation(Long id, String name, String address, Member member) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.member = member;
-    }
 }
