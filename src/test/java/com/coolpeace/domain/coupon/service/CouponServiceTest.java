@@ -5,6 +5,10 @@ import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
+import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
+import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
+import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
@@ -24,16 +28,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,29 +68,136 @@ class CouponServiceTest {
     @Mock
     private RoomRepository roomRepository;
 
-    @DisplayName("쿠폰 등록")
+    private Member member;
+    private Accommodation accommodation;
+    private List<Room> rooms;
+
+    @BeforeEach
+    void beforeEach() {
+        this.member = new MemberTestBuilder().encoded().build();
+        this.accommodation = new AccommodationTestBuilder(member).build();
+        this.rooms = new RoomTestBuilder(accommodation).buildList();
+
+        ReflectionTestUtils.setField(member, "id", 101L);
+        ReflectionTestUtils.setField(accommodation, "id", 1234L);
+    }
+
+    @DisplayName("쿠폰 조회")
     @Nested
-    class CouponRegisterTest {
-
-        private Member member;
-        private Accommodation accommodation;
-        private List<Room> rooms;
-        private List<Integer> registerRoomNumbers;
-        private Coupon coupon;
-
+    class CouponSearchTest {
+        private List<Coupon> coupons;
 
         @BeforeEach
         void beforeEach() {
-            this.member = new MemberTestBuilder().encoded().build();
-            this.accommodation = new AccommodationTestBuilder(member).build();
-            this.rooms = new RoomTestBuilder(accommodation).buildList();
+            coupons = getTestCoupons();
+        }
+
+        @DisplayName("필터 없이 쿠폰 조회를 할 수 있다.")
+        @Test
+        void no_filter_success() {
+            // given
+            SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, null);
+            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+                    .willReturn(new PageImpl<>(coupons));
+
+            // when
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), searchCouponParams, Pageable.ofSize(10));
+
+            // then
+            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+
+            assertThat(result).isNotNull();
+        }
+
+        private static List<SearchCouponParams> searchFilterMethodSource() {
+            List<SearchCouponParams> params = new ArrayList<>();
+            List<String> titles = Arrays.asList("", null, "testTitle");
+            for (SearchCouponStatusFilterType statusType : SearchCouponStatusFilterType.values()) {
+                for (SearchCouponDateFilterType dateType : SearchCouponDateFilterType.values()) {
+                    for (String title : titles) {
+                        params.add(new SearchCouponParams(statusType, title, dateType));
+                    }
+                }
+            }
+            return params;
+        }
+
+        @DisplayName("필터를 통해 쿠폰 조회를 할 수 있다.")
+        @ParameterizedTest
+        @MethodSource("searchFilterMethodSource")
+        void filtered_search_success(SearchCouponParams params) {
+            // given
+            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+                    .willReturn(new PageImpl<>(coupons));
+
+            // when
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), params, Pageable.ofSize(10));
+
+            // then
+            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+
+            assertThat(result).isNotNull();
+        }
+
+        @DisplayName("페이지네이션과 필터를 통해 쿠폰 조회를 할 수 있다.")
+        @Test
+        void paged_filtered_search_success() {
+            // given
+            SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, SearchCouponDateFilterType.YEAR);
+            PageRequest firstPageRequest = PageRequest.of(0, 10);
+
+            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+                    .willReturn(new PageImpl<>(coupons.subList(0, 10)));
+
+            // when
+            Page<CouponResponse> firstPageResult = couponService.searchCoupons(member.getId(), searchCouponParams, firstPageRequest);
+
+            // then
+            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            assertThat(firstPageResult).isNotNull();
+            assertThat(firstPageResult.getContent().size()).isEqualTo(10);
+        }
+    }
+
+    @DisplayName("이전 쿠폰 등록 내역 조회")
+    @Nested
+    class CouponRecentHistoryTest {
+        private List<Coupon> coupons;
+
+        @BeforeEach
+        void beforeEach() {
+            coupons = getTestCoupons();
+        }
+
+        @DisplayName("이전 쿠폰 등록 내역을 조회할 수 있다.")
+        @Test
+        void no_filter_success() {
+            // given
+            given(couponRepository.findRecentCouponByMemberId(anyLong())).willReturn(
+                    coupons.stream().limit(4).toList());
+
+            // when
+            List<CouponResponse> result = couponService.getRecentHistory(member.getId());
+
+            // then
+            verify(couponRepository).findRecentCouponByMemberId(anyLong());
+
+            assertThat(result).isNotNull();
+        }
+    }
+
+    @DisplayName("쿠폰 등록")
+    @Nested
+    class CouponRegisterTest {
+        private List<Integer> registerRoomNumbers;
+        private Coupon coupon;
+
+        @BeforeEach
+        void beforeEach() {
             List<Room> registerRooms = AccommodationTestUtil.getRandomRooms(rooms);
             this.registerRoomNumbers = registerRooms.stream().map(Room::getRoomNumber).toList();
 
             coupon = new CouponTestBuilder(accommodation, member, registerRooms).build();
-
-            ReflectionTestUtils.setField(member, "id", 101L);
-            ReflectionTestUtils.setField(accommodation, "id", 1234L);
             ReflectionTestUtils.setField(coupon, "id", 4321L);
         }
 
@@ -184,5 +300,17 @@ class CouponServiceTest {
                     coupon.getExposureEndDate()
             );
         }
+    }
+
+    public List<Coupon> getTestCoupons() {
+        return IntStream.range(0, 20)
+                .mapToObj(i -> {
+                    List<Room> registerRooms = AccommodationTestUtil.getRandomRooms(rooms);
+                    Coupon coupon = new CouponTestBuilder(accommodation, member, registerRooms).build();
+                    ReflectionTestUtils.setField(coupon, "id", 4321L);
+                    ReflectionTestUtils.setField(coupon, "createdAt", LocalDateTime.now());
+                    return coupon;
+                })
+                .toList();
     }
 }
