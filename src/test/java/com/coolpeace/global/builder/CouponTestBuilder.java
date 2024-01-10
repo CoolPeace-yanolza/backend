@@ -20,12 +20,12 @@ public class CouponTestBuilder {
 
     private final Accommodation accommodation;
     private final Member member;
-    private final List<Room> rooms;
+    private final List<Room> registerRooms;
 
-    public CouponTestBuilder(Accommodation accommodation, Member member, List<Room> rooms) {
+    public CouponTestBuilder(Accommodation accommodation, Member member, List<Room> registerRooms) {
         this.accommodation = accommodation;
         this.member = member;
-        this.rooms = rooms;
+        this.registerRooms = registerRooms;
     }
 
     public Coupon build() {
@@ -69,7 +69,7 @@ public class CouponTestBuilder {
                 exposureStartDate,
                 exposureEndDate,
                 accommodation,
-                rooms,
+                registerRooms,
                 member
         );
     }
