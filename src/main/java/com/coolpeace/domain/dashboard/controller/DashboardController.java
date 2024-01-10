@@ -25,40 +25,40 @@ public class DashboardController {
     public ResponseEntity<?> monthlyData(@PathVariable("accommodation_id") Long accommodationId,
      @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
         return ResponseEntity.ok().body(dashboardService
-            .monthlyData(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .monthlyData(jwtPrincipal.getMemberId(), accommodationId));
     }
 
     @GetMapping("/{accommodation_id}/reports/week")
     public ResponseEntity<?> weeklyCoupon(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
         return ResponseEntity.ok().body(dashboardService
-            .weeklyCoupon(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .weeklyCoupon(jwtPrincipal.getMemberId(), accommodationId));
     }
 
     @GetMapping("/{accommodation_id}/reports/daily")
     public ResponseEntity<?> dailyCouponReport(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
         return ResponseEntity.ok().body(couponQueryService
-            .dailyReport(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .dailyReport(jwtPrincipal.getMemberId(), accommodationId));
     }
 
     @GetMapping("/{accommodation_id}/coupons/download")
     public ResponseEntity<?> downloadCouponTop3(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
         return ResponseEntity.ok().body(dashboardService
-            .downloadCouponTop3(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .downloadCouponTop3(jwtPrincipal.getMemberId(), accommodationId));
     }
     @GetMapping("/{accommodation_id}/reports/year")
     public ResponseEntity<?> byYearCumulativeData(@PathVariable("accommodation_id") Long accommodationId,
-        @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
+        @AuthJwtPrincipal JwtPrincipal jwtPrincipal,int year){
         return ResponseEntity.ok().body(dashboardService
-            .byYearCumulativeData(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .byYearCumulativeData(year, jwtPrincipal.getMemberId(), accommodationId));
     }
 
     @GetMapping("/{accommodation_id}/reports/total")
     public ResponseEntity<?> cumulativeData(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
         return ResponseEntity.ok().body(dashboardService
-            .cumulativeData(Long.valueOf(jwtPrincipal.getMemberId()), accommodationId));
+            .cumulativeData(jwtPrincipal.getMemberId(), accommodationId));
     }
 }
