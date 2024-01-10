@@ -11,10 +11,7 @@ import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
-import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
-import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
-import com.coolpeace.domain.coupon.exception.InvalidCouponStateInsideExposureDateException;
-import com.coolpeace.domain.coupon.exception.InvalidCouponStateOutsideExposureDateException;
+import com.coolpeace.domain.coupon.exception.*;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
@@ -128,11 +125,11 @@ public class CouponService {
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
 
-        // 노출 기간 이후인데 대기중을 요청한 경우 예외처리
-        boolean isAfterExposureDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
+        // 노출 시작 이후로 대기중을 요청한 경우 예외처리
+        boolean isAfterExposureStartDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
         boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT);
-        if (isAfterExposureDate && isWaitRequest) {
-            throw new InvalidCouponStateInsideExposureDateException();
+        if (isAfterExposureStartDate && isWaitRequest) {
+            throw new InvalidCouponStateWaitExposureDateException();
         }
 
         // 노출 기간이 아닌데 ON/OFF를 요청한 경우 예외처리
@@ -141,6 +138,13 @@ public class CouponService {
                 || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF);
         if (!isBetweenExposureDate && isONOFFRequest) {
             throw new InvalidCouponStateOutsideExposureDateException();
+        }
+
+        // 노출 종료 이전에 종료를 요청한 경우 예외처리
+        boolean isBeforeExposureEndDate = !(LocalDate.now().isAfter(storedCoupon.getExposureEndDate()));
+        boolean isEndRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_END);
+        if (isBeforeExposureEndDate && isEndRequest) {
+            throw new InvalidCouponStateEndExposureDateException();
         }
 
         storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());
