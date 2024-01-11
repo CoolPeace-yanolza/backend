@@ -1,6 +1,7 @@
 package com.coolpeace.domain.coupon.service;
 
-import com.coolpeace.docs.utils.AccommodationTestUtil;
+import com.coolpeace.global.util.CouponTestUtil;
+import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
@@ -96,7 +97,7 @@ class CouponServiceTest {
 
         @BeforeEach
         void beforeEach() {
-            coupons = getTestCoupons();
+            coupons = CouponTestUtil.getTestCoupons(accommodation, member, rooms);
         }
 
         @DisplayName("필터 없이 쿠폰 조회를 할 수 있다.")
@@ -173,7 +174,7 @@ class CouponServiceTest {
 
         @BeforeEach
         void beforeEach() {
-            coupons = getTestCoupons();
+            coupons = CouponTestUtil.getTestCoupons(accommodation, member, rooms);
         }
 
         @DisplayName("이전 쿠폰 등록 내역을 조회할 수 있다.")
@@ -217,7 +218,7 @@ class CouponServiceTest {
 
         @BeforeEach
         void beforeEach() {
-            List<Room> registerRooms = AccommodationTestUtil.getRandomRooms(rooms);
+            List<Room> registerRooms = RoomTestUtil.getRandomRooms(rooms);
             this.registerRoomNumbers = registerRooms.stream().map(Room::getRoomNumber).toList();
 
             coupon = new CouponTestBuilder(accommodation, member, registerRooms).build();
@@ -577,18 +578,5 @@ class CouponServiceTest {
             assertThatThrownBy(() -> couponService.deleteCoupon(member.getId(), coupon.getCouponNumber()))
                     .isInstanceOf(CouponNotFoundException.class);
         }
-    }
-
-    public List<Coupon> getTestCoupons() {
-        return IntStream.range(0, 20)
-                .mapToObj(i -> {
-                    List<Room> registerRooms = AccommodationTestUtil.getRandomRooms(rooms);
-                    Coupon coupon = new CouponTestBuilder(accommodation, member, registerRooms).build();
-                    ReflectionTestUtils.setField(coupon, "id", 4321L);
-                    ReflectionTestUtils.setField(coupon, "createdAt", LocalDateTime.now());
-                    coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
-                    return coupon;
-                })
-                .toList();
     }
 }

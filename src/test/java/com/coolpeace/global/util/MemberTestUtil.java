@@ -1,4 +1,4 @@
-package com.coolpeace.docs.utils;
+package com.coolpeace.global.util;
 
 import com.coolpeace.domain.member.dto.request.MemberLoginRequest;
 import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;

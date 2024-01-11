@@ -1,7 +1,5 @@
 package com.coolpeace.docs.coupon;
 
-import com.coolpeace.docs.utils.AccommodationTestUtil;
-import com.coolpeace.docs.utils.MemberTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
@@ -25,6 +23,8 @@ import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
 import com.coolpeace.global.common.RestDocsIntegrationTest;
+import com.coolpeace.global.util.RoomTestUtil;
+import com.coolpeace.global.util.MemberTestUtil;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
@@ -94,7 +94,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         MemberLoginResponse loginResponse = MemberTestUtil
                 .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
-        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
         List<Integer> randomRoomNumbers = rooms.stream().map(Room::getRoomNumber).toList();
         Coupon coupon = new CouponTestBuilder(accommodation, storedMember, randomRooms).build();
 
@@ -157,7 +157,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         for (int i = 0; i < 10; i++) {
             List<Room> randomRooms;
             if (i % 3 == 0) {
-                randomRooms = AccommodationTestUtil.getRandomRooms(this.rooms);
+                randomRooms = RoomTestUtil.getRandomRooms(this.rooms);
             } else {
                 randomRooms = Collections.emptyList();
             }
@@ -259,7 +259,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
             MemberLoginResponse loginResponse = MemberTestUtil
                     .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
-            List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+            List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
             Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
             coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
 
@@ -336,7 +336,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         MemberLoginResponse loginResponse = MemberTestUtil
                 .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
-        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
         Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponUpdateRequest request = new CouponUpdateRequest(
@@ -393,7 +393,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         MemberLoginResponse loginResponse = MemberTestUtil
                 .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
-        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
         Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponExposeRequest request;
@@ -437,7 +437,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         MemberLoginResponse loginResponse = MemberTestUtil
                 .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
-        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+        List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
         Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
 
