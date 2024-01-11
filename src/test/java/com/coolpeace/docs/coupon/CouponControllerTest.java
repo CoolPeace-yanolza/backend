@@ -354,7 +354,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         );
 
         // when
-        ResultActions result = mockMvc.perform(put(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber())
+        ResultActions result = mockMvc.perform(put(URL_DOMAIN_PREFIX + "/{coupon_number}", coupon.getCouponNumber())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
                 .content(objectMapper.writeValueAsString(request))
@@ -408,7 +408,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         }
 
         // when
-        ResultActions result = mockMvc.perform(put(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber() + "/expose")
+        ResultActions result = mockMvc.perform(put( URL_DOMAIN_PREFIX + "/{coupon_number}/expose", coupon.getCouponNumber())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
                 .content(objectMapper.writeValueAsString(request))
@@ -442,7 +442,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
 
         // when
-        ResultActions result = mockMvc.perform(delete(URL_DOMAIN_PREFIX + "/" + coupon.getCouponNumber())
+        ResultActions result = mockMvc.perform(delete(URL_DOMAIN_PREFIX + "/{coupon_number}", coupon.getCouponNumber())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
         );
