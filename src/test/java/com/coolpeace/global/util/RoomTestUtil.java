@@ -1,4 +1,4 @@
-package com.coolpeace.docs.utils;
+package com.coolpeace.global.util;
 
 import com.coolpeace.domain.room.entity.Room;
 import com.github.javafaker.Faker;
@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class AccommodationTestUtil {
+public class RoomTestUtil {
     public static List<Room> getRandomRooms(List<Room> rooms) {
         Faker faker = new Faker(Locale.KOREA);
         Collections.shuffle(rooms);

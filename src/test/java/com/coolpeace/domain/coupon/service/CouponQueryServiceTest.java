@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
-import com.coolpeace.docs.utils.AccommodationTestUtil;
+import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.response.CouponDailyResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
@@ -57,7 +57,7 @@ public class CouponQueryServiceTest {
             Member member = new MemberTestBuilder().encoded().build();
             Accommodation accommodation = new Accommodation(1L, "신라호텔", "주소주소", member);
             List<Room> rooms = new RoomTestBuilder(accommodation).buildList();
-            List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+            List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
             Coupon coupon1 = new CouponTestBuilder(accommodation, member, randomRooms).build();
             Coupon coupon2 = new CouponTestBuilder(accommodation, member, randomRooms).build();
             List<Coupon> couponList = new ArrayList<>();
@@ -101,7 +101,7 @@ public class CouponQueryServiceTest {
             Member member = new MemberTestBuilder().encoded().build();
             Accommodation accommodation = new Accommodation(1L, "신라호텔", "주소주소", member);
             List<Room> rooms = new RoomTestBuilder(accommodation).buildList();
-            List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
+            List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
             Coupon coupon1 = new CouponTestBuilder(accommodation, member, randomRooms).build();
             Coupon coupon2 = new CouponTestBuilder(accommodation, member, randomRooms).build();
             List<Coupon> couponList = new ArrayList<>();

@@ -1,6 +1,6 @@
 package com.coolpeace.docs.member;
 
-import com.coolpeace.docs.utils.MemberTestUtil;
+import com.coolpeace.global.util.MemberTestUtil;
 import com.coolpeace.domain.member.dto.request.MemberLoginRequest;
 import com.coolpeace.domain.member.dto.request.MemberRegisterRequest;
 import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
