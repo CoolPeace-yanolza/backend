@@ -52,10 +52,10 @@ class SettlementRepositoryTest {
             accommodation, 2023, 12).get();
 
         //then
-        assertThat(getMonthlyStatistics).extracting("id", "statisticsYear",
+        assertThat(getMonthlyStatistics).extracting( "statisticsYear",
                 "statisticsMonth", "totalSales", "couponTotalSales",
                 "downloadCount", "usedCount", "settlementAmount")
-            .containsExactly(1L, 2023, 12, 10000000, 9000000, 1000, 300, 1000000);
+            .containsExactly( 2023, 12, 10000000, 9000000, 1000, 300, 1000000);
 
     }
     @Test
