@@ -4,24 +4,25 @@ import com.coolpeace.domain.accommodation.entity.Accommodation;
 import lombok.Builder;
 
 @Builder
-public class AccomodationResponse {
+public record AccommodationResponse (
 
-    private Long id;
+    Long id,
 
-    private String name;
+    String name,
 
-    private Integer sidoId;
+    Integer sidoId,
 
-    private String sido;
+    String sido,
 
-    private Integer sigunguId;
+    Integer sigunguId,
 
-    private String sigungu;
+    String sigungu,
 
-    private String address;
+    String address
 
-    public static AccomodationResponse fromEntity(Accommodation accommodation){
-        return AccomodationResponse.builder()
+){
+    public static AccommodationResponse fromEntity(Accommodation accommodation){
+        return AccommodationResponse.builder()
             .id(accommodation.getId())
             .name(accommodation.getName())
             .sigunguId(accommodation.getSigungu().getId())
