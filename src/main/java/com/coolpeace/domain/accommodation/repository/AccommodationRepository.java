@@ -5,7 +5,7 @@ import com.coolpeace.domain.member.entity.Member;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long>,AccommodationRepositoryCustom{
 
     List<Accommodation> findAllByMember(Member member);
 

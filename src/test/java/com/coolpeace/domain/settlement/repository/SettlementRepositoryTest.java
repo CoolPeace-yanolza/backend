@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest
-
 class SettlementRepositoryTest {
 
     @Autowired

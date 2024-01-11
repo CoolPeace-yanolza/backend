@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LocalCouponDownload {
@@ -29,6 +28,12 @@ public class LocalCouponDownload {
 
     private String thirdCouponTitle;
 
+    private Long firstCouponId;
+
+    private Long secondCouponId;
+
+    private Long thirdCouponId;
+
     public LocalCouponDownload(String region) {
         this.region = region;
     }
@@ -41,4 +46,46 @@ public class LocalCouponDownload {
         this.secondCouponTitle = secondCouponTitle;
         this.thirdCouponTitle = thirdCouponTitle;
     }
+
+    public void init(String couponTitle, Long couponId) {
+        this.firstCouponTitle = couponTitle;
+        this.secondCouponTitle = couponTitle;
+        this.thirdCouponTitle = couponTitle;
+        this.firstCouponId = couponId;
+        this.secondCouponId = couponId;
+        this.thirdCouponId = couponId;
+    }
+
+    public void setFirstCoupon(String firstCouponTitle, Long firstCouponId) {
+        this.firstCouponTitle = firstCouponTitle;
+        this.firstCouponId = firstCouponId;
+    }
+
+    public void setSecondCoupon(String secondCouponTitle, Long secondCouponId) {
+        this.secondCouponTitle = secondCouponTitle;
+        this.secondCouponId = secondCouponId;
+    }
+
+    public void setThirdCoupon(String thirdCouponTitle, Long thirdCouponId) {
+        this.thirdCouponTitle = thirdCouponTitle;
+        this.thirdCouponId = thirdCouponId;
+    }
+
+    public void setAllCoupon(String firstCouponTitle, Long firstCouponId,
+        LocalCouponDownload localCouponDownload) {
+        this.firstCouponTitle = firstCouponTitle;
+        this.firstCouponId = firstCouponId;
+        this.secondCouponTitle = localCouponDownload.getFirstCouponTitle();
+        this.secondCouponId = localCouponDownload.getFirstCouponId();
+        this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
+        this.thirdCouponId = localCouponDownload.getSecondCouponId();
+    }
+    public void setSecondAndThirdCoupon(String secondCouponTitle, Long secondCouponId,
+        LocalCouponDownload localCouponDownload) {
+        this.secondCouponTitle = secondCouponTitle;
+        this.secondCouponId = secondCouponId;
+        this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
+        this.thirdCouponId = localCouponDownload.getSecondCouponId();
+    }
+
 }
