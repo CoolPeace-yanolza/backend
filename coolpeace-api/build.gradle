@@ -1,16 +1,25 @@
-plugins {
-    id 'java'
-}
-
-repositories {
-    mavenCentral()
-}
-
 bootJar.enabled = true
 
+ext {
+    JJWT_VERSION = "0.12.3"
+    RESTDOCS_API_SPEC_VERSION = "0.18.2"
+}
+
 dependencies {
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.h2database:h2'
+    implementation project(':coolpeace-core')
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation "io.jsonwebtoken:jjwt-api:${JJWT_VERSION}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${JJWT_VERSION}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
+
+    // RestDocs
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${RESTDOCS_API_SPEC_VERSION}"
+
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 // Swagger UI 설정

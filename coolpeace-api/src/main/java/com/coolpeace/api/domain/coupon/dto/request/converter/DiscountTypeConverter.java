@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.coupon.dto.request.converter;
 
-import com.coolpeace.api.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.core.domain.coupon.entity.type.DiscountType;
 import org.springframework.core.convert.converter.Converter;
 
 public class DiscountTypeConverter implements Converter<String, DiscountType> {

@@ -1,0 +1,11 @@
+
+dependencies {
+    implementation project(':coolpeace-core')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    testRuntimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.batch:spring-batch-test'
+}

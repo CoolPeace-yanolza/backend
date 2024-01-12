@@ -3,7 +3,7 @@ package com.coolpeace.api.domain.coupon.controller;
 import com.coolpeace.api.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponUpdateRequest;
-import com.coolpeace.api.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.core.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.api.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.api.domain.coupon.service.CouponService;
 import com.coolpeace.api.global.jwt.security.JwtPrincipal;

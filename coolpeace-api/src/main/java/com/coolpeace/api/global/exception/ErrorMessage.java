@@ -1,5 +1,7 @@
 package com.coolpeace.api.global.exception;
 
+import com.coolpeace.core.exception.ErrorCode;
+
 public record ErrorMessage (
         String code,
         String message

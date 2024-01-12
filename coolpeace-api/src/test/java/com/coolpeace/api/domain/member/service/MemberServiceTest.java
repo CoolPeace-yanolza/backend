@@ -1,11 +1,11 @@
 package com.coolpeace.api.domain.member.service;
 
 import com.coolpeace.api.domain.member.dto.request.MemberRegisterRequest;
-import com.coolpeace.api.domain.member.entity.Member;
-import com.coolpeace.api.domain.member.entity.Role;
-import com.coolpeace.api.domain.member.entity.type.RoleType;
-import com.coolpeace.api.domain.member.repository.MemberRepository;
-import com.coolpeace.api.domain.member.repository.RoleRepository;
+import com.coolpeace.core.domain.member.entity.Member;
+import com.coolpeace.core.domain.member.entity.Role;
+import com.coolpeace.core.domain.member.entity.type.RoleType;
+import com.coolpeace.core.domain.member.repository.MemberRepository;
+import com.coolpeace.core.domain.member.repository.RoleRepository;
 import com.coolpeace.api.global.factory.MemberTestBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

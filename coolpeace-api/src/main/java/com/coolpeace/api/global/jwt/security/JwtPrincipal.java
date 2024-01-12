@@ -1,6 +1,6 @@
 package com.coolpeace.api.global.jwt.security;
 
-import com.coolpeace.api.domain.member.entity.Member;
+import com.coolpeace.core.domain.member.entity.Member;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

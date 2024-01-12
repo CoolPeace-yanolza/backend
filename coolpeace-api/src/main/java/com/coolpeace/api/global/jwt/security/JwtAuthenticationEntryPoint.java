@@ -1,7 +1,7 @@
 package com.coolpeace.api.global.jwt.security;
 
 import com.coolpeace.api.global.jwt.exception.JwtAuthenticationException;
-import com.coolpeace.api.global.exception.ErrorCode;
+import com.coolpeace.core.exception.ErrorCode;
 import com.coolpeace.api.global.exception.ErrorMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

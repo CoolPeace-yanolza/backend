@@ -1,7 +1,7 @@
 package com.coolpeace.api.domain.coupon.dto.request;
 
-import com.coolpeace.api.global.common.validator.ValidEnum;
-import com.coolpeace.api.domain.coupon.entity.type.CouponStatusType;
+import com.coolpeace.core.common.validator.ValidEnum;
+import com.coolpeace.core.domain.coupon.entity.type.CouponStatusType;
 import jakarta.validation.constraints.NotNull;
 
 public record CouponExposeRequest(

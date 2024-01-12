@@ -1,10 +1,10 @@
 package com.coolpeace.api.domain.coupon.dto.response;
 
-import com.coolpeace.api.domain.coupon.entity.Coupon;
-import com.coolpeace.api.domain.coupon.entity.type.CouponRoomType;
-import com.coolpeace.api.domain.coupon.entity.type.CouponStatusType;
-import com.coolpeace.api.domain.coupon.entity.type.CustomerType;
-import com.coolpeace.api.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.core.domain.coupon.entity.Coupon;
+import com.coolpeace.core.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.core.domain.coupon.entity.type.CouponStatusType;
+import com.coolpeace.core.domain.coupon.entity.type.CustomerType;
+import com.coolpeace.core.domain.coupon.entity.type.DiscountType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

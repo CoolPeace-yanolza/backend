@@ -1,19 +1,19 @@
 package com.coolpeace.api.domain.accommodation.service;
 
 import com.coolpeace.api.domain.accommodation.dto.response.AccomodationResponse;
-import com.coolpeace.api.domain.accommodation.entity.Accommodation;
-import com.coolpeace.api.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.api.domain.member.entity.Member;
-import com.coolpeace.api.global.jwt.security.JwtPrincipal;
 import com.coolpeace.api.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.api.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.api.domain.member.exception.MemberNotFoundException;
-import com.coolpeace.api.domain.member.repository.MemberRepository;
-import com.coolpeace.api.domain.room.repository.RoomRepository;
-
-import java.util.List;
+import com.coolpeace.api.global.jwt.security.JwtPrincipal;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.core.domain.member.entity.Member;
+import com.coolpeace.core.domain.member.repository.MemberRepository;
+import com.coolpeace.core.domain.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

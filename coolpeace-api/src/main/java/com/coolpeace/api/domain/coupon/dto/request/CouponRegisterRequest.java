@@ -1,9 +1,9 @@
 package com.coolpeace.api.domain.coupon.dto.request;
 
-import com.coolpeace.api.global.common.validator.ValidEnum;
-import com.coolpeace.api.domain.coupon.entity.type.CouponRoomType;
-import com.coolpeace.api.domain.coupon.entity.type.CustomerType;
-import com.coolpeace.api.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.core.common.validator.ValidEnum;
+import com.coolpeace.core.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.core.domain.coupon.entity.type.CustomerType;
+import com.coolpeace.core.domain.coupon.entity.type.DiscountType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

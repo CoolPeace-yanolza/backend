@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.dashboard.dto.response;
 
-import com.coolpeace.api.domain.statistics.entity.LocalCouponDownload;
+import com.coolpeace.core.domain.statistics.entity.LocalCouponDownload;
 
 public record MonthlyCouponDownloadResponse(
     String firstCouponTitle,

@@ -1,7 +1,7 @@
 package com.coolpeace.api.domain.dashboard.dto.response;
 
 
-import com.coolpeace.api.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
 
 public record MonthlyDataResponse(
     int statisticsYear,

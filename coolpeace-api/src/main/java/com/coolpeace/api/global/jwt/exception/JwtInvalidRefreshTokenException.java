@@ -1,7 +1,7 @@
 package com.coolpeace.api.global.jwt.exception;
 
-import com.coolpeace.api.global.exception.ApplicationException;
-import com.coolpeace.api.global.exception.ErrorCode;
+import com.coolpeace.core.exception.ApplicationException;
+import com.coolpeace.core.exception.ErrorCode;
 
 public class JwtInvalidRefreshTokenException extends ApplicationException {
     public JwtInvalidRefreshTokenException() {

@@ -1,3 +1,5 @@
 rootProject.name = 'coolPeace'
 include 'coolpeace-api'
+include 'coolpeace-batch'
+include 'coolpeace-core'
 

@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.accommodation.dto.response;
 
-import com.coolpeace.api.domain.room.entity.Room;
+import com.coolpeace.core.domain.room.entity.Room;
 import lombok.Builder;
 
 @Builder

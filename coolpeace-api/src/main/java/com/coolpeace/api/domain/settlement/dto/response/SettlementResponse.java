@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.settlement.dto.response;
 
-import com.coolpeace.api.domain.settlement.entity.Settlement;
+import com.coolpeace.core.domain.settlement.entity.Settlement;
 
 import java.time.LocalDate;
 

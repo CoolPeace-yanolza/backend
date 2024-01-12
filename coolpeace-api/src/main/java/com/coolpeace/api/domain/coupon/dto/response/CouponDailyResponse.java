@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.coupon.dto.response;
 
-import com.coolpeace.api.domain.coupon.entity.CouponDailyCondition;
+import com.coolpeace.core.domain.coupon.entity.CouponDailyCondition;
 
 import java.util.Collections;
 import java.util.List;

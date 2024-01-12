@@ -1,9 +1,9 @@
 package com.coolpeace.api.domain.coupon.service;
 
 import com.coolpeace.api.domain.coupon.dto.response.CouponDailyResponse;
-import com.coolpeace.api.domain.coupon.entity.Coupon;
-import com.coolpeace.api.domain.coupon.entity.CouponDailyCondition;
-import com.coolpeace.api.domain.coupon.repository.CouponRepository;
+import com.coolpeace.core.domain.coupon.entity.Coupon;
+import com.coolpeace.core.domain.coupon.entity.CouponDailyCondition;
+import com.coolpeace.core.domain.coupon.repository.CouponRepository;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.coolpeace.api.global.factory;
 
-import com.coolpeace.api.domain.member.entity.Member;
-import com.coolpeace.api.domain.member.entity.Role;
-import com.coolpeace.api.domain.member.entity.type.RoleType;
+import com.coolpeace.core.domain.member.entity.Member;
+import com.coolpeace.core.domain.member.entity.Role;
+import com.coolpeace.core.domain.member.entity.type.RoleType;
 import com.github.javafaker.Faker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

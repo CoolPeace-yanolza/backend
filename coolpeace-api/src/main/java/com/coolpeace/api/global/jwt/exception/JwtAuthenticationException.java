@@ -1,6 +1,6 @@
 package com.coolpeace.api.global.jwt.exception;
 
-import com.coolpeace.api.global.exception.ErrorCode;
+import com.coolpeace.core.exception.ErrorCode;
 import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 
