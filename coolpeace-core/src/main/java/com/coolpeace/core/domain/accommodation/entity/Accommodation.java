@@ -22,11 +22,11 @@ public class Accommodation extends BaseTimeEntity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "sido")
     private Sido sido;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "sigungu")
     private Sigungu sigungu;
 
@@ -38,4 +38,24 @@ public class Accommodation extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
+
+    public Accommodation(Long id, String name, String address, Member member) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.member = member;
+    }
+
+    public Accommodation(String name, Sido sido, Sigungu sigungu, String address, Member member) {
+        this.name = name;
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.address = address;
+        this.member = member;
+    }
+
+    public static Accommodation from(String name, Sido sido, Sigungu sigungu, String address, Member member) {
+        return new Accommodation(name, sido, sigungu, address, member);
+    }
+
 }

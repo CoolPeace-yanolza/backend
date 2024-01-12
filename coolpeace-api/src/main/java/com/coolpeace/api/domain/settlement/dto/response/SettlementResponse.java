@@ -25,4 +25,17 @@ public record SettlementResponse (
             settlement.getCompleteAt()
         );
     }
+    public static SettlementResponse from(LocalDate couponUseDate, int couponCount, int discountPrice,
+        int cancelPrice, int supplyPrice, int sumPrice, LocalDate completeAt) {
+        return new SettlementResponse(
+            couponUseDate,
+            couponCount,
+            discountPrice,
+            cancelPrice,
+            supplyPrice,
+            sumPrice,
+            completeAt
+        );
+    }
+
 }

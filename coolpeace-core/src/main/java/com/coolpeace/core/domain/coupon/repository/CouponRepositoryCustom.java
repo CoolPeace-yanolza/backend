@@ -13,7 +13,7 @@ public interface CouponRepositoryCustom {
 
     Page<Coupon> findAllCoupons(Long memberId, SearchCouponParams params, PageRequest pageable);
 
-    Optional<Coupon> findRecentCouponByMemberId(Long memberId);
+    List<Coupon> findRecentCouponByMemberId(Long memberId);
 
     Optional<Coupon> findByCouponNumber(String couponNumber);
 

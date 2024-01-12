@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface CouponRepository extends JpaRepository<Coupon,Long>,CouponRepositoryCustom {
     boolean existsByMemberIdAndCouponNumber(Long memberId, String couponNumber);
-    List<Coupon> findAllByMemberAndAccommodation(Member member, Accommodation accommodation);
+    List<Coupon> findAllByAccommodation(Accommodation accommodation);
 }

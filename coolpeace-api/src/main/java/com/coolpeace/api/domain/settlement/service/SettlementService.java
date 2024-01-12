@@ -18,7 +18,7 @@ import com.coolpeace.core.domain.statistics.repository.DailyStatisticsRepository
 import com.coolpeace.core.domain.statistics.repository.MonthlyStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,7 @@ public class SettlementService {
     private final AccommodationRepository accommodationRepository;
     private final MemberRepository memberRepository;
 
-    public SumSettlementResponse sumSettlement(Long memberId, Long accommodationId) {
+    public SumSettlementResponse sumSettlement(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
             .findAllByAccommodation(accommodation);
@@ -45,17 +45,18 @@ public class SettlementService {
         for (DailyStatistics dailyStatistics : dailyStatisticsList) {
             thisMonthSumSettlement += dailyStatistics.getSettlementAmount();
         }
+        int lastMonthSumSettlement = 0 ;
 
-        int lastMonthSumSettlement = monthlyStatisticsRepository
+        lastMonthSumSettlement = monthlyStatisticsRepository
             .findByAccommodationAndStatisticsYearAndStatisticsMonth
                 (accommodation, LocalDate.now().getYear(), LocalDate.now().getMonth().getValue())
-            .orElseThrow(MonthlyStatisticsNotFoundException::new).getSettlementAmount();
+            .orElse(MonthlyStatistics.emptyMonthlyStatistics()).getSettlementAmount();
 
         return SumSettlementResponse.from(thisMonthSumSettlement, lastMonthSumSettlement);
     }
 
-    public List<SettlementResponse> searchSettlement(Long memberId, Long accommodationId,
-                                                     SearchSettlementParams searchSettlementParams, Pageable pageable) {
+    public List<SettlementResponse> searchSettlement(String memberId, Long accommodationId,
+        SearchSettlementParams searchSettlementParams, int page, int pageSize) {
 
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         LocalDate startDate = LocalDate.parse(searchSettlementParams.startDate());
@@ -63,26 +64,26 @@ public class SettlementService {
 
         Page<Settlement> settlements = switch (searchSettlementParams.orderBy()) {
             case COMPLETE_AT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAt
-                    (pageable, accommodation, startDate, endDate);
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAtDesc
+                    (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case SUM_PRICE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPrice
-                    (pageable, accommodation, startDate, endDate);
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPriceDesc
+                    (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_USE_DATE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate
-                    (pageable, accommodation, startDate, endDate);
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
+                    (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_COUNT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCount
-                    (pageable, accommodation, startDate, endDate);
+                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCountDesc
+                    (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
         };
         return settlements.stream().map(SettlementResponse::from).toList();
     }
 
 
-    public Accommodation checkAccommodationMatchMember(Long memberId, Long accommodationId) {
+    public Accommodation checkAccommodationMatchMember(String memberId, Long accommodationId) {
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow(AccommodationNotFoundException::new);
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(MemberNotFoundException::new);
         if (!accommodation.getMember().equals(member)) {
             throw new AccommodationNotMatchMemberException();

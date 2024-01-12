@@ -137,8 +137,16 @@ public class Coupon extends BaseTimeEntity {
         );
     }
 
+    public String getCouponTitle() {
+        return switch (this.discountType) {
+            case FIXED_PRICE -> String.format("%s %d원 할인", customerType.getValue(), discountValue);
+            case FIXED_RATE -> String.format("%s %d%% 할인", customerType.getValue(), discountValue);
+        };
+    }
+
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
-        this.couponNumber = couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
+        this.couponNumber =
+            couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
     }
 
     public void changeCouponStatus(CouponStatusType couponStatusType) {

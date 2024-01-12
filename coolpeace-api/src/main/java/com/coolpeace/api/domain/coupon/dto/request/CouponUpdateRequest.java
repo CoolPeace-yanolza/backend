@@ -20,7 +20,9 @@ public record CouponUpdateRequest(
         List<Integer> registerRooms,
         Integer minimumReservationPrice,
         List<DayOfWeek> couponUseConditionDays,
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate exposureStartDate,
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate exposureEndDate
 ) {
 }

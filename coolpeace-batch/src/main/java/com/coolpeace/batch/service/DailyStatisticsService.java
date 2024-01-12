@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,8 @@ public class DailyStatisticsService {
     private final DailyStatisticsRepository dailyStatisticsRepository;
 
     private final ReservationRepository reservationRepository;
+
+    private final CouponRepository couponRepository;
 
     private final SettlementRepository settlementRepository;
 
@@ -56,21 +60,21 @@ public class DailyStatisticsService {
 
     public void updateCoupon(){
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int downloadCount = 0;
-        int usedCount = 0;
         int day = LocalDate.now().getDayOfMonth();
-
-        for (Accommodation accommodation : accommodations) {
+        accommodations.forEach(accommodation -> {
+            int downloadCount = 0;
+            int usedCount = 0;
             Member member = accommodation.getMember();
-            /* 쿠폰 변경 후, 적용 예정
-            * ...
-            * */
+            List<Coupon> coupons = couponRepository.findAllByAccommodation(accommodation);
+            for (Coupon coupon : coupons) {
+                downloadCount += coupon.getDownloadCount();
+                usedCount += coupon.getUseCount();
+            }
             DailyStatistics dailyStatistics = dailyStatisticsRepository
                 .findByAccommodationAndStatisticsDay(accommodation,day)
                 .orElse(new DailyStatistics(day,member, accommodation));
             dailyStatistics.setCoupon(downloadCount, usedCount);
-        }
-
+        });
     }
 
     public void updateSettlement(){

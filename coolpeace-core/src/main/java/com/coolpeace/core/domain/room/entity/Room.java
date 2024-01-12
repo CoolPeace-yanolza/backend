@@ -36,4 +36,14 @@ public class Room extends BaseTimeEntity {
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CouponRooms> couponRooms = new ArrayList<>();
 
+    public Room(int roomNumber, String roomType, int price, Accommodation accommodation) {
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.price = price;
+        this.accommodation = accommodation;
+    }
+
+    public static Room from(int roomNumber, String roomType, int price, Accommodation accommodation) {
+        return new Room(roomNumber, roomType, price, accommodation);
+    }
 }

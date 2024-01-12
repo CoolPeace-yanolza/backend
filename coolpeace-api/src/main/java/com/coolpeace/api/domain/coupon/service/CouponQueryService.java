@@ -18,23 +18,23 @@ public class CouponQueryService {
     private final CouponRepository couponRepository;
 
     /* 메소드 복잡도를 낮추는 방법 고안 중 */
-    public CouponDailyResponse dailyReport(Long memberId, Long accommodationId) {
-
-        if (couponRepository.noRegister(memberId, accommodationId)) {
+    public CouponDailyResponse dailyReport(String jwtPrincipal, Long accommodationId) {
+        Long memberId = Long.valueOf(jwtPrincipal);
+        if (Boolean.TRUE.equals(couponRepository.noRegister(memberId, accommodationId))) {
             return CouponDailyResponse.from(CouponDailyCondition.NO_REGISTER);
         }
-        if (couponRepository.noExposure(memberId, accommodationId)) {
-            return CouponDailyResponse.from(CouponDailyCondition.NO_EXPOSURE);
-        }
-
-        List<Coupon> expiration3daysCoupons = couponRepository.expiration3days(memberId, accommodationId);
+        List<Coupon> expiration3daysCoupons = couponRepository.expiration3days(memberId,
+            accommodationId);
         if (!expiration3daysCoupons.isEmpty()) {
             return CouponDailyResponse.from(CouponDailyCondition.EXPIRATION_3DAYS,
-                expiration3daysCoupons.stream().map(Coupon::getTitle).toList());
+                expiration3daysCoupons.stream().map(Coupon::getCouponTitle).toList());
+        }
+        if (Boolean.TRUE.equals(couponRepository.noExposure(memberId, accommodationId))) {
+            return CouponDailyResponse.from(CouponDailyCondition.NO_EXPOSURE);
         }
 
         List<Coupon> exposureCoupons = couponRepository.exposureCoupons(memberId, accommodationId);
         return CouponDailyResponse.from(CouponDailyCondition.NO_CONDITION,
-            exposureCoupons.stream().map(Coupon::getTitle).toList());
+            exposureCoupons.stream().map(Coupon::getCouponTitle).toList());
     }
 }

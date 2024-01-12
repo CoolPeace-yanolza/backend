@@ -26,13 +26,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -46,20 +47,15 @@ public class CouponService {
     @Transactional(readOnly = true)
     public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
         return couponRepository.findAllCoupons(memberId, searchCouponParams,
-                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()))
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
+                .map(CouponResponse::from);
     }
 
     @Transactional(readOnly = true)
-    public Optional<CouponResponse> getRecentHistory(Long memberId) {
+    public List<CouponResponse> getRecentHistory(Long memberId) {
         return couponRepository.findRecentCouponByMemberId(memberId)
-                .map(coupon -> CouponResponse.from(coupon,
-                        coupon.getCouponRooms().stream()
-                                .map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList())
-                );
+                .stream().map(CouponResponse::from).toList();
     }
 
     @Transactional
@@ -70,6 +66,9 @@ public class CouponService {
 
         List<Room> rooms;
         if (!couponRegisterRequest.registerAllRoom()) {
+            if (CollectionUtils.isEmpty(couponRegisterRequest.registerRooms())) {
+                throw new RegisterRoomsEmptyException();
+            }
             rooms = couponRegisterRequest.registerRooms()
                     .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
                             .orElseThrow(RoomNotFoundException::new))
@@ -128,11 +127,11 @@ public class CouponService {
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
 
-        // 노출 기간 이후인데 대기중을 요청한 경우 예외처리
-        boolean isAfterExposureDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
+        // 노출 시작 이후로 대기중을 요청한 경우 예외처리
+        boolean isAfterExposureStartDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
         boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT);
-        if (isAfterExposureDate && isWaitRequest) {
-            throw new InvalidCouponStateInsideExposureDateException();
+        if (isAfterExposureStartDate && isWaitRequest) {
+            throw new InvalidCouponStateWaitExposureDateException();
         }
 
         // 노출 기간이 아닌데 ON/OFF를 요청한 경우 예외처리
@@ -141,6 +140,13 @@ public class CouponService {
                 || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF);
         if (!isBetweenExposureDate && isONOFFRequest) {
             throw new InvalidCouponStateOutsideExposureDateException();
+        }
+
+        // 노출 종료 이전에 종료를 요청한 경우 예외처리
+        boolean isBeforeExposureEndDate = !(LocalDate.now().isAfter(storedCoupon.getExposureEndDate()));
+        boolean isEndRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_END);
+        if (isBeforeExposureEndDate && isEndRequest) {
+            throw new InvalidCouponStateEndExposureDateException();
         }
 
         storedCoupon.changeCouponStatus(couponExposeRequest.couponStatus());

@@ -38,28 +38,30 @@ public class DashboardService {
     private final MemberRepository memberRepository;
     private final AccommodationRepository accommodationRepository;
 
-    public MonthlyDataResponse monthlyData(Long memberId, Long accommodationId) {
+    public List<MonthlyDataResponse> monthlyData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
 
-        MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository
-            .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation,
-                LocalDateTime.now().getYear(), LocalDateTime.now().getMonth().getValue())
-            .orElseThrow(MonthlyStatisticsNotFoundException::new);
+        int[] last6Months = findLast6Months(LocalDate.now().getYear(),
+            LocalDate.now().getMonth().getValue());
+        List<MonthlyStatistics> last6monthsMonthlyStatistics =
+            monthlyStatisticsRepository.findLast6monthsMonthlyStatistics
+            (accommodation, last6Months[0], last6Months[1], last6Months[2], last6Months[3]);
 
-        return MonthlyDataResponse.from(monthlyStatistics);
+        return last6monthsMonthlyStatistics.stream()
+            .map(MonthlyDataResponse::from).toList();
+
     }
 
-    public WeeklyCouponResponse weeklyCoupon(Long memberId, Long accommodationId) {
+    public WeeklyCouponResponse weeklyCoupon(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
 
-        DailyStatistics dailyStatistics = dailyStatisticsRepository
-            .findByAccommodationAndStatisticsDay(accommodation, LocalDateTime.now().getDayOfMonth())
-            .orElseThrow(DailyStatisticsNotFoundException::new);
+        List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
+            .findAllByAccommodation(accommodation);
 
-        return WeeklyCouponResponse.from(dailyStatistics);
+        return WeeklyCouponResponse.from(dailyStatisticsList);
     }
 
-    public MonthlyCouponDownloadResponse downloadCouponTop3(Long memberId, Long accommodationId) {
+    public MonthlyCouponDownloadResponse downloadCouponTop3(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
 
         MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository
@@ -71,14 +73,10 @@ public class DashboardService {
 
     }
 
-    public ByYearCumulativeDataResponse byYearCumulativeData(Long memberId, Long accommodationId) {
+    public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
-            .findAllByAccommodationAndStatisticsYear(accommodation, LocalDate.now().getYear());
-
-        if (monthlyStatisticsList.isEmpty()) {
-            throw new MonthlyStatisticsNotFoundException();
-        }
+            .findAllByAccommodationAndStatisticsYear(accommodation, year);
 
         int couponTotalSales = 0;
         int couponUseSales = 0;
@@ -95,14 +93,10 @@ public class DashboardService {
     }
 
 
-    public CumulativeDataResponse cumulativeData(Long memberId, Long accommodationId) {
+    public CumulativeDataResponse cumulativeData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
             .findAllByAccommodation(accommodation);
-
-        if (monthlyStatisticsList.isEmpty()) {
-            throw new MonthlyStatisticsNotFoundException();
-        }
 
         int couponTotalSales = 0;
         int couponUseSales = 0;
@@ -119,11 +113,10 @@ public class DashboardService {
             .from(couponTotalSales,couponUseSales,couponTotalUsedCount,couponTotalDownloadCount);
     }
 
-
-    public Accommodation checkAccommodationMatchMember(Long memberId, Long accommodationId) {
+    public Accommodation checkAccommodationMatchMember(String memberId, Long accommodationId) {
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow(AccommodationNotFoundException::new);
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(MemberNotFoundException::new);
         if (!accommodation.getMember().equals(member)) {
             throw new AccommodationNotMatchMemberException();
@@ -131,4 +124,9 @@ public class DashboardService {
         return accommodation;
     }
 
+    public int[] findLast6Months(int year, int month) {
+        if (month >= 7) return new int[]{year, month - 6, year, month - 1};
+        if (month == 1) return new int[]{year - 1, 7, year - 1, 12};
+        return new int[]{year - 1, 6 + month, year, month - 1};
+    }
 }

@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-
-public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long>,AccommodationRepositoryCustom{
 
     List<Accommodation> findAllByMember(Member member);
 

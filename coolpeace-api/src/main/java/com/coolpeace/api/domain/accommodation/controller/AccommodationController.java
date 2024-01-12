@@ -21,7 +21,7 @@ public class AccommodationController {
     private final AccomodationService accomodationService;
 
     @GetMapping
-    public ResponseEntity<List<AccomodationResponse>> accommodations(
+    public ResponseEntity<List<AccommodationResponse>> accommodations(
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
         return ResponseEntity.ok(accomodationService.getAccommodations(jwtPrincipal));

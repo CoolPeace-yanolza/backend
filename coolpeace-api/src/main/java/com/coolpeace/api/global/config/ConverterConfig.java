@@ -12,10 +12,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ConverterConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        // coupons
-        registry.addConverter(new CustomerTypeConverter());
-        registry.addConverter(new DiscountTypeConverter());
-        registry.addConverter(new CouponRoomTypeConverter());
-        registry.addConverter(new DayOfWeekConverter());
+        // coupon requests
+        registry.addConverter(new CustomerTypeRequestConverter());
+        registry.addConverter(new DiscountTypeRequestConverter());
+        registry.addConverter(new CouponRoomTypeRequestConverter());
+        registry.addConverter(new DayOfWeekRequestConverter());
     }
 }
