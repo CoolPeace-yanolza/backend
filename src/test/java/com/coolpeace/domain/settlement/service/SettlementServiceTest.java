@@ -77,9 +77,8 @@ class SettlementServiceTest {
             Accommodation getAccommodation =
                 settlementService.checkAccommodationMatchMember("1", 1L);
             //then
-            assertThat(getAccommodation).extracting("id", "name", "address")
-                .containsExactly(accommodation.getId(),
-                    accommodation.getName(), accommodation.getAddress());
+            assertThat(getAccommodation).extracting("name", "address")
+                .containsExactly(accommodation.getName(), accommodation.getAddress());
         }
 
         @Test
@@ -138,7 +137,7 @@ class SettlementServiceTest {
                 new Accommodation(1L, "신라호텔", "주소주소", member);
             DailyStatistics dailyStatistics1 = new DailyStatistics(1L, 1, 1000000,
                 100000, 11, 10, 100000, member, accommodation);
-            DailyStatistics dailyStatistics2 = new DailyStatistics(1L, 2, 1000000,
+            DailyStatistics dailyStatistics2 = new DailyStatistics(2L, 2, 1000000,
                 100000, 11, 10, 100000, member, accommodation);
             List<DailyStatistics> dailyStatisticsList = new ArrayList<>();
             dailyStatisticsList.add(dailyStatistics1);

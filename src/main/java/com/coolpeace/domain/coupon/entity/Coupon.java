@@ -7,6 +7,7 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.text.NumberFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -134,8 +135,19 @@ public class Coupon extends BaseTimeEntity {
         );
     }
 
+    public String getCouponTitle() {
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        if (this.discountType.equals(DiscountType.FIXED_PRICE)) {
+            return this.customerType.getValue() + " " + numberFormat.format(this.discountValue)
+                + "원 할인";
+        }
+        return this.customerType.getValue() + " " + numberFormat.format(this.discountValue)
+            + "% 할인";
+    }
+
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
-        this.couponNumber = couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
+        this.couponNumber =
+            couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
     }
 
     public void changeCouponStatus(CouponStatusType couponStatusType) {
@@ -177,5 +189,12 @@ public class Coupon extends BaseTimeEntity {
         this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
         updateCouponStatusByExposureDate();
+    }
+
+    public String getConcatTitle() {
+        return switch (this.discountType) {
+            case FIXED_PRICE -> String.format("%s %d원 할인", customerType.getValue(), discountValue);
+            case FIXED_RATE -> String.format("%s %d%% 할인", customerType.getValue(), discountValue);
+        };
     }
 }

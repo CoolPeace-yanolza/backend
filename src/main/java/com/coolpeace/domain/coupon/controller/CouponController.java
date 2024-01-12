@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/coupons")
@@ -27,8 +27,8 @@ public class CouponController {
 
     @GetMapping
     public ResponseEntity<Page<CouponResponse>> searchCoupons(
-            SearchCouponParams searchCouponParams,
-            @PageableDefault(size = 6) Pageable pageable,
+            @Valid SearchCouponParams searchCouponParams,
+            @PageableDefault Pageable pageable,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
         return ResponseEntity.ok(couponService.searchCoupons(
@@ -39,11 +39,11 @@ public class CouponController {
     public ResponseEntity<?> getCouponRecentHistory(
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        Optional<CouponResponse> couponResponse = couponService.getRecentHistory(Long.valueOf(jwtPrincipal.getMemberId()));
-        if (couponResponse.isEmpty()) {
+        List<CouponResponse> couponResponses = couponService.getRecentHistory(Long.valueOf(jwtPrincipal.getMemberId()));
+        if (couponResponses.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().body(couponResponse.get());
+        return ResponseEntity.ok().body(couponResponses);
     }
 
     @PostMapping("/register")

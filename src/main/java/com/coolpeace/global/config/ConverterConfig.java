@@ -1,9 +1,9 @@
 package com.coolpeace.global.config;
 
-import com.coolpeace.domain.coupon.dto.request.converter.CouponRoomTypeConverter;
-import com.coolpeace.domain.coupon.dto.request.converter.CustomerTypeConverter;
-import com.coolpeace.domain.coupon.dto.request.converter.DayOfWeekConverter;
-import com.coolpeace.domain.coupon.dto.request.converter.DiscountTypeConverter;
+import com.coolpeace.domain.coupon.dto.request.converter.CouponRoomTypeRequestConverter;
+import com.coolpeace.domain.coupon.dto.request.converter.CustomerTypeRequestConverter;
+import com.coolpeace.domain.coupon.dto.request.converter.DayOfWeekRequestConverter;
+import com.coolpeace.domain.coupon.dto.request.converter.DiscountTypeRequestConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,10 +12,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ConverterConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        // coupons
-        registry.addConverter(new CustomerTypeConverter());
-        registry.addConverter(new DiscountTypeConverter());
-        registry.addConverter(new CouponRoomTypeConverter());
-        registry.addConverter(new DayOfWeekConverter());
+        // coupon requests
+        registry.addConverter(new CustomerTypeRequestConverter());
+        registry.addConverter(new DiscountTypeRequestConverter());
+        registry.addConverter(new CouponRoomTypeRequestConverter());
+        registry.addConverter(new DayOfWeekRequestConverter());
     }
 }

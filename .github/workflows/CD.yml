@@ -42,7 +42,11 @@ jobs:
         shell: bash
 
       - name: Gradle 빌드 및 테스트 실행
-        run: ./gradlew build
+        run: ./gradlew build -Pprod
+        shell: bash
+
+      - name: Gradle bootJar 패키징
+        run: ./gradlew bootJar
         shell: bash
 
       - name: .env 파일 제거
