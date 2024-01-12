@@ -1,5 +1,3 @@
-bootJar.enabled = true
-
 ext {
     JJWT_VERSION = "0.12.3"
     RESTDOCS_API_SPEC_VERSION = "0.18.2"
@@ -11,9 +9,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // jjwt
     implementation "io.jsonwebtoken:jjwt-api:${JJWT_VERSION}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${JJWT_VERSION}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
+
+    // queryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     // RestDocs
     testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
@@ -23,26 +28,30 @@ dependencies {
 }
 
 // Swagger UI 설정
-def openapi3Path = "build/api-spec/openapi3.yaml"
+
+def isProd = project.hasProperty('prod')
 
 openapi3 {
-    server = "http://localhost:8080"
+    server = isProd ? "https://coolpeace.store" : "http://localhost:8080"
     title = "CoolPeace API"
     description = "CoolPeace API Document"
     version = "0.0.1"
     format = "yaml"
-
 }
+
+def openapi3Path = "build/api-spec/openapi3.yaml"
+def srcStaticDirPath = "src/main/resources/static/swagger-ui/"
 
 tasks.register("copyToSwaggerUI") {
     dependsOn "openapi3"
     doLast {
         copy {
             from openapi3Path
-            into "src/main/resources/static/swagger-ui/."
+            into srcStaticDirPath
         }
     }
 }
+
 
 tasks.register("copyTextToSecurity") {
     dependsOn copyToSwaggerUI
@@ -51,6 +60,10 @@ tasks.register("copyTextToSecurity") {
         def securityFile = file("src/test/resources/security.yaml")
         openapi3File.append securityFile.text
     }
+}
+
+clean {
+    delete "$srcStaticDirPath/openapi3.yaml"
 }
 
 test.finalizedBy copyTextToSecurity

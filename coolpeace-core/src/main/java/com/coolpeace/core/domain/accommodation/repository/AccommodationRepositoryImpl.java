@@ -1,10 +1,11 @@
-package com.coolpeace.domain.accommodation.repository;
+package com.coolpeace.core.domain.accommodation.repository;
 
-import static com.coolpeace.domain.accommodation.entity.QAccommodation.accommodation;
-
-import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import java.util.List;
+
+import static com.coolpeace.core.domain.accommodation.entity.QAccommodation.accommodation;
 
 public class AccommodationRepositoryImpl implements AccommodationRepositoryCustom {
 

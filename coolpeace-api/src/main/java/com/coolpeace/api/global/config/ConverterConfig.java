@@ -1,9 +1,9 @@
 package com.coolpeace.api.global.config;
 
-import com.coolpeace.api.domain.coupon.dto.request.converter.CouponRoomTypeConverter;
-import com.coolpeace.api.domain.coupon.dto.request.converter.CustomerTypeConverter;
-import com.coolpeace.api.domain.coupon.dto.request.converter.DayOfWeekConverter;
-import com.coolpeace.api.domain.coupon.dto.request.converter.DiscountTypeConverter;
+import com.coolpeace.api.domain.coupon.dto.request.converter.CouponRoomTypeRequestConverter;
+import com.coolpeace.api.domain.coupon.dto.request.converter.CustomerTypeRequestConverter;
+import com.coolpeace.api.domain.coupon.dto.request.converter.DayOfWeekRequestConverter;
+import com.coolpeace.api.domain.coupon.dto.request.converter.DiscountTypeRequestConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

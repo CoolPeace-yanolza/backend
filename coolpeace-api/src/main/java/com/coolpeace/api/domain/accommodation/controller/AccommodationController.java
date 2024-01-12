@@ -1,17 +1,18 @@
 package com.coolpeace.api.domain.accommodation.controller;
 
-import com.coolpeace.api.domain.accommodation.dto.response.AccomodationResponse;
-import com.coolpeace.api.global.jwt.security.JwtPrincipal;
+import com.coolpeace.api.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.api.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.api.domain.accommodation.service.AccomodationService;
+import com.coolpeace.api.global.jwt.security.JwtPrincipal;
 import com.coolpeace.api.global.resolver.AuthJwtPrincipal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/accommodation")

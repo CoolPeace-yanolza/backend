@@ -1,6 +1,6 @@
 package com.coolpeace.api.domain.accommodation.service;
 
-import com.coolpeace.api.domain.accommodation.dto.response.AccomodationResponse;
+import com.coolpeace.api.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.api.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.api.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.api.domain.member.exception.MemberNotFoundException;

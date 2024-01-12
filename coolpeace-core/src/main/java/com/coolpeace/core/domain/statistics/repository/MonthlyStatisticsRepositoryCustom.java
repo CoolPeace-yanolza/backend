@@ -1,7 +1,7 @@
-package com.coolpeace.domain.statistics.repository;
+package com.coolpeace.core.domain.statistics.repository;
 
-import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
 import java.util.List;
 
 public interface MonthlyStatisticsRepositoryCustom {

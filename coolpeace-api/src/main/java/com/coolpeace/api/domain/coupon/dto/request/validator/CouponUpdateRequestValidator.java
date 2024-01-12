@@ -1,8 +1,8 @@
-package com.coolpeace.domain.coupon.dto.request.validator;
+package com.coolpeace.api.domain.coupon.dto.request.validator;
 
-import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
-import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
-import com.coolpeace.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.api.domain.coupon.dto.request.CouponRegisterRequest;
+import com.coolpeace.api.domain.coupon.dto.request.CouponUpdateRequest;
+import com.coolpeace.core.domain.coupon.entity.type.DiscountType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;

@@ -1,14 +1,14 @@
 package com.coolpeace.api.domain.dashboard.dto.response;
 
 import com.coolpeace.core.domain.statistics.entity.DailyStatistics;
-import com.coolpeace.core.domain.statistics.entity.DailyStatistics;
+
 import java.util.List;
 
 public record WeeklyCouponResponse(
-    int couponTotalSales,
-    int usedCount,
-    int settlementAmount,
-    int downloadCount) {
+        int couponTotalSales,
+        int usedCount,
+        int settlementAmount,
+        int downloadCount) {
 
     public static WeeklyCouponResponse from(List<DailyStatistics> dailyStatisticsList) {
         int couponTotalSales = 0;
@@ -22,10 +22,10 @@ public record WeeklyCouponResponse(
             downloadCount += dailyStatistics.getDownloadCount();
         }
         return new WeeklyCouponResponse(
-            couponTotalSales,
-            usedCount,
-            settlementAmount,
-            downloadCount
+                couponTotalSales,
+                usedCount,
+                settlementAmount,
+                downloadCount
         );
     }
 }

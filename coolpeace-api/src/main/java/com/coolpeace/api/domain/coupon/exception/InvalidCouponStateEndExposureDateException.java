@@ -1,7 +1,7 @@
-package com.coolpeace.domain.coupon.exception;
+package com.coolpeace.api.domain.coupon.exception;
 
-import com.coolpeace.global.exception.ApplicationException;
-import com.coolpeace.global.exception.ErrorCode;
+import com.coolpeace.core.exception.ApplicationException;
+import com.coolpeace.core.exception.ErrorCode;
 
 public class InvalidCouponStateEndExposureDateException extends ApplicationException {
     public InvalidCouponStateEndExposureDateException() {

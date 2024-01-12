@@ -1,6 +1,6 @@
-package com.coolpeace.domain.accommodation.repository;
+package com.coolpeace.core.domain.accommodation.repository;
 
-import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
 import java.util.List;
 
 public interface AccommodationRepositoryCustom {

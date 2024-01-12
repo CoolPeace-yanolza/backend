@@ -2,6 +2,8 @@ package com.coolpeace.batch.service;
 
 import com.coolpeace.core.domain.accommodation.entity.Accommodation;
 import com.coolpeace.core.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.core.domain.coupon.entity.Coupon;
+import com.coolpeace.core.domain.coupon.repository.CouponRepository;
 import com.coolpeace.core.domain.member.entity.Member;
 import com.coolpeace.core.domain.reservation.entity.Reservation;
 import com.coolpeace.core.domain.reservation.repository.ReservationRepository;
@@ -16,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor

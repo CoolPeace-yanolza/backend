@@ -1,7 +1,7 @@
-package com.coolpeace.domain.room.exception;
+package com.coolpeace.api.domain.room.exception;
 
-import com.coolpeace.global.exception.ApplicationException;
-import com.coolpeace.global.exception.ErrorCode;
+import com.coolpeace.core.exception.ApplicationException;
+import com.coolpeace.core.exception.ErrorCode;
 
 public class RegisterRoomsEmptyException extends ApplicationException {
     public RegisterRoomsEmptyException() {

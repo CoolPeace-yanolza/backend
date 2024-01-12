@@ -1,22 +1,19 @@
-package com.coolpeace.domain.statistics.service;
+package com.coolpeace.batch.service;
 
-import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.domain.coupon.repository.CouponRepository;
-import com.coolpeace.domain.member.entity.Member;
-import com.coolpeace.domain.member.repository.MemberRepository;
-import com.coolpeace.domain.settlement.entity.Settlement;
-import com.coolpeace.domain.settlement.repository.SettlementRepository;
-import com.coolpeace.domain.statistics.entity.DailyStatistics;
-import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
-import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
-import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundException;
-import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
-import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
-import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
-import java.time.LocalDate;
-import java.util.List;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.core.domain.coupon.entity.Coupon;
+import com.coolpeace.core.domain.coupon.exception.CouponNotFoundException;
+import com.coolpeace.core.domain.coupon.repository.CouponRepository;
+import com.coolpeace.core.domain.member.entity.Member;
+import com.coolpeace.core.domain.settlement.entity.Settlement;
+import com.coolpeace.core.domain.settlement.repository.SettlementRepository;
+import com.coolpeace.core.domain.statistics.entity.DailyStatistics;
+import com.coolpeace.core.domain.statistics.entity.LocalCouponDownload;
+import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.core.domain.statistics.repository.DailyStatisticsRepository;
+import com.coolpeace.core.domain.statistics.repository.LocalCouponDownloadRepository;
+import com.coolpeace.core.domain.statistics.repository.MonthlyStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,18 +41,18 @@ public class MonthlyStatisticsService {
         accommodations.forEach(accommodation -> {
             Member member = accommodation.getMember();
             List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
-                .findAllByAccommodation(accommodation);
+                    .findAllByAccommodation(accommodation);
 
             if (!dailyStatisticsList.isEmpty()) {
                 MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository
-                    .save(new MonthlyStatistics(year, month, member, accommodation));
+                        .save(new MonthlyStatistics(year, month, member, accommodation));
 
                 dailyStatisticsList.forEach(dailyStatistics -> monthlyStatistics.setMonthlySum(
-                    dailyStatistics.getTotalSales(),
-                    dailyStatistics.getCouponTotalSales(),
-                    dailyStatistics.getDownloadCount(),
-                    dailyStatistics.getUsedCount(),
-                    dailyStatistics.getSettlementAmount()
+                        dailyStatistics.getTotalSales(),
+                        dailyStatistics.getCouponTotalSales(),
+                        dailyStatistics.getDownloadCount(),
+                        dailyStatistics.getUsedCount(),
+                        dailyStatistics.getSettlementAmount()
                 ));
 
                 dailyStatisticsRepository.deleteAllInBatch(dailyStatisticsList);
@@ -68,7 +65,7 @@ public class MonthlyStatisticsService {
 
         accommodations.forEach(accommodation -> {
             List<Settlement> settlements = settlementRepository.
-                findAllByAccommodationForDailyUpdate(accommodation);
+                    findAllByAccommodationForDailyUpdate(accommodation);
             for (Settlement settlement : settlements) {
                 settlement.completeSettlement();
             }
@@ -81,15 +78,15 @@ public class MonthlyStatisticsService {
         List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository.findAll();
         localCouponDownloads.forEach(localCouponDownload -> {
             List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
-                localCouponDownload.getRegion());
+                    localCouponDownload.getRegion());
             accommodations.forEach(accommodation -> {
                 Member member = accommodation.getMember();
                 monthlyStatisticsRepository
-                    .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, year,
-                        month)
-                    .orElse(monthlyStatisticsRepository.save
-                        (new MonthlyStatistics(year, month, member, accommodation)))
-                    .setLocalCouponDownloadTop3(localCouponDownload);
+                        .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, year,
+                                month)
+                        .orElse(monthlyStatisticsRepository.save
+                                (new MonthlyStatistics(year, month, member, accommodation)))
+                        .setLocalCouponDownloadTop3(localCouponDownload);
             });
         });
     }
@@ -100,9 +97,9 @@ public class MonthlyStatisticsService {
         for (Coupon coupon : coupons) {
             String address = coupon.getAccommodation().getSigungu().getName();
             LocalCouponDownload localCouponDownload = localCouponDownloadRepository
-                .findByRegion(address)
-                .orElseGet(
-                    () -> localCouponDownloadRepository.save(new LocalCouponDownload(address)));
+                    .findByRegion(address)
+                    .orElseGet(
+                            () -> localCouponDownloadRepository.save(new LocalCouponDownload(address)));
             if (localCouponDownload.getFirstCouponTitle().isBlank()) {
                 localCouponDownload.init(coupon.getCouponTitle(), coupon.getId());
                 continue;
@@ -123,7 +120,7 @@ public class MonthlyStatisticsService {
             localCouponDownload.setAllCoupon(nowCouponTitle, nowCouponId, localCouponDownload);
         } else if (downloadCount > downloadCount2nd) {
             localCouponDownload.setSecondAndThirdCoupon(nowCouponTitle, nowCouponId,
-                localCouponDownload);
+                    localCouponDownload);
         } else if (downloadCount > downloadCount3rd) {
             localCouponDownload.setThirdCoupon(nowCouponTitle, nowCouponId);
         }
@@ -132,6 +129,6 @@ public class MonthlyStatisticsService {
 
     private int getDownloadCountFromId(Long couponId) {
         return couponRepository.findById(couponId)
-            .orElseThrow(CouponNotFoundException::new).getDownloadCount();
+                .orElseThrow(CouponNotFoundException::new).getDownloadCount();
     }
 }

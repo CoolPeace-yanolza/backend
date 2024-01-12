@@ -1,14 +1,14 @@
-package com.coolpeace.domain.statistics.repository;
+package com.coolpeace.core.domain.statistics.repository;
 
-import static com.coolpeace.domain.statistics.entity.QMonthlyStatistics.monthlyStatistics;
-
-import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.core.domain.accommodation.entity.Accommodation;
+import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import static com.coolpeace.core.domain.statistics.entity.QMonthlyStatistics.monthlyStatistics;
 
 public class MonthlyStatisticsRepositoryImpl implements MonthlyStatisticsRepositoryCustom {
 
@@ -20,7 +20,7 @@ public class MonthlyStatisticsRepositoryImpl implements MonthlyStatisticsReposit
 
     @Override
     public List<MonthlyStatistics> findLast6monthsMonthlyStatistics(Accommodation accommodation,
-        int startYear, int startMonth,int endYear, int endMonth) {
+                                                                    int startYear, int startMonth, int endYear, int endMonth) {
 
         if (startYear == endYear) {
             return jpaQueryFactory.selectFrom(monthlyStatistics)

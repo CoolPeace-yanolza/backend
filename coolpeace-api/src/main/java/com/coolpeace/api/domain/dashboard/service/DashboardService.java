@@ -1,32 +1,26 @@
 package com.coolpeace.api.domain.dashboard.service;
 
 
+import com.coolpeace.api.domain.accommodation.exception.AccommodationNotFoundException;
+import com.coolpeace.api.domain.accommodation.exception.AccommodationNotMatchMemberException;
+import com.coolpeace.api.domain.dashboard.dto.response.*;
+import com.coolpeace.api.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.core.domain.accommodation.entity.Accommodation;
 import com.coolpeace.core.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.api.domain.dashboard.dto.response.MonthlyDataLightResponse;
-import com.coolpeace.api.domain.dashboard.dto.response.MonthlyDataResponse;
-import com.coolpeace.api.domain.dashboard.dto.response.WeeklyCouponResponse;
 import com.coolpeace.core.domain.member.entity.Member;
 import com.coolpeace.core.domain.member.repository.MemberRepository;
-import com.coolpeace.core.domain.statistics.exception.DailyStatisticsNotFoundException;
+import com.coolpeace.core.domain.statistics.entity.DailyStatistics;
+import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.core.domain.statistics.exception.MonthlyStatisticsNotFoundException;
 import com.coolpeace.core.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.core.domain.statistics.repository.MonthlyStatisticsRepository;
-import com.coolpeace.api.domain.accommodation.exception.AccommodationNotFoundException;
-import com.coolpeace.api.domain.accommodation.exception.AccommodationNotMatchMemberException;
-import com.coolpeace.api.domain.dashboard.dto.response.ByYearCumulativeDataResponse;
-import com.coolpeace.api.domain.dashboard.dto.response.CumulativeDataResponse;
-import com.coolpeace.api.domain.dashboard.dto.response.MonthlyCouponDownloadResponse;
-import com.coolpeace.api.domain.member.exception.MemberNotFoundException;
-import com.coolpeace.core.domain.statistics.entity.DailyStatistics;
-import com.coolpeace.core.domain.statistics.entity.MonthlyStatistics;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)

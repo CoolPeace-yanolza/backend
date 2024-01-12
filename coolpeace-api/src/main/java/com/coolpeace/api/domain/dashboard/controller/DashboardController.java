@@ -4,7 +4,6 @@ import com.coolpeace.api.domain.dashboard.service.DashboardService;
 import com.coolpeace.api.global.jwt.security.JwtPrincipal;
 import com.coolpeace.api.domain.coupon.service.CouponQueryService;
 import com.coolpeace.api.global.resolver.AuthJwtPrincipal;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
