@@ -9,6 +9,7 @@ import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
+import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
@@ -187,7 +188,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         parameterWithName("page").type(SimpleType.STRING).description("페이지 번호(1번부터 시작)").optional(),
                                         parameterWithName("size").type(SimpleType.STRING).description("페이지 크기").optional()
                                 )
-                                .responseSchema(Schema.schema(CouponResponse.class.getSimpleName()))
+                                .responseSchema(Schema.schema(CouponSearchResponse.class.getSimpleName()))
                                 .responseFields(
                                         fieldWithPath("content[].title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
                                         fieldWithPath("content[].coupon_number").type(JsonFieldType.STRING).description("쿠폰 번호"),
@@ -208,22 +209,15 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("content[].accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
                                         fieldWithPath("content[].register_room_numbers").type(JsonFieldType.ARRAY).description("등록된 객실 번호"),
                                         fieldWithPath("content[].created_date").type(JsonFieldType.STRING).description("생성 날짜"),
-                                        fieldWithPath("pageable.page_number").type(JsonFieldType.NUMBER).description("페이지 번호").ignored(),
-                                        fieldWithPath("pageable.page_size").type(JsonFieldType.NUMBER).description("페이지 크기").ignored(),
-                                        fieldWithPath("pageable.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 조건이 비어있는지 여부").ignored(),
-                                        fieldWithPath("pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 조건이 있는지 여부").ignored(),
-                                        fieldWithPath("pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description("미정렬 조건이 있는지 여부").ignored(),
-                                        fieldWithPath("pageable.offset").type(JsonFieldType.NUMBER).description("페이지 시작 위치").ignored(),
-                                        fieldWithPath("pageable.paged").type(JsonFieldType.BOOLEAN).description("페이징 여부").ignored(),
-                                        fieldWithPath("pageable.unpaged").type(JsonFieldType.BOOLEAN).description("비페이징 여부").ignored(),
+                                        fieldWithPath("category.all").type(JsonFieldType.NUMBER).description("쿠폰 카테고리 - 전체"),
+                                        fieldWithPath("category.exposure_on").type(JsonFieldType.NUMBER).description("쿠폰 카테고리 - 노출 ON"),
+                                        fieldWithPath("category.exposure_off").type(JsonFieldType.NUMBER).description("쿠폰 카테고리 - 노출 OFF"),
+                                        fieldWithPath("category.expiration").type(JsonFieldType.NUMBER).description("쿠폰 카테고리 - 만료"),
                                         fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
                                         fieldWithPath("total_elements").type(JsonFieldType.NUMBER).description("총 엘리먼트 수"),
                                         fieldWithPath("total_pages").type(JsonFieldType.NUMBER).description("총 페이지 수"),
                                         fieldWithPath("size").type(JsonFieldType.NUMBER).description("페이지당 사이즈"),
                                         fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
-                                        fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 조건이 있는지 여부").ignored(),
-                                        fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description("미정렬 조건이 있는지 여부").ignored(),
-                                        fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 조건이 비어있는지 여부").ignored(),
                                         fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("첫번째 페이지 여부"),
                                         fieldWithPath("number_of_elements").type(JsonFieldType.NUMBER).description("현재 페이지 엘리먼트 수"),
                                         fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("페이지 내용이 비어있는지 여부")
