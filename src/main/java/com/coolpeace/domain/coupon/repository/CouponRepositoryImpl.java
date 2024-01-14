@@ -4,6 +4,7 @@ import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,10 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 import static com.coolpeace.domain.coupon.entity.QCouponRooms.couponRooms;
@@ -71,6 +74,21 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
 
         List<Coupon> coupons = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, couponJPAQuery).fetch();
         return PageableExecutionUtils.getPage(coupons, pageable, totalQuery::fetchOne);
+    }
+
+    @Override
+    public Map<CouponStatusType, Long> countCouponsByCouponStatus() {
+        List<Tuple> results = jpaQueryFactory
+                .select(coupon.couponStatus, coupon.count())
+                .from(coupon)
+                .groupBy(coupon.couponStatus)
+                .fetch();
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(coupon.couponStatus),
+                        tuple -> Optional.ofNullable(tuple.get(coupon.count())).orElse(0L)
+                ));
     }
 
     @Override
