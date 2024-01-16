@@ -29,7 +29,7 @@ INSERT INTO fc_coolpeace.sigungu(id, sido, name) values (267, 18, ''), (269, 18,
 INSERT INTO fc_coolpeace.member (is_deleted, email, name, password) VALUES (0, 'testowner@test.com', 'testowner', 'pass123');
 
 --1번회원 숙소 2개 추가
-insert into fc_coolpeace.accommodation (member_id, name, sido, sigungu, address) values (1, '테스트숙박1', 1, 2, '테스트 상세 주소 1번지'), (1, '테스트숙박2', 1, 2, '테스트 상세 주소 2번지');
+insert into fc_coolpeace.accommodation (member_id, name, sido, sigungu, address, accommodation_type) values (1, '테스트숙박1', 1, 2, '테스트 상세 주소 1번지', 'MOTEL'), (1, '테스트숙박2', 1, 2, '테스트 상세 주소 2번지', 'RESORT');
 
 --숙소당 객실 2개 추가
 insert into room (price, room_number, accommodation_id, created_at, room_type) values (100000, 101, 1, now(), '테스트룸타입1-1'), (150000, 102, 1, now(), '테스트룸타입1-2');
