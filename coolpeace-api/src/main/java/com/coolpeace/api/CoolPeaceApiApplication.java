@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EntityScan(basePackages = "com.coolpeace.core")
 @EnableJpaRepositories(basePackages = "com.coolpeace.core")
-@SpringBootApplication(scanBasePackages = {"com.coolpeace.core", "com.coolpeace.api"})
+@SpringBootApplication(scanBasePackages = "com.coolpeace")
 public class CoolPeaceApiApplication {
 
     public static void main(String[] args) {
