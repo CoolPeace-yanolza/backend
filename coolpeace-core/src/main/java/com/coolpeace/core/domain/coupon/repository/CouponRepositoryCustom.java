@@ -1,17 +1,20 @@
 package com.coolpeace.core.domain.coupon.repository;
 
-
 import com.coolpeace.core.domain.coupon.entity.Coupon;
 import com.coolpeace.core.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.core.domain.coupon.entity.type.CouponStatusType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CouponRepositoryCustom {
 
     Page<Coupon> findAllCoupons(Long memberId, SearchCouponParams params, PageRequest pageable);
+
+    Map<CouponStatusType, Long> countCouponsByCouponStatus();
 
     List<Coupon> findRecentCouponByMemberId(Long memberId);
 

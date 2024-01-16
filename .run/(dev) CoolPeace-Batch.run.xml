@@ -1,8 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="(dev) CoolPeace-Api" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="dev" />
-    <module name="coolPeace.coolpeace-api.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.coolpeace.api.CoolPeaceApiApplication" />
+  <configuration default="false" name="(dev) CoolPeace-Batch" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="coolPeace.coolpeace-batch.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.coolpeace.batch.CoolPeaceBatchApplication" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="true" />
       <option name="IS_SUBST" value="false" />
@@ -11,7 +10,7 @@
       <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
       <ENTRIES>
         <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
-        <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH="coolpeace-api/.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH="coolpeace-batch/.env" />
       </ENTRIES>
     </extension>
     <method v="2">

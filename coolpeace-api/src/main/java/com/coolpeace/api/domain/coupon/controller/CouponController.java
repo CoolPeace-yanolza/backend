@@ -3,11 +3,13 @@ package com.coolpeace.api.domain.coupon.controller;
 import com.coolpeace.api.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponUpdateRequest;
-import com.coolpeace.core.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.api.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.api.domain.coupon.dto.response.CouponResponse;
+import com.coolpeace.api.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.api.domain.coupon.service.CouponService;
 import com.coolpeace.api.global.jwt.security.JwtPrincipal;
 import com.coolpeace.api.global.resolver.AuthJwtPrincipal;
+import com.coolpeace.core.domain.coupon.dto.request.SearchCouponParams;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,13 +28,15 @@ public class CouponController {
     private final CouponService couponService;
 
     @GetMapping
-    public ResponseEntity<Page<CouponResponse>> searchCoupons(
+    public ResponseEntity<CouponSearchResponse> searchCoupons(
             @Valid SearchCouponParams searchCouponParams,
             @PageableDefault Pageable pageable,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        return ResponseEntity.ok(couponService.searchCoupons(
-                Long.valueOf(jwtPrincipal.getMemberId()), searchCouponParams, pageable));
+        Page<CouponResponse> couponResponses = couponService.searchCoupons(
+                Long.valueOf(jwtPrincipal.getMemberId()), searchCouponParams, pageable);
+        CouponCategoryResponse categoryResponse = couponService.getCouponCategories();
+        return ResponseEntity.ok(CouponSearchResponse.from(couponResponses, categoryResponse));
     }
 
     @GetMapping("/recent")

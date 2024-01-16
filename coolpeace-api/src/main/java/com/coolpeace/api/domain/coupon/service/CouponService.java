@@ -4,6 +4,7 @@ import com.coolpeace.api.domain.accommodation.exception.AccommodationNotFoundExc
 import com.coolpeace.api.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.api.domain.coupon.dto.request.CouponUpdateRequest;
+import com.coolpeace.api.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.api.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.api.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.api.domain.coupon.exception.InvalidCouponStateEndExposureDateException;
@@ -36,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -52,6 +54,20 @@ public class CouponService {
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                                 pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
                 .map(CouponResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public CouponCategoryResponse getCouponCategories() {
+        Map<CouponStatusType, Long> counts = couponRepository.countCouponsByCouponStatus();
+
+        long all = counts.values().stream().mapToLong(Long::longValue).sum();
+        long exposureOn = counts.getOrDefault(CouponStatusType.EXPOSURE_ON, 0L);
+        long exposureOff = counts.getOrDefault(CouponStatusType.EXPOSURE_OFF, 0L)
+                + counts.getOrDefault(CouponStatusType.EXPOSURE_WAIT, 0L);
+        long expired = counts.getOrDefault(CouponStatusType.EXPOSURE_END, 0L)
+                + counts.getOrDefault(CouponStatusType.DELETED, 0L);
+
+        return CouponCategoryResponse.from(all, exposureOn, exposureOff, expired);
     }
 
     @Transactional(readOnly = true)
