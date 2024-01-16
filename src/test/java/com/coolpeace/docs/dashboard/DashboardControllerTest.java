@@ -51,15 +51,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 @WebMvcTest(DashboardController.class)
 class DashboardControllerTest extends RestDocsUnitTest {
 
+    private static final String MOCK_AUTHORIZATION_HEADER = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIyIiwiY2xpZW50X2VtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlzcyI6ImNvb2xwZWFjZSIsImlhdCI6MTcwNDYzODY5NSwiZXhwIjoxNzA0Njc0Njk1fQ.Re2QfSHVBJ9gKq8rCpv8wlvSuDS80jwEjHgGIxg840Og1ng6R_cozWOgw_eU9hgoYW0NUIAZLW322scfkUCRvQ";
+
     @MockBean
     private DashboardService dashboardService;
     @MockBean
     private CouponQueryService couponQueryService;
 
-
     @Test
     @DisplayName("월간 비교 그래프 조회")
-    @WithMockUser
     void monthlyData_success() throws Exception {
         //given
         Member member = new MemberTestBuilder().encoded().build();
@@ -72,7 +72,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/month", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-monthly",
                 resource(ResourceSnippetParameters.builder()
@@ -122,7 +122,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/week", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-weekly",
                 resource(ResourceSnippetParameters.builder()
@@ -165,7 +165,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/daily", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-daily",
                 resource(ResourceSnippetParameters.builder()
@@ -198,7 +198,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/coupons/local/download", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-download",
                 resource(ResourceSnippetParameters.builder()
@@ -230,7 +230,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/coupons/local/count", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-count",
                 resource(ResourceSnippetParameters.builder()
@@ -266,7 +266,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/year", 1L)
                 .queryParam("year","2023")
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-year",
                 resource(ResourceSnippetParameters.builder()
@@ -307,7 +307,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders.
                 get("/v1/dashboards/{accommodation_id}/reports/total", 1L)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-total",
                 resource(ResourceSnippetParameters.builder()

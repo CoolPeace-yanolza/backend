@@ -52,7 +52,7 @@ class SettlementControllerTest extends RestDocsUnitTest {
 
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}/summary",1)
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-summary",
                 resource(ResourceSnippetParameters.builder()
@@ -89,7 +89,7 @@ class SettlementControllerTest extends RestDocsUnitTest {
                 .queryParam("end_date","2023-09-27")
                 .queryParam("order_by","coupon_use_date")
                 .queryParam("start_date","2023-12-03")
-                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-search",
                 resource(ResourceSnippetParameters.builder()
