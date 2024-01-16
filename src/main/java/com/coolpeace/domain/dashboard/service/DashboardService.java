@@ -2,11 +2,12 @@ package com.coolpeace.domain.dashboard.service;
 
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.accommodation.entity.type.AccommodationType;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotMatchMemberException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.dashboard.dto.response.ByYearCumulativeDataResponse;
+import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
 import com.coolpeace.domain.dashboard.dto.response.CumulativeDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataLightResponse;
@@ -16,9 +17,12 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
+import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
+import com.coolpeace.domain.statistics.exception.LocalCouponDownloadNotFoundException;
 import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundException;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
+import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +40,7 @@ public class DashboardService {
     private final DailyStatisticsRepository dailyStatisticsRepository;
     private final MemberRepository memberRepository;
     private final AccommodationRepository accommodationRepository;
+    private final LocalCouponDownloadRepository localCouponDownloadRepository;
 
     public List<MonthlyDataResponse> monthlyData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
@@ -71,6 +76,17 @@ public class DashboardService {
         return MonthlyCouponDownloadResponse.from(monthlyStatistics.getLocalCouponDownload());
 
     }
+
+    public CouponCountAvgResponse couponCountAvg(String memberId,Long accommodationId) {
+        Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
+        String address = accommodation.getSigungu().getName();
+        AccommodationType type = accommodation.getAccommodationType();
+        LocalCouponDownload localCouponDownload = localCouponDownloadRepository
+            .findByRegion(address).orElseThrow(LocalCouponDownloadNotFoundException::new);
+
+        return getCouponCountAvgResponse(type, localCouponDownload, address);
+    }
+
 
     public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
@@ -121,6 +137,20 @@ public class DashboardService {
             throw new AccommodationNotMatchMemberException();
         }
         return accommodation;
+    }
+
+    private  CouponCountAvgResponse getCouponCountAvgResponse(AccommodationType type,
+        LocalCouponDownload localCouponDownload, String address) {
+        if (type.equals(AccommodationType.MOTEL)) {
+            return CouponCountAvgResponse.from(localCouponDownload.getMotelCouponCount(),
+                localCouponDownload.getMotelAccommodationCount(), address);
+        }
+        if (type.equals(AccommodationType.PENSION) || (type.equals(AccommodationType.VILLA))) {
+            return CouponCountAvgResponse.from(localCouponDownload.getPensionAndVillaCouponCount(),
+                localCouponDownload.getPensionAndVillaAccommodationCount(), address);
+        }
+        return CouponCountAvgResponse.from(localCouponDownload.getHotelAndResortCouponCount(),
+            localCouponDownload.getHotelAndResortAccommodationCount(), address);
     }
 
     public int[] findLast6Months(int year, int month) {
