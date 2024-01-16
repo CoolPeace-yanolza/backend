@@ -1,5 +1,6 @@
 package com.coolpeace.domain.accommodation.entity;
 
+import com.coolpeace.domain.accommodation.entity.type.AccommodationType;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
@@ -31,6 +32,9 @@ public class Accommodation extends BaseTimeEntity {
     private Sigungu sigungu;
 
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private AccommodationType accommodationType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
