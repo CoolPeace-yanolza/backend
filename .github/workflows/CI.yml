@@ -28,8 +28,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: .env.example 파일을 .env로 복사
-        run: cp .env.example .env
+      - name: .env.example 파일을 각 모듈의 .env에 복사
+        run: |
+          cp .env.example coolpeace-api/.env
+          cp .env.example coolpeace-batch/.env
         shell: bash
 
       - name: gradlew에 실행권한 부여
@@ -41,5 +43,7 @@ jobs:
         shell: bash
 
       - name: .env 파일 제거
-        run: rm .env
+        run: |
+          rm coolpeace-api/.env
+          rm coolpeace-batch/.env
         shell: bash
