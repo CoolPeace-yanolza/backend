@@ -9,11 +9,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.accommodation.entity.type.AccommodationType;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotMatchMemberException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
-import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.dashboard.dto.response.ByYearCumulativeDataResponse;
+import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
 import com.coolpeace.domain.dashboard.dto.response.CumulativeDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataResponse;
@@ -25,7 +26,9 @@ import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
+import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
+import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,7 +59,7 @@ class DashboardServiceTest {
     @Mock
     private AccommodationRepository accommodationRepository;
     @Mock
-    private CouponRepository couponRepository;
+    private LocalCouponDownloadRepository localCouponDownloadRepository;
 
     @Nested
     @DisplayName("checkAccommodationMatchMember()는")
@@ -213,6 +216,32 @@ class DashboardServiceTest {
     }
 
     @Test
+    @DisplayName("couponCountAvg()는 지역별 쿠폰 평균 갯수를 불러올 수 있다.")
+    void couponCountAvg_success() {
+        //given
+        Member member = new MemberTestBuilder().encoded().build();
+        Accommodation accommodation = new AccommodationTestBuilder(member).build();
+        accommodation.setType(AccommodationType.MOTEL);
+        String name = accommodation.getSigungu().getName();
+        LocalCouponDownload localCouponDownload = new LocalCouponDownload(name);
+        localCouponDownload.setCount(5, AccommodationType.MOTEL);
+        localCouponDownload.setCount(6, AccommodationType.MOTEL);
+        given(localCouponDownloadRepository.findByRegion(any()))
+            .willReturn(Optional.of(localCouponDownload));
+        given(accommodationRepository.findById(anyLong())).willReturn(
+            Optional.of(accommodation));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        //when
+        CouponCountAvgResponse couponCountAvgResponse =
+            dashboardService.couponCountAvg("1", 1L);
+
+        //then
+        assertThat(couponCountAvgResponse).extracting("address", "couponAvg")
+            .containsExactly(name, "5.5");
+    }
+
+
+    @Test
     @DisplayName("byYearCumulativeData()는 연도별 누적 데이터를 내보낼 수 있다.")
     void byYearCumulativeData_success(){
         //given
@@ -293,33 +322,6 @@ class DashboardServiceTest {
         return monthlyStatisticsList;
     }
 
-    //    아직 미정
-//    @Test
-//    @DisplayName("myDownloadCouponTop1()는 숙소에서 가장 다운로드 수가 많은 쿠폰을 내보낼 수 있다.")
-//    void myDownloadCouponTop1_success(){
-//        //given
-//        Member member = new MemberTestBuilder().encoded().build();
-//        Accommodation accommodation = new Accommodation(1L, "신라호텔", "주소주소", member);
-//        List<Room> rooms = new RoomTestBuilder(accommodation).buildList();
-//        List<Room> randomRooms = AccommodationTestUtil.getRandomRooms(rooms);
-//        Coupon coupon1 = new CouponTestBuilder(accommodation, member, randomRooms).build();
-//        Coupon coupon2 = new CouponTestBuilder(accommodation, member, randomRooms).build();
-//        List<Coupon> couponList = new ArrayList<>();
-//        couponList.add(coupon1);
-//        couponList.add(coupon2);
-//        given(accommodationRepository.findById(anyLong())).willReturn(
-//            Optional.of(accommodation));
-//        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
-//        given(couponRepository.findAllByAccommodationOrderByDownloadCountDesc(accommodation))
-//            .willReturn(couponList);
-//        //when
-//        String couponTitle = dashboardService.myDownloadCouponTop1("1", 1L);
-//        //then
-//        if (coupon1.getDownloadCount() >= coupon2.getDownloadCount()) {
-//            assertThat(couponTitle).isEqualTo(coupon1.getCouponTitle());
-//        }
-//        else assertThat(couponTitle).isEqualTo(coupon2.getCouponTitle());
-//
-//    }
+
 
 }
