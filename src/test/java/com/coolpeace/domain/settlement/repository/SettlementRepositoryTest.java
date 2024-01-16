@@ -76,7 +76,7 @@ class SettlementRepositoryTest {
         settlementRepository.save(settlement3);
         //when
         List<SettlementResponse> list = settlementRepository
-            .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
+            .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponUseDateDesc
                 (PageRequest.of(0, 10), accommodation,
                     LocalDate.of(2023, 9, 27),
                     LocalDate.of(2024, 3, 27))

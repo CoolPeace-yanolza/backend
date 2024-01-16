@@ -196,7 +196,7 @@ class SettlementServiceTest {
                 Optional.of(accommodation));
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
+                .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponUseDateDesc
                     (any(Pageable.class), any(Accommodation.class), any(LocalDate.class),
                         any(LocalDate.class))).willReturn(settlementPage);
             //when
