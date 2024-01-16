@@ -4,7 +4,6 @@ import com.coolpeace.domain.coupon.service.CouponQueryService;
 import com.coolpeace.domain.dashboard.service.DashboardService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,12 +41,20 @@ public class DashboardController {
             .dailyReport(jwtPrincipal.getMemberId(), accommodationId));
     }
 
-    @GetMapping("/{accommodation_id}/coupons/download")
+    @GetMapping("/{accommodation_id}/coupons/local/download")
     public ResponseEntity<?> downloadCouponTop3(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
         return ResponseEntity.ok().body(dashboardService
             .downloadCouponTop3(jwtPrincipal.getMemberId(), accommodationId));
     }
+
+    @GetMapping("/{accommodation_id}/coupons/local/count")
+    public ResponseEntity<?> couponCountAvg(@PathVariable("accommodation_id") Long accommodationId,
+        @AuthJwtPrincipal JwtPrincipal jwtPrincipal){
+        return ResponseEntity.ok().body(dashboardService
+            .couponCountAvg(jwtPrincipal.getMemberId(), accommodationId));
+    }
+    
     @GetMapping("/{accommodation_id}/reports/year")
     public ResponseEntity<?> byYearCumulativeData(@PathVariable("accommodation_id") Long accommodationId,
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal,int year){
