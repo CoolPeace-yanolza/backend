@@ -158,7 +158,7 @@ class DashboardControllerTest extends RestDocsUnitTest {
         couponList.add(coupon1);
         couponList.add(coupon2);
         CouponDailyResponse couponDailyResponse = CouponDailyResponse.from
-            (CouponDailyCondition.EXPIRATION_3DAYS,
+            (3,CouponDailyCondition.EXPIRATION_3DAYS,
                 couponList.stream().map(Coupon::getCouponTitle).toList());
         given(couponQueryService.dailyReport(any(), anyLong())).willReturn(couponDailyResponse);
 
@@ -173,6 +173,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
                     .description("일간 쿠폰 리포트 API")
                     .responseSchema(Schema.schema(CouponDailyResponse.class.getSimpleName()))
                     .responseFields(
+                        fieldWithPath("condition_num").type(JsonFieldType.NUMBER)
+                            .description("상태 넘버"),
                         fieldWithPath("condition").type(JsonFieldType.STRING)
                             .description("조건에 맞는 상태"),
                         fieldWithPath("coupon_titles[]").type(JsonFieldType.ARRAY)

@@ -7,13 +7,14 @@ import lombok.Builder;
 
 @Builder
 public record CouponDailyResponse(
+    int conditionNum,
     CouponDailyCondition condition,
     List<String> couponTitles
 ) {
-    public static CouponDailyResponse from(CouponDailyCondition condition,List<String> couponTitles) {
-        return new CouponDailyResponse(condition, couponTitles);
+    public static CouponDailyResponse from(int conditionNum, CouponDailyCondition condition,List<String> couponTitles) {
+        return new CouponDailyResponse(conditionNum, condition, couponTitles);
     }
-    public static CouponDailyResponse from(CouponDailyCondition condition) {
-        return new CouponDailyResponse(condition, Collections.emptyList());
+    public static CouponDailyResponse from(int conditionNum, CouponDailyCondition condition) {
+        return new CouponDailyResponse(conditionNum, condition, Collections.emptyList());
     }
 }

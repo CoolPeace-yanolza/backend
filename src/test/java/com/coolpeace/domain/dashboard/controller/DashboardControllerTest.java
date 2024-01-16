@@ -139,7 +139,7 @@ class DashboardControllerTest {
         couponList.add(coupon1);
         couponList.add(coupon2);
         CouponDailyResponse couponDailyResponse = CouponDailyResponse.from
-            (CouponDailyCondition.NO_EXPOSURE,
+            (2, CouponDailyCondition.NO_EXPOSURE,
                 couponList.stream().map(Coupon::getCouponTitle).toList());
         given(couponQueryService.dailyReport(any(), anyLong())).willReturn(couponDailyResponse);
 
@@ -147,9 +147,11 @@ class DashboardControllerTest {
         mockMvc.perform(get("/v1/dashboards/{accommodation_id}/reports/daily", 1L))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.condition").isString())
+            .andExpect(jsonPath("$.condition_num").isNumber())
             .andExpect(jsonPath("$.coupon_titles[0]").isString())
             .andExpect(jsonPath("$.coupon_titles[1]").isString())
             .andDo(print());
+
     }
 
     @Test
