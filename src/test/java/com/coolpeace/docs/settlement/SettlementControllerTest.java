@@ -7,9 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.coolpeace.domain.settlement.controller.SettlementController;
@@ -35,6 +34,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 @WebMvcTest(SettlementController.class)
 class SettlementControllerTest extends RestDocsUnitTest {
 
+    private static final String MOCK_AUTHORIZATION_HEADER = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIyIiwiY2xpZW50X2VtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlzcyI6ImNvb2xwZWFjZSIsImlhdCI6MTcwNDYzODY5NSwiZXhwIjoxNzA0Njc0Njk1fQ.Re2QfSHVBJ9gKq8rCpv8wlvSuDS80jwEjHgGIxg840Og1ng6R_cozWOgw_eU9hgoYW0NUIAZLW322scfkUCRvQ";
+
+
     @MockBean
     private SettlementService settlementService;
 
@@ -49,7 +51,8 @@ class SettlementControllerTest extends RestDocsUnitTest {
         given(settlementService.sumSettlement(any(), anyLong())).willReturn(settlementResponse);
 
         //when,then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}/summary",1))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}/summary",1)
+                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-summary",
                 resource(ResourceSnippetParameters.builder()
@@ -85,7 +88,8 @@ class SettlementControllerTest extends RestDocsUnitTest {
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}", 1)
                 .queryParam("end_date","2023-09-27")
                 .queryParam("order_by","coupon_use_date")
-                .queryParam("start_date","2023-12-03"))
+                .queryParam("start_date","2023-12-03")
+                .header(AUTHORIZATION, MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-search",
                 resource(ResourceSnippetParameters.builder()
