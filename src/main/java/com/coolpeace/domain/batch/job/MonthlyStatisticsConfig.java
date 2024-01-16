@@ -2,6 +2,7 @@ package com.coolpeace.domain.batch.job;
 
 import com.coolpeace.domain.batch.tasklet.CompleteSettlementTasklet;
 import com.coolpeace.domain.batch.tasklet.CouponDownloadTop3Tasklet;
+import com.coolpeace.domain.batch.tasklet.LocalCouponAvgTasklet;
 import com.coolpeace.domain.batch.tasklet.LocalCouponDownloadTasklet;
 import com.coolpeace.domain.batch.tasklet.MonthlySumTasklet;
 import com.coolpeace.domain.statistics.service.MonthlyStatisticsService;
@@ -14,7 +15,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
@@ -34,6 +34,7 @@ public class MonthlyStatisticsConfig {
             .next(monthlySumStep(jobRepository, platformTransactionManager))
             .next(localCouponDownloadStep(jobRepository, platformTransactionManager))
             .next(couponDownloadTop3Step(jobRepository,platformTransactionManager))
+            .next(localCouponAvgStep(jobRepository,platformTransactionManager))
             .build();
     }
 
@@ -80,4 +81,14 @@ public class MonthlyStatisticsConfig {
             .build();
     }
 
+    @Bean
+    public Step localCouponAvgStep(JobRepository jobRepository,
+        PlatformTransactionManager platformTransactionManager) {
+        log.info("LocalCouponAvg step start");
+        return new StepBuilder("localCouponAvgStep", jobRepository)
+            .tasklet(new LocalCouponAvgTasklet(monthlyStatisticsService),
+                platformTransactionManager)
+            .listener(customStepListener)
+            .build();
+    }
 }
