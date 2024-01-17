@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
 import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.response.CouponDailyResponse;
@@ -138,7 +139,7 @@ class DashboardControllerTest {
         couponList.add(coupon1);
         couponList.add(coupon2);
         CouponDailyResponse couponDailyResponse = CouponDailyResponse.from
-            (CouponDailyCondition.NO_EXPOSURE,
+            (2, CouponDailyCondition.NO_EXPOSURE,
                 couponList.stream().map(Coupon::getCouponTitle).toList());
         given(couponQueryService.dailyReport(any(), anyLong())).willReturn(couponDailyResponse);
 
@@ -146,9 +147,11 @@ class DashboardControllerTest {
         mockMvc.perform(get("/v1/dashboards/{accommodation_id}/reports/daily", 1L))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.condition").isString())
+            .andExpect(jsonPath("$.condition_num").isNumber())
             .andExpect(jsonPath("$.coupon_titles[0]").isString())
             .andExpect(jsonPath("$.coupon_titles[1]").isString())
             .andDo(print());
+
     }
 
     @Test
@@ -165,11 +168,29 @@ class DashboardControllerTest {
             .willReturn(monthlyCouponDownloadResponse);
 
         //when, then
-        mockMvc.perform(get("/v1/dashboards/{accommodation_id}/coupons/download", 1L))
+        mockMvc.perform(get("/v1/dashboards/{accommodation_id}/coupons/local/download", 1L))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.first_coupon_title").isString())
             .andExpect(jsonPath("$.second_coupon_title").isString())
             .andExpect(jsonPath("$.third_coupon_title").isString())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("couponCountAvg()는 지역별 쿠폰 평균 갯수를 불러올 수 있다.")
+    @WithMockUser
+    void couponCountAvg_success() throws Exception {
+        //given
+        CouponCountAvgResponse couponCountAvgResponse =
+            CouponCountAvgResponse.from(11, 2, "강남구");
+
+        given(dashboardService.couponCountAvg(any(), anyLong())).willReturn(couponCountAvgResponse);
+
+        //when, then
+        mockMvc.perform(get("/v1/dashboards/{accommodation_id}/coupons/local/count", 1L))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.address").isString())
+            .andExpect(jsonPath("$.coupon_avg").isString())
             .andDo(print());
     }
 

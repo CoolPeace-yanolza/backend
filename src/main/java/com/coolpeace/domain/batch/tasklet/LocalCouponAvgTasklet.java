@@ -1,5 +1,6 @@
 package com.coolpeace.domain.batch.tasklet;
 
+import com.coolpeace.domain.statistics.service.DailyStatisticsService;
 import com.coolpeace.domain.statistics.service.MonthlyStatisticsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +15,18 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CompleteSettlementTasklet implements Tasklet, StepExecutionListener {
+public class LocalCouponAvgTasklet implements Tasklet, StepExecutionListener {
+
     private final MonthlyStatisticsService monthlyStatisticsService;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
-        log.info("정산 Tasklet 시작 ");
-        monthlyStatisticsService.completeSettlement();
+        log.info("지역 쿠폰 평균 갯수 Tasklet 시작");
+        monthlyStatisticsService.updateLocalCouponAvg();
 
         return RepeatStatus.FINISHED;
     }
+
+
 }

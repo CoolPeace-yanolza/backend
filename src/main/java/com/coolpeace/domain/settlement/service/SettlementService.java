@@ -63,16 +63,16 @@ public class SettlementService {
 
         Page<Settlement> settlements = switch (searchSettlementParams.orderBy()) {
             case COMPLETE_AT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAtDesc
+                .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCompleteAtDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case SUM_PRICE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPriceDesc
+                .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderBySumPriceDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_USE_DATE -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
+                .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponUseDateDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
             case COUPON_COUNT -> settlementRepository
-                .findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCountDesc
+                .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponCountDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
         };
         return settlements.stream().map(SettlementResponse::from).toList();
