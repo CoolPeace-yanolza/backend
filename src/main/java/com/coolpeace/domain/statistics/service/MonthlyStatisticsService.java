@@ -32,9 +32,9 @@ public class MonthlyStatisticsService {
     private final AccommodationRepository accommodationRepository;
     private final SettlementRepository settlementRepository;
 
-    public void updateMonthlySum() {
-        int month = LocalDate.now().getMonthValue();
-        int year = LocalDate.now().getYear();
+    public void updateMonthlySum(int statisticsYear, int statisticsMonth) {
+        int month = checkMonth(statisticsMonth);
+        int year = checkYear(statisticsYear);
         List<Accommodation> accommodations = accommodationRepository.findAll();
 
         accommodations.forEach(accommodation -> {
@@ -71,9 +71,9 @@ public class MonthlyStatisticsService {
         });
     }
 
-    public void updateCouponDownloadTop3() {
-        int month = LocalDate.now().getMonthValue();
-        int year = LocalDate.now().getYear();
+    public void updateCouponDownloadTop3(int statisticsYear, int statisticsMonth) {
+        int month = checkMonth(statisticsMonth);
+        int year = checkYear(statisticsYear);
         List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository.findAll();
         localCouponDownloads.forEach(localCouponDownload -> {
             List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
@@ -129,5 +129,18 @@ public class MonthlyStatisticsService {
     private int getDownloadCountFromId(Long couponId) {
         return couponRepository.findById(couponId)
             .orElseThrow(CouponNotFoundException::new).getDownloadCount();
+    }
+
+    private int checkYear(int year) {
+        if (year == 0 ) {
+            return LocalDate.now().getYear();
+        }
+        return year;
+    }
+    private int checkMonth(int month) {
+        if (month == 0 ) {
+            return LocalDate.now().getDayOfMonth();
+        }
+        return month;
     }
 }

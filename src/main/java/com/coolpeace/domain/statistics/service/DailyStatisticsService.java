@@ -32,9 +32,9 @@ public class DailyStatisticsService {
 
     private final SettlementRepository settlementRepository;
 
-    public void updateSales(){
+    public void updateSales(int statisticsDay){
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
         accommodations.forEach(accommodation -> {
             Member member = accommodation.getMember();
 
@@ -57,9 +57,9 @@ public class DailyStatisticsService {
 
     }
 
-    public void updateCoupon(){
+    public void updateCoupon(int statisticsDay){
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
         accommodations.forEach(accommodation -> {
             int downloadCount = 0;
             int usedCount = 0;
@@ -76,9 +76,9 @@ public class DailyStatisticsService {
         });
     }
 
-    public void updateSettlement(){
+    public void updateSettlement(int statisticsDay){
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
 
         accommodations.forEach(accommodation -> {
             List<Settlement> settlements = settlementRepository
@@ -97,8 +97,15 @@ public class DailyStatisticsService {
             dailyStatistics.setSettlement(sumSettlement);
         });
 
-        }
     }
+
+    private int checkDay(int day){
+        if (day == 0) {
+            return LocalDate.now().getDayOfMonth();
+        }
+        return day;
+    }
+}
 
 
 
