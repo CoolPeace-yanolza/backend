@@ -53,7 +53,7 @@ public class Reservation extends BaseTimeEntity {
     public void updateRoomReservationAndPrices(List<RoomReservation> roomReservations, int roomTotalPrice) {
         this.roomReservations = roomReservations;
         this.discountPrice = this.roomReservations.stream().mapToInt(RoomReservation::getDiscountPrice).sum();
-        this.totalPrice = roomTotalPrice - this.discountPrice;
+        this.totalPrice = Math.max(0, roomTotalPrice - this.discountPrice);
     }
 
     public void updateReservation(ReservationStatusType reservationStatus) {

@@ -55,6 +55,7 @@ public class ReservationService {
                 .mapToInt(roomRes -> roomRes.getRoom().getPrice()).sum();
 
         newReservation.updateRoomReservationAndPrices(roomReservations, totalPrice);
+        reservationRepository.save(newReservation);
     }
 
     @Transactional
@@ -67,7 +68,7 @@ public class ReservationService {
     private int getRoomNumberFromStr(String roomNumberStr) {
         int roomNumber;
         if (roomNumberStr.endsWith("호")) {
-            roomNumber = Integer.parseInt(roomNumberStr.substring(0, roomNumberStr.length() - 2));
+            roomNumber = Integer.parseInt(roomNumberStr.substring(0, roomNumberStr.length() - 1));
         } else {
             roomNumber = Integer.parseInt(roomNumberStr);
         }
