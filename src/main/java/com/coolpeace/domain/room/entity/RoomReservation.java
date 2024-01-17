@@ -32,7 +32,7 @@ public class RoomReservation {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
