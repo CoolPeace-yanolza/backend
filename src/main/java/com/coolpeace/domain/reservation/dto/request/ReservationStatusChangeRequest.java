@@ -1,6 +1,8 @@
 package com.coolpeace.domain.reservation.dto.request;
 
-public record ReservationStatusChangeRequest(
+import com.coolpeace.domain.reservation.entity.type.ReservationStatusType;
 
+public record ReservationStatusChangeRequest(
+        ReservationStatusType status
 ) {
 }
