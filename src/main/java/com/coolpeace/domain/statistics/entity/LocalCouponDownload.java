@@ -1,5 +1,6 @@
 package com.coolpeace.domain.statistics.entity;
 
+import com.coolpeace.domain.accommodation.entity.type.AccommodationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +9,6 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
@@ -33,6 +33,24 @@ public class LocalCouponDownload {
     private Long secondCouponId;
 
     private Long thirdCouponId;
+
+    @Column(nullable = false)
+    private int motelCouponCount = 0;
+
+    @Column(nullable = false)
+    private int motelAccommodationCount = 0;
+
+    @Column(nullable = false)
+    private int pensionAndVillaCouponCount = 0;
+
+    @Column(nullable = false)
+    private int pensionAndVillaAccommodationCount = 0;
+
+    @Column(nullable = false)
+    private int hotelAndResortCouponCount = 0;
+
+    @Column(nullable = false)
+    private int hotelAndResortAccommodationCount = 0;
 
     public LocalCouponDownload(String region) {
         this.region = region;
@@ -80,12 +98,28 @@ public class LocalCouponDownload {
         this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
         this.thirdCouponId = localCouponDownload.getSecondCouponId();
     }
+
     public void setSecondAndThirdCoupon(String secondCouponTitle, Long secondCouponId,
         LocalCouponDownload localCouponDownload) {
         this.secondCouponTitle = secondCouponTitle;
         this.secondCouponId = secondCouponId;
         this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
         this.thirdCouponId = localCouponDownload.getSecondCouponId();
+    }
+
+    public void setCount(int couponCount, AccommodationType type) {
+        if (type.equals(AccommodationType.MOTEL)) {
+            this.motelCouponCount += couponCount;
+            this.motelAccommodationCount +=1;
+        }
+        if (type.equals(AccommodationType.PENSION) || (type.equals(AccommodationType.VILLA))) {
+            this.pensionAndVillaCouponCount += couponCount;
+            this.pensionAndVillaAccommodationCount += 1;
+        }
+        if (type.equals(AccommodationType.HOTEL) || (type.equals(AccommodationType.RESORT))) {
+            this.hotelAndResortCouponCount += couponCount;
+            this.hotelAndResortCouponCount += 1;
+        }
     }
 
 }

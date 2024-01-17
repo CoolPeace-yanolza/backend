@@ -8,13 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SettlementRepository extends JpaRepository<Settlement, Long>,SettlementRepositoryCustom {
-    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderBySumPriceDesc
+    Page<Settlement> findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderBySumPriceDesc
         (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
-    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCompleteAtDesc
+    Page<Settlement> findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCompleteAtDesc
         (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
-    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponCountDesc
+    Page<Settlement> findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponCountDesc
         (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
-    Page<Settlement> findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDateDesc
+    Page<Settlement> findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponUseDateDesc
         (Pageable pageable, Accommodation accommodation, LocalDate startDate, LocalDate endDate);
 
 }

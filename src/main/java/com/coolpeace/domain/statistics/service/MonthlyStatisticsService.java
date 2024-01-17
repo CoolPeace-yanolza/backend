@@ -92,7 +92,8 @@ public class MonthlyStatisticsService {
 
     public void updateLocalCouponDownload() {
         localCouponDownloadRepository.deleteAllInBatch();
-        List<Coupon> coupons = couponRepository.findAll();
+        List<Coupon> coupons = couponRepository
+            .findAllByExposureStartDateGreaterThanEqual(LocalDate.now().minusMonths(1));
         for (Coupon coupon : coupons) {
             String address = coupon.getAccommodation().getSigungu().getName();
             LocalCouponDownload localCouponDownload = localCouponDownloadRepository
@@ -126,6 +127,18 @@ public class MonthlyStatisticsService {
 
     }
 
+    public void updateLocalCouponAvg() {
+        localCouponDownloadRepository.findAll().forEach(localCouponDownload -> {
+            List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
+                localCouponDownload.getRegion());
+            for (Accommodation accommodation : accommodations) {
+                localCouponDownload.setCount(couponRepository.exposureCoupons
+                        (accommodation.getMember().getId(), accommodation.getId()).size(),
+                    accommodation.getAccommodationType());
+            }
+        });
+    }
+
     private int getDownloadCountFromId(Long couponId) {
         return couponRepository.findById(couponId)
             .orElseThrow(CouponNotFoundException::new).getDownloadCount();
@@ -143,4 +156,5 @@ public class MonthlyStatisticsService {
         }
         return month;
     }
+
 }
