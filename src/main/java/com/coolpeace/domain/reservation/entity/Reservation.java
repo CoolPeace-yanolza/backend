@@ -1,25 +1,15 @@
 package com.coolpeace.domain.reservation.entity;
 
-import com.coolpeace.domain.accommodation.entity.Accommodation;
-import com.coolpeace.domain.room.entity.Room;
+import com.coolpeace.domain.reservation.entity.type.ReservationStatusType;
 import com.coolpeace.domain.room.entity.RoomReservation;
 import com.coolpeace.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import java.time.LocalDateTime;
-import java.util.List;
-import jdk.dynalink.linker.LinkerServices;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -30,7 +20,10 @@ public class Reservation extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDateTime startDate;
+
+    @Column(nullable = false)
     private LocalDateTime endDate;
 
     @Column(nullable = false)
@@ -39,7 +32,31 @@ public class Reservation extends BaseTimeEntity {
     @Column(nullable = false)
     private int discountPrice = 0;
 
-    @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private ReservationStatusType reservationStatus = ReservationStatusType.PENDING;
+
+    @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<RoomReservation> roomReservations;
 
+    public Reservation(LocalDateTime startDate,
+                       LocalDateTime endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public static Reservation from(LocalDateTime startDate,
+                            LocalDateTime endDate) {
+        return new Reservation(startDate, endDate);
+    }
+
+    public void updateRoomReservationAndPrices(List<RoomReservation> roomReservations, int roomTotalPrice) {
+        this.roomReservations = roomReservations;
+        this.discountPrice = this.roomReservations.stream().mapToInt(RoomReservation::getDiscountPrice).sum();
+        this.totalPrice = roomTotalPrice - this.discountPrice;
+    }
+
+    public void updateReservation(ReservationStatusType reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
 }
