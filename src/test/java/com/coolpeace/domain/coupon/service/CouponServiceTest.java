@@ -173,7 +173,7 @@ class CouponServiceTest {
 
         @BeforeEach
         void beforeEach() {
-            coupons = CouponTestUtil.getExpiredTestCoupons(accommodation, member, rooms);
+            coupons = CouponTestUtil.getOnlyExpiredTestCoupons(accommodation, member, rooms);
         }
 
         @DisplayName("이전 쿠폰 등록 내역을 조회할 수 있다.")
