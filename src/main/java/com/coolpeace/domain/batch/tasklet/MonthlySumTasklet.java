@@ -21,7 +21,7 @@ public class MonthlySumTasklet implements Tasklet, StepExecutionListener {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("일간 통계 합 Tasklet 시작");
-        monthlyStatisticsService.updateMonthlySum();
+        monthlyStatisticsService.updateMonthlySum(0,0);
 
         return RepeatStatus.FINISHED;
     }
