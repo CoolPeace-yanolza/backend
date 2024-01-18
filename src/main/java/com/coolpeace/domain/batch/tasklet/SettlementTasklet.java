@@ -21,7 +21,7 @@ public class SettlementTasklet implements Tasklet, StepExecutionListener {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("정산 Tasklet 시작");
-        dailyStatisticsService.updateSettlement(0);
+        dailyStatisticsService.updateSettlement(0,0,0);
 
         return RepeatStatus.FINISHED;
     }
