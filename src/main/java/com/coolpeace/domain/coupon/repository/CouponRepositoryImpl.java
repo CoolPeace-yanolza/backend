@@ -1,5 +1,6 @@
 package com.coolpeace.domain.coupon.repository;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
@@ -150,5 +151,13 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         .and(coupon.couponStatus.ne(CouponStatusType.DELETED))
                         .and(coupon.exposureEndDate.before(LocalDate.now().plusDays(3))))
                 .fetch();
+    }
+
+    @Override
+    public List<Coupon> findAllByExposureDate(Accommodation accommodation, LocalDate localDate) {
+        return jpaQueryFactory.selectFrom(coupon)
+            .where(coupon.accommodation.eq(accommodation)
+                .and(coupon.exposureStartDate.before(localDate))
+                .and(coupon.exposureEndDate.after(localDate))).fetch();
     }
 }

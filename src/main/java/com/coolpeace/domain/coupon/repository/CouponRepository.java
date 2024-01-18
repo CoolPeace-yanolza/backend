@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponRepository extends JpaRepository<Coupon,Long>,CouponRepositoryCustom {
     boolean existsByMemberIdAndCouponNumber(Long memberId, String couponNumber);
-    List<Coupon> findAllByAccommodation(Accommodation accommodation);
     List<Coupon> findAllByExposureStartDateGreaterThanEqual(LocalDate localDate);
+    List<Coupon> findAllByAccommodationAndExposureStartDateGreaterThanEqual(Accommodation accommodation,LocalDate localDate);
 }
