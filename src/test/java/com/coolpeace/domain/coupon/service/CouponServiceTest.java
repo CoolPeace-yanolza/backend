@@ -1,7 +1,5 @@
 package com.coolpeace.domain.coupon.service;
 
-import com.coolpeace.global.util.CouponTestUtil;
-import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
@@ -27,6 +25,8 @@ import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
+import com.coolpeace.global.util.CouponTestUtil;
+import com.coolpeace.global.util.RoomTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,9 +48,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -174,7 +173,7 @@ class CouponServiceTest {
 
         @BeforeEach
         void beforeEach() {
-            coupons = CouponTestUtil.getTestCoupons(accommodation, member, rooms);
+            coupons = CouponTestUtil.getExpiredTestCoupons(accommodation, member, rooms);
         }
 
         @DisplayName("이전 쿠폰 등록 내역을 조회할 수 있다.")
@@ -182,7 +181,7 @@ class CouponServiceTest {
         void getRecentHistory_success() {
             // given
             given(couponRepository.findRecentCouponByMemberId(anyLong())).willReturn(
-                    coupons.stream().limit(4).toList());
+                    coupons.stream().limit(6).toList());
 
             // when
             List<CouponResponse> result = couponService.getRecentHistory(member.getId());
@@ -191,6 +190,8 @@ class CouponServiceTest {
             verify(couponRepository).findRecentCouponByMemberId(anyLong());
 
             assertThat(result).isNotNull();
+            Predicate<CouponResponse> getNotExpiredCoupons = couponResponse -> !couponResponse.couponStatus().equals(CouponStatusType.EXPOSURE_END.getValue());
+            assertThat(result.stream().filter(getNotExpiredCoupons).toList().isEmpty()).isTrue();
         }
 
         @DisplayName("이전 쿠폰 등록 내역이 없으면 빈 리스트를 반환한다.")
