@@ -1,6 +1,5 @@
 package com.coolpeace.domain.batch.job;
 
-import com.coolpeace.domain.batch.tasklet.CompleteSettlementTasklet;
 import com.coolpeace.domain.batch.tasklet.CouponDownloadTop3Tasklet;
 import com.coolpeace.domain.batch.tasklet.LocalCouponAvgTasklet;
 import com.coolpeace.domain.batch.tasklet.LocalCouponDownloadTasklet;
@@ -30,8 +29,7 @@ public class MonthlyStatisticsConfig {
         PlatformTransactionManager platformTransactionManager) {
         log.info("월간 통계 집계 시작");
         return new JobBuilder("monthlyStatisticsJob", jobRepository)
-            .start(completeSettlementStep(jobRepository,platformTransactionManager))
-            .next(monthlySumStep(jobRepository, platformTransactionManager))
+            .start(monthlySumStep(jobRepository, platformTransactionManager))
             .next(localCouponDownloadStep(jobRepository, platformTransactionManager))
             .next(couponDownloadTop3Step(jobRepository,platformTransactionManager))
             .next(localCouponAvgStep(jobRepository,platformTransactionManager))
@@ -65,17 +63,6 @@ public class MonthlyStatisticsConfig {
         log.info("getCouponDownloadTop3 step start");
         return new StepBuilder("CouponDownloadTop3Step", jobRepository)
             .tasklet(new CouponDownloadTop3Tasklet(monthlyStatisticsService),
-                platformTransactionManager)
-            .listener(customStepListener)
-            .build();
-    }
-
-    @Bean
-    public Step completeSettlementStep(JobRepository jobRepository,
-        PlatformTransactionManager platformTransactionManager) {
-        log.info("completeSettlement step start");
-        return new StepBuilder("completeSettlementStep", jobRepository)
-            .tasklet(new CompleteSettlementTasklet(monthlyStatisticsService),
                 platformTransactionManager)
             .listener(customStepListener)
             .build();
