@@ -38,6 +38,7 @@ public enum ErrorCode {
     // SETTLEMENT
 
     // RESERVATION
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약의 정보를 찾을 수 없습니다."),
 
     //statistics
     DAILY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일별 통계를 찾을 수 없습니다."),
