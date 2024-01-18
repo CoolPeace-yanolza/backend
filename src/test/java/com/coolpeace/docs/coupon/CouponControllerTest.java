@@ -24,8 +24,9 @@ import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
 import com.coolpeace.global.common.RestDocsIntegrationTest;
-import com.coolpeace.global.util.RoomTestUtil;
+import com.coolpeace.global.util.CouponTestUtil;
 import com.coolpeace.global.util.MemberTestUtil;
+import com.coolpeace.global.util.RoomTestUtil;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
@@ -254,8 +255,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                     .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
             List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
-            Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
-            coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+            couponRepository.saveAll(CouponTestUtil.getTestCoupons(accommodation, storedMember, randomRooms));
 
             // when
             ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/recent")
@@ -263,10 +263,8 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                     .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken()));
 
             // then
-            result
-//                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andDo(document("coupon-recent-history",
+            result.andExpect(status().is2xxSuccessful());
+            result.andDo(document("coupon-recent-history",
                             resource(ResourceSnippetParameters.builder()
                                     .tag(RESOURCE_TAG)
                                     .description("이전 쿠폰 등록 내역 조회 API")
@@ -311,7 +309,6 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
             // then
             result
-//                    .andDo(print())
                     .andExpect(status().isNoContent())
                     .andDo(document("coupon-recent-history-no-content",
                             resource(ResourceSnippetParameters.builder()

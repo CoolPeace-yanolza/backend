@@ -161,7 +161,11 @@ public class Coupon extends BaseTimeEntity {
         if (this.betweenExposureDate(LocalDate.now())) {
             this.changeCouponStatus(CouponStatusType.EXPOSURE_ON);
         } else {
-            this.changeCouponStatus(CouponStatusType.EXPOSURE_WAIT);
+            if (LocalDate.now().isAfter(exposureEndDate)) {
+                this.changeCouponStatus(CouponStatusType.EXPOSURE_END);
+            } else {
+                this.changeCouponStatus(CouponStatusType.EXPOSURE_WAIT);
+            }
         }
     }
 

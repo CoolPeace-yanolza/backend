@@ -37,6 +37,14 @@ public class CouponTestBuilder {
         return this;
     }
 
+    public CouponTestBuilder expiredExposureDates() {
+        long startDate = faker.number().numberBetween(200, 300);
+        long period = faker.random().nextInt(100);
+        this.exposureStartDate = LocalDate.now().minusDays(startDate);
+        this.exposureEndDate = exposureStartDate.plusDays(period);
+        return this;
+    }
+
     public Coupon build() {
         String title = faker.lorem().characters(10, 20);
 
@@ -68,6 +76,7 @@ public class CouponTestBuilder {
             this.exposureStartDate = LocalDate.now().plusDays(startDate);
             this.exposureEndDate = exposureStartDate.plusDays(period);
         }
+
 
         return Coupon.from(
                 title,
