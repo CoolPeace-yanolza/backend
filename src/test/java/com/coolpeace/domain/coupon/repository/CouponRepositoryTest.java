@@ -71,9 +71,9 @@ class CouponRepositoryTest extends QueryDSLRepositoryTest {
     void findAllCoupons_success() {
         //given
         SearchCouponParams params = new SearchCouponParams(
-                SearchCouponStatusFilterType.EXPOSURE_OFF,
+                SearchCouponStatusFilterType.EXPOSURE_OFF.getValue(),
                 null,
-                SearchCouponDateFilterType.SIX_MONTHS
+                SearchCouponDateFilterType.SIX_MONTHS.getValue()
         );
 
         //when
