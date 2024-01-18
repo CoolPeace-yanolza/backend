@@ -23,7 +23,7 @@ public class LocalCouponAvgTasklet implements Tasklet, StepExecutionListener {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("지역 쿠폰 평균 갯수 Tasklet 시작");
-        monthlyStatisticsService.updateLocalCouponAvg();
+        monthlyStatisticsService.updateLocalCouponAvg(0,0);
 
         return RepeatStatus.FINISHED;
     }

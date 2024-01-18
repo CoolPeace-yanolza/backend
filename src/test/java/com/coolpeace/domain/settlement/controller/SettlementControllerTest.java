@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
+import com.coolpeace.domain.settlement.repository.OrderBy;
 import com.coolpeace.domain.settlement.service.SettlementService;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -71,7 +72,10 @@ class SettlementControllerTest  {
         given(settlementService.searchSettlement(any(), anyLong(), any(SearchSettlementParams.class),
                 anyInt(),anyInt())).willReturn(settlementResponseList);
         //when,then
-        mockMvc.perform(get("/v1/settlements/{accommodation_id}", 1L))
+        mockMvc.perform(get("/v1/settlements/{accommodation_id}", 1L)
+                .queryParam("start","2023-09-27")
+                .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
+                .queryParam("end","2023-12-03"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].coupon_use_date").exists())
             .andExpect(jsonPath("$[0].coupon_count").isNumber())

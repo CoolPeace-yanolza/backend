@@ -22,7 +22,7 @@ public class ReservationTasklet implements Tasklet, StepExecutionListener {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("매출 Tasklet 시작");
-        dailyStatisticsService.updateSales();
+        dailyStatisticsService.updateSales(0,0,0);
 
         return RepeatStatus.FINISHED;
     }

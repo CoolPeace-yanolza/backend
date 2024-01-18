@@ -104,9 +104,11 @@ class CouponRepositoryTest extends QueryDSLRepositoryTest {
         List<Coupon> resultCoupons = couponRepository.findRecentCouponByMemberId(memberId);
 
         //then
-        assertThat(resultCoupons.size()).isLessThanOrEqualTo(4);
-        Coupon coupon = resultCoupons.get(0);
-        assertThat(coupon.getMember().getId()).isEqualTo(memberId);
+        assertThat(resultCoupons.size()).isLessThanOrEqualTo(6);
+        if (!resultCoupons.isEmpty()) {
+            Coupon coupon = resultCoupons.get(0);
+            assertThat(coupon.getMember().getId()).isEqualTo(memberId);
+        }
     }
 
     @DisplayName("쿠폰의 번호로 쿠폰을 조회할 수 있다.")

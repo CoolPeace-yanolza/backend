@@ -21,7 +21,7 @@ public class CouponDownloadTop3Tasklet implements Tasklet, StepExecutionListener
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("쿠폰 Tasklet 시작");
-        monthlyStatisticsService.updateCouponDownloadTop3();
+        monthlyStatisticsService.updateCouponDownloadTop3(0,0);
 
         return RepeatStatus.FINISHED;
     }

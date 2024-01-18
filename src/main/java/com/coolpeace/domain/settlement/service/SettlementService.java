@@ -10,6 +10,7 @@ import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
+import com.coolpeace.domain.settlement.entity.SearchDate;
 import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
@@ -37,6 +38,7 @@ public class SettlementService {
 
     public SumSettlementResponse sumSettlement(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
+        SearchDate searchDate = SearchDate.getsearchDate();
         List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
             .findAllByAccommodation(accommodation);
 
@@ -48,8 +50,8 @@ public class SettlementService {
 
         lastMonthSumSettlement = monthlyStatisticsRepository
             .findByAccommodationAndStatisticsYearAndStatisticsMonth
-                (accommodation, LocalDate.now().getYear(), LocalDate.now().getMonth().getValue())
-            .orElse(MonthlyStatistics.emptyMonthlyStatistics()).getSettlementAmount();
+                (accommodation, searchDate.year(), searchDate.month())
+            .orElseGet(MonthlyStatistics::emptyMonthlyStatistics).getSettlementAmount();
 
         return SumSettlementResponse.from(thisMonthSumSettlement, lastMonthSumSettlement);
     }
@@ -58,10 +60,10 @@ public class SettlementService {
         SearchSettlementParams searchSettlementParams, int page, int pageSize) {
 
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
-        LocalDate startDate = LocalDate.parse(searchSettlementParams.startDate());
-        LocalDate endDate = LocalDate.parse(searchSettlementParams.endDate());
+        LocalDate startDate = LocalDate.parse(searchSettlementParams.start());
+        LocalDate endDate = LocalDate.parse(searchSettlementParams.end());
 
-        Page<Settlement> settlements = switch (searchSettlementParams.orderBy()) {
+        Page<Settlement> settlements = switch (searchSettlementParams.order()) {
             case COMPLETE_AT -> settlementRepository
                 .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCompleteAtDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);

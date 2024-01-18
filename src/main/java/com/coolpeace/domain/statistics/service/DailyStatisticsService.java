@@ -32,13 +32,16 @@ public class DailyStatisticsService {
 
     private final SettlementRepository settlementRepository;
 
-    public void updateSales(){
+    public void updateSales(int statisticsYear, int statisticsMonth, int statisticsDay){
+        int year = checkYear(statisticsYear);
+        int month = checkMonth(statisticsMonth);
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
         accommodations.forEach(accommodation -> {
             Member member = accommodation.getMember();
 
-            List<Reservation> reservations = reservationRepository.findByAccommodation(accommodation);
+            List<Reservation> reservations = reservationRepository
+                .findByAccommodation(year,month,day,accommodation);
 
             int totalSales = reservations.stream()
                 .mapToInt(Reservation::getTotalPrice)
@@ -57,32 +60,38 @@ public class DailyStatisticsService {
 
     }
 
-    public void updateCoupon(){
+    public void updateCoupon(int statisticsYear, int statisticsMonth, int statisticsDay){
+        int year = checkYear(statisticsYear);
+        int month = checkMonth(statisticsMonth);
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
         accommodations.forEach(accommodation -> {
             int downloadCount = 0;
             int usedCount = 0;
             Member member = accommodation.getMember();
-            List<Coupon> coupons = couponRepository.findAllByAccommodation(accommodation);
+            List<Coupon> coupons = couponRepository.
+                findAllByExposureDate(accommodation,LocalDate.of(year,month,day));
+
             for (Coupon coupon : coupons) {
                 downloadCount += coupon.getDownloadCount();
                 usedCount += coupon.getUseCount();
             }
             DailyStatistics dailyStatistics = dailyStatisticsRepository
                 .findByAccommodationAndStatisticsDay(accommodation,day)
-                .orElse(new DailyStatistics(day,member, accommodation));
+                .orElseGet(()->new DailyStatistics(day,member, accommodation));
             dailyStatistics.setCoupon(downloadCount, usedCount);
         });
     }
 
-    public void updateSettlement(){
+    public void updateSettlement(int statisticsYear, int statisticsMonth, int statisticsDay){
+        int year = checkYear(statisticsYear);
+        int month = checkMonth(statisticsMonth);
+        int day = checkDay(statisticsDay);
         List<Accommodation> accommodations = accommodationRepository.findAll();
-        int day = LocalDate.now().getDayOfMonth();
 
         accommodations.forEach(accommodation -> {
             List<Settlement> settlements = settlementRepository
-                .findAllByAccommodationForDailyUpdate(accommodation);
+                .findAllByAccommodationForDailyUpdate(LocalDate.of(year,month,day),accommodation);
 
             int sumSettlement = 0;
 
@@ -97,8 +106,27 @@ public class DailyStatisticsService {
             dailyStatistics.setSettlement(sumSettlement);
         });
 
-        }
     }
+
+    private int checkDay(int day){
+        if (day == 0) {
+            return LocalDate.now().getDayOfMonth();
+        }
+        return day;
+    }
+    private int checkYear(int year) {
+        if (year == 0 ) {
+            return LocalDate.now().getYear();
+        }
+        return year;
+    }
+    private int checkMonth(int month) {
+        if (month == 0 ) {
+            return LocalDate.now().getDayOfMonth();
+        }
+        return month;
+    }
+}
 
 
 

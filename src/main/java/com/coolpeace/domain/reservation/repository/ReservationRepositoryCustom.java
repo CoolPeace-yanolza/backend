@@ -5,5 +5,5 @@ import com.coolpeace.domain.reservation.entity.Reservation;
 import java.util.List;
 
 public interface ReservationRepositoryCustom {
-    List<Reservation> findByAccommodation(Accommodation accommodation);
+    List<Reservation> findByAccommodation(int year, int month, int day, Accommodation accommodation);
 }
