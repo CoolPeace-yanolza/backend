@@ -96,9 +96,10 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
-                .where(coupon.member.id.eq(memberId))
+                .where(coupon.member.id.eq(memberId),
+                        coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END))
                 .orderBy(coupon.createdAt.desc())
-                .limit(4)
+                .limit(6)
                 .fetch();
     }
 
