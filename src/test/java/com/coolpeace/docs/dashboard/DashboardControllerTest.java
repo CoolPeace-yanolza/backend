@@ -7,10 +7,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.response.CouponDailyResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
@@ -18,6 +18,7 @@ import com.coolpeace.domain.coupon.entity.CouponDailyCondition;
 import com.coolpeace.domain.coupon.service.CouponQueryService;
 import com.coolpeace.domain.dashboard.controller.DashboardController;
 import com.coolpeace.domain.dashboard.dto.response.ByYearCumulativeDataResponse;
+import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
 import com.coolpeace.domain.dashboard.dto.response.CumulativeDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataLightResponse;
@@ -33,6 +34,7 @@ import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
 import com.coolpeace.global.config.RestDocsUnitTest;
+import com.coolpeace.global.util.RoomTestUtil;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
@@ -49,15 +51,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 @WebMvcTest(DashboardController.class)
 class DashboardControllerTest extends RestDocsUnitTest {
 
+    private static final String MOCK_AUTHORIZATION_HEADER = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIyIiwiY2xpZW50X2VtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlzcyI6ImNvb2xwZWFjZSIsImlhdCI6MTcwNDYzODY5NSwiZXhwIjoxNzA0Njc0Njk1fQ.Re2QfSHVBJ9gKq8rCpv8wlvSuDS80jwEjHgGIxg840Og1ng6R_cozWOgw_eU9hgoYW0NUIAZLW322scfkUCRvQ";
+
     @MockBean
     private DashboardService dashboardService;
     @MockBean
     private CouponQueryService couponQueryService;
 
-
     @Test
     @DisplayName("월간 비교 그래프 조회")
-    @WithMockUser
     void monthlyData_success() throws Exception {
         //given
         Member member = new MemberTestBuilder().encoded().build();
@@ -69,7 +71,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
         given(dashboardService.monthlyData(any(), anyLong())).willReturn(monthlyDataResponses);
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders
-                .get("/v1/dashboards/{accommodation_id}/reports/month", 1L))
+                .get("/v1/dashboards/{accommodation_id}/reports/month", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-monthly",
                 resource(ResourceSnippetParameters.builder()
@@ -118,7 +121,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
 
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
-                .get("/v1/dashboards/{accommodation_id}/reports/week", 1L))
+                .get("/v1/dashboards/{accommodation_id}/reports/week", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-weekly",
                 resource(ResourceSnippetParameters.builder()
@@ -154,13 +158,14 @@ class DashboardControllerTest extends RestDocsUnitTest {
         couponList.add(coupon1);
         couponList.add(coupon2);
         CouponDailyResponse couponDailyResponse = CouponDailyResponse.from
-            (CouponDailyCondition.EXPIRATION_3DAYS,
+            (3,CouponDailyCondition.EXPIRATION_3DAYS,
                 couponList.stream().map(Coupon::getCouponTitle).toList());
         given(couponQueryService.dailyReport(any(), anyLong())).willReturn(couponDailyResponse);
 
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
-                .get("/v1/dashboards/{accommodation_id}/reports/daily", 1L))
+                .get("/v1/dashboards/{accommodation_id}/reports/daily", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-daily",
                 resource(ResourceSnippetParameters.builder()
@@ -168,6 +173,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
                     .description("일간 쿠폰 리포트 API")
                     .responseSchema(Schema.schema(CouponDailyResponse.class.getSimpleName()))
                     .responseFields(
+                        fieldWithPath("condition_num").type(JsonFieldType.NUMBER)
+                            .description("상태 넘버"),
                         fieldWithPath("condition").type(JsonFieldType.STRING)
                             .description("조건에 맞는 상태"),
                         fieldWithPath("coupon_titles[]").type(JsonFieldType.ARRAY)
@@ -192,7 +199,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
 
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
-                .get("/v1/dashboards/{accommodation_id}/coupons/download", 1L))
+                .get("/v1/dashboards/{accommodation_id}/coupons/local/download", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-download",
                 resource(ResourceSnippetParameters.builder()
@@ -210,6 +218,38 @@ class DashboardControllerTest extends RestDocsUnitTest {
                     .build()
                 )));
     }
+
+    @Test
+    @DisplayName("지역,숙소타입별 쿠폰 평균 갯수")
+    @WithMockUser
+    void couponCountAvg_success() throws Exception {
+        //given
+        CouponCountAvgResponse couponCountAvgResponse =
+            CouponCountAvgResponse.from(11, 2, "강남구");
+
+        given(dashboardService.couponCountAvg(any(), anyLong())).willReturn(couponCountAvgResponse);
+
+        //when, then
+        mockMvc.perform(RestDocumentationRequestBuilders
+                .get("/v1/dashboards/{accommodation_id}/coupons/local/count", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
+            .andExpect(status().isOk())
+            .andDo(document("dashboard-count",
+                resource(ResourceSnippetParameters.builder()
+                    .tag("대시보드")
+                    .description("지역,숙소타입별 쿠폰 평균 갯수 API")
+                    .responseSchema(Schema.schema(MonthlyCouponDownloadResponse.class.getSimpleName()))
+                    .responseFields(
+                        fieldWithPath("address").type(JsonFieldType.STRING)
+                            .description("주소"),
+                        fieldWithPath("coupon_avg").type(JsonFieldType.STRING)
+                            .description("쿠폰 평균 개수")
+                    )
+                    .build()
+                )));
+
+    }
+
     @Test
     @DisplayName("연도별 누적 리포트")
     @WithMockUser
@@ -227,7 +267,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/year", 1L)
-                .queryParam("year","2023"))
+                .queryParam("year","2023")
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-year",
                 resource(ResourceSnippetParameters.builder()
@@ -267,7 +308,8 @@ class DashboardControllerTest extends RestDocsUnitTest {
         given(dashboardService.cumulativeData(any(), anyLong())).willReturn(from);
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders.
-                get("/v1/dashboards/{accommodation_id}/reports/total", 1L))
+                get("/v1/dashboards/{accommodation_id}/reports/total", 1L)
+                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("dashboard-total",
                 resource(ResourceSnippetParameters.builder()

@@ -2,13 +2,7 @@ package com.coolpeace.domain.room.entity;
 
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.reservation.entity.Reservation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,18 +16,37 @@ public class RoomReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int discountPrice;
+    @Column(nullable = false)
+    private int discountPrice = 0;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    @ManyToOne
-    @JoinColumn(name = "reservation_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
+    public RoomReservation(Room room, Reservation reservation) {
+        this.room = room;
+        this.reservation = reservation;
+    }
+
+    public RoomReservation(Room room, Reservation reservation, Coupon coupon) {
+        this.room = room;
+        this.reservation = reservation;
+        this.coupon = coupon;
+        this.discountPrice = switch (coupon.getDiscountType()) {
+            case FIXED_RATE -> room.getPrice() * coupon.getDiscountValue();
+            case FIXED_PRICE -> coupon.getDiscountValue();
+        };
+    }
+
+    public static RoomReservation from(Room room, Reservation reservation, Coupon coupon) {
+        return new RoomReservation(room, reservation, coupon);
+    }
 }

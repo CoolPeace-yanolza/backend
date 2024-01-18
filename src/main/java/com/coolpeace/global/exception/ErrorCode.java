@@ -38,10 +38,12 @@ public enum ErrorCode {
     // SETTLEMENT
 
     // RESERVATION
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약의 정보를 찾을 수 없습니다."),
 
     //statistics
     DAILY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일별 통계를 찾을 수 없습니다."),
-    MONTHLY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 월별 통계를 찾을 수 없습니다."),
+    MONTHLY_STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "아직 월별 통계 집계가 되지 않았습니다."),
+    LOCAL_COUPON_DOWNLOAD_NOT_FOUND(HttpStatus.NOT_FOUND, "아직 월별 쿠폰 집계가 되지 않았습니다"),
 
     // JWT
     JWT_INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
