@@ -1,8 +1,11 @@
 package com.coolpeace.domain.coupon.repository;
 
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
+import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
+import com.coolpeace.global.common.ValuedEnum;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -22,6 +25,8 @@ import java.util.stream.Collectors;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 import static com.coolpeace.domain.coupon.entity.QCouponRooms.couponRooms;
+import static com.coolpeace.domain.coupon.entity.type.CouponStatusType.EXPOSURE_OFF;
+import static com.coolpeace.domain.coupon.entity.type.CouponStatusType.EXPOSURE_ON;
 import static com.coolpeace.domain.room.entity.QRoom.room;
 
 public class CouponRepositoryImpl extends QuerydslRepositorySupport implements CouponRepositoryCustom {
@@ -40,9 +45,9 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
 
         // 쿠폰 상태
         if (params.status() != null) {
-            searchCouponPredicate.and(switch (params.status()) {
-                case EXPOSURE_ON -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON);
-                case EXPOSURE_OFF -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_OFF)
+            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponStatusFilterType.class, params.status())) {
+                case EXPOSURE_ON -> coupon.couponStatus.eq(EXPOSURE_ON);
+                case EXPOSURE_OFF -> coupon.couponStatus.eq(EXPOSURE_OFF)
                         .or(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT));
                 case EXPIRED -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END)
                         .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
@@ -57,7 +62,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
 
         // 쿠폰 날짜
         if (params.date() != null) {
-            searchCouponPredicate.and(switch (params.date()) {
+            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponDateFilterType.class, params.date())) {
                 case THREE_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(3));
                 case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
                 case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
@@ -118,7 +123,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
-                        .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON)))
+                        .and(coupon.couponStatus.eq(EXPOSURE_ON)))
                 .fetch();
     }
 
@@ -138,7 +143,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
-                        .and(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_ON)))
+                        .and(coupon.couponStatus.eq(EXPOSURE_ON)))
                 .fetch().isEmpty();
     }
 
