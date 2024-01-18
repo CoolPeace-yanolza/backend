@@ -15,6 +15,7 @@ import com.coolpeace.domain.settlement.controller.SettlementController;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
+import com.coolpeace.domain.settlement.repository.OrderBy;
 import com.coolpeace.domain.settlement.service.SettlementService;
 import com.coolpeace.global.config.RestDocsUnitTest;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -86,9 +87,9 @@ class SettlementControllerTest extends RestDocsUnitTest {
             anyInt(),anyInt())).willReturn(settlementResponseList);
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}", 1)
-                .queryParam("end_date","2023-09-27")
-                .queryParam("order_by","coupon_use_date")
-                .queryParam("start_date","2023-12-03")
+                .queryParam("start","2023-09-27")
+                .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
+                .queryParam("end","2023-12-03")
                 .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-search",
@@ -98,9 +99,9 @@ class SettlementControllerTest extends RestDocsUnitTest {
                     .queryParameters(
                         parameterWithName("page").type(SimpleType.INTEGER).description("페이지 수").optional(),
                         parameterWithName("page_size").type(SimpleType.INTEGER).description("페이지 사이즈").optional(),
-                        parameterWithName("start_date").type(SimpleType.STRING).description("검색 시작일"),
-                        parameterWithName("end_date").type(SimpleType.STRING).description("검색 종료일"),
-                        parameterWithName("order_by").type(SimpleType.STRING).description("정렬 기준")
+                        parameterWithName("start").type(SimpleType.STRING).description("검색 시작일"),
+                        parameterWithName("end").type(SimpleType.STRING).description("검색 종료일"),
+                        parameterWithName("order").type(SimpleType.STRING).description("정렬 기준")
                     )
                     .responseSchema(Schema.schema(SettlementResponse.class.getSimpleName()))
                     .responseFields(
