@@ -8,6 +8,6 @@ public record CouponExposeRequest(
 
         @NotNull(message = "쿠폰의 상태를 입력해야 합니다.")
         @ValidEnum(enumClass = CouponStatusType.class, message = "올바른 쿠폰 상태를 입력해야 합니다.")
-        CouponStatusType couponStatus
+        String couponStatus
 ) {
 }

@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,19 +18,19 @@ public record CouponRegisterRequest(
         String title,
         @NotNull(message = "고객의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = CustomerType.class, message = "올바르지 않은 고객의 유형입니다.")
-        CustomerType customerType,
+        String customerType,
 
         // 할인 정책
         @NotNull(message = "할인의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = DiscountType.class, message = "올바르지 않은 할인의 유형입니다.")
-        DiscountType discountType,
+        String discountType,
         @NotNull(message = "할인의 값을 입력해야 합니다.")
         Integer discountValue,
 
         // 객실 유형
         @NotNull(message = "객실의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 객실의 유형입니다.")
-        CouponRoomType couponRoomType,
+        String couponRoomType,
 
         // 숙소 ID
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
@@ -44,7 +43,7 @@ public record CouponRegisterRequest(
 
         // 쿠폰 사용 조건
         Integer minimumReservationPrice,
-        List<DayOfWeek> couponUseConditionDays,
+        List<String> couponUseConditionDays,
 
         // 노출 날짜
         @NotNull(message = "노출 시작 날짜를 입력해야 합니다.")
