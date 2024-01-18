@@ -21,7 +21,7 @@ public class LocalCouponDownloadTasklet implements Tasklet, StepExecutionListene
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
         throws Exception {
         log.info("지역 쿠폰 다운로드 Tasklet 시작");
-        monthlyStatisticsService.updateLocalCouponDownload();
+        monthlyStatisticsService.updateLocalCouponDownload(0,0);
         return RepeatStatus.FINISHED;
     }
 }

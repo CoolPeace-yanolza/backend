@@ -1,9 +1,11 @@
 package com.coolpeace.domain.coupon.repository;
 
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
+import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -29,5 +31,6 @@ public interface CouponRepositoryCustom {
 
     List<Coupon> expiration3days(Long memberId,Long accommodationId);
 
+    List<Coupon> findAllByExposureDate(Accommodation accommodation, LocalDate localDate);
 
 }

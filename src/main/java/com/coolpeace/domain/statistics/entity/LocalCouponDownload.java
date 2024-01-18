@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +21,18 @@ public class LocalCouponDownload {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Min(value = 2000)
+    private int statisticsYear;
+
+    @Min(value = 1)
+    @Max(value = 12)
+    private int statisticsMonth;
+
+    @Column(nullable = false)
     private String region;
 
-    private String firstCouponTitle;
+    @Column(nullable = false)
+    private String firstCouponTitle="";
 
     private String secondCouponTitle;
 
@@ -52,8 +62,10 @@ public class LocalCouponDownload {
     @Column(nullable = false)
     private int hotelAndResortAccommodationCount = 0;
 
-    public LocalCouponDownload(String region) {
+    public LocalCouponDownload(String region,int year, int month) {
         this.region = region;
+        this.statisticsYear = year;
+        this.statisticsMonth = month;
     }
 
     public LocalCouponDownload(Long id, String region, String firstCouponTitle,
@@ -74,16 +86,6 @@ public class LocalCouponDownload {
         this.thirdCouponId = couponId;
     }
 
-    public void setFirstCoupon(String firstCouponTitle, Long firstCouponId) {
-        this.firstCouponTitle = firstCouponTitle;
-        this.firstCouponId = firstCouponId;
-    }
-
-    public void setSecondCoupon(String secondCouponTitle, Long secondCouponId) {
-        this.secondCouponTitle = secondCouponTitle;
-        this.secondCouponId = secondCouponId;
-    }
-
     public void setThirdCoupon(String thirdCouponTitle, Long thirdCouponId) {
         this.thirdCouponTitle = thirdCouponTitle;
         this.thirdCouponId = thirdCouponId;
@@ -91,20 +93,20 @@ public class LocalCouponDownload {
 
     public void setAllCoupon(String firstCouponTitle, Long firstCouponId,
         LocalCouponDownload localCouponDownload) {
-        this.firstCouponTitle = firstCouponTitle;
-        this.firstCouponId = firstCouponId;
-        this.secondCouponTitle = localCouponDownload.getFirstCouponTitle();
-        this.secondCouponId = localCouponDownload.getFirstCouponId();
         this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
         this.thirdCouponId = localCouponDownload.getSecondCouponId();
+        this.secondCouponTitle = localCouponDownload.getFirstCouponTitle();
+        this.secondCouponId = localCouponDownload.getFirstCouponId();
+        this.firstCouponTitle = firstCouponTitle;
+        this.firstCouponId = firstCouponId;
     }
 
     public void setSecondAndThirdCoupon(String secondCouponTitle, Long secondCouponId,
         LocalCouponDownload localCouponDownload) {
-        this.secondCouponTitle = secondCouponTitle;
-        this.secondCouponId = secondCouponId;
         this.thirdCouponTitle = localCouponDownload.getSecondCouponTitle();
         this.thirdCouponId = localCouponDownload.getSecondCouponId();
+        this.secondCouponTitle = secondCouponTitle;
+        this.secondCouponId = secondCouponId;
     }
 
     public void setCount(int couponCount, AccommodationType type) {
@@ -118,7 +120,7 @@ public class LocalCouponDownload {
         }
         if (type.equals(AccommodationType.HOTEL) || (type.equals(AccommodationType.RESORT))) {
             this.hotelAndResortCouponCount += couponCount;
-            this.hotelAndResortCouponCount += 1;
+            this.hotelAndResortAccommodationCount += 1;
         }
     }
 

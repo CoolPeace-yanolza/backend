@@ -202,8 +202,7 @@ class DashboardServiceTest {
             Optional.of(accommodation));
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(monthlyStatisticsRepository.findByAccommodationAndStatisticsYearAndStatisticsMonth
-            (accommodation, LocalDateTime.now().getYear(),
-                LocalDateTime.now().getMonth().getValue()))
+            (any(Accommodation.class), anyInt(),anyInt()))
             .willReturn(Optional.of(monthlyStatistics));
 
         //when
@@ -223,10 +222,10 @@ class DashboardServiceTest {
         Accommodation accommodation = new AccommodationTestBuilder(member).build();
         accommodation.setType(AccommodationType.MOTEL);
         String name = accommodation.getSigungu().getName();
-        LocalCouponDownload localCouponDownload = new LocalCouponDownload(name);
+        LocalCouponDownload localCouponDownload = new LocalCouponDownload(name,2023,12);
         localCouponDownload.setCount(5, AccommodationType.MOTEL);
         localCouponDownload.setCount(6, AccommodationType.MOTEL);
-        given(localCouponDownloadRepository.findByRegion(any()))
+        given(localCouponDownloadRepository.findByRegionAndStatisticsYearAndStatisticsMonth(any(),anyInt(),anyInt()))
             .willReturn(Optional.of(localCouponDownload));
         given(accommodationRepository.findById(anyLong())).willReturn(
             Optional.of(accommodation));

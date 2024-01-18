@@ -6,8 +6,6 @@ import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
-import com.coolpeace.domain.settlement.entity.Settlement;
-import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
@@ -30,7 +28,6 @@ public class MonthlyStatisticsService {
     private final CouponRepository couponRepository;
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
     private final AccommodationRepository accommodationRepository;
-    private final SettlementRepository settlementRepository;
 
     public void updateMonthlySum(int statisticsYear, int statisticsMonth) {
         int month = checkMonth(statisticsMonth);
@@ -44,7 +41,10 @@ public class MonthlyStatisticsService {
 
             if (!dailyStatisticsList.isEmpty()) {
                 MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository
-                    .save(new MonthlyStatistics(year, month, member, accommodation));
+                    .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, year,
+                        month)
+                    .orElseGet(()->monthlyStatisticsRepository.save
+                        (new MonthlyStatistics(year, month, member, accommodation)));
 
                 dailyStatisticsList.forEach(dailyStatistics -> monthlyStatistics.setMonthlySum(
                     dailyStatistics.getTotalSales(),
@@ -59,22 +59,12 @@ public class MonthlyStatisticsService {
         });
     }
 
-    public void completeSettlement() {
-        List<Accommodation> accommodations = accommodationRepository.findAll();
-
-        accommodations.forEach(accommodation -> {
-            List<Settlement> settlements = settlementRepository.
-                findAllByAccommodationForDailyUpdate(accommodation);
-            for (Settlement settlement : settlements) {
-                settlement.completeSettlement();
-            }
-        });
-    }
 
     public void updateCouponDownloadTop3(int statisticsYear, int statisticsMonth) {
         int month = checkMonth(statisticsMonth);
         int year = checkYear(statisticsYear);
-        List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository.findAll();
+        List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository
+            .findAllByStatisticsYearAndStatisticsMonth(year,month);
         localCouponDownloads.forEach(localCouponDownload -> {
             List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
                 localCouponDownload.getRegion());
@@ -83,23 +73,24 @@ public class MonthlyStatisticsService {
                 monthlyStatisticsRepository
                     .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, year,
                         month)
-                    .orElse(monthlyStatisticsRepository.save
+                    .orElseGet(()->monthlyStatisticsRepository.save
                         (new MonthlyStatistics(year, month, member, accommodation)))
                     .setLocalCouponDownloadTop3(localCouponDownload);
             });
         });
     }
 
-    public void updateLocalCouponDownload() {
-        localCouponDownloadRepository.deleteAllInBatch();
-        List<Coupon> coupons = couponRepository
-            .findAllByExposureStartDateGreaterThanEqual(LocalDate.now().minusMonths(1));
+    public void updateLocalCouponDownload(int statisticsYear, int statisticsMonth) {
+        int month = checkMonth(statisticsMonth);
+        int year = checkYear(statisticsYear);
+        List<Coupon> coupons = couponRepository.findAllByExposureStartDateGreaterThanEqual
+            (LocalDate.of(year,month,1));
         for (Coupon coupon : coupons) {
             String address = coupon.getAccommodation().getSigungu().getName();
             LocalCouponDownload localCouponDownload = localCouponDownloadRepository
-                .findByRegion(address)
-                .orElseGet(
-                    () -> localCouponDownloadRepository.save(new LocalCouponDownload(address)));
+                .findByRegionAndStatisticsYearAndStatisticsMonth(address,year,month).orElseGet
+                    (()->localCouponDownloadRepository
+                        .save(new LocalCouponDownload(address,year,month)));
             if (localCouponDownload.getFirstCouponTitle().isBlank()) {
                 localCouponDownload.init(coupon.getCouponTitle(), coupon.getId());
                 continue;
@@ -127,13 +118,17 @@ public class MonthlyStatisticsService {
 
     }
 
-    public void updateLocalCouponAvg() {
-        localCouponDownloadRepository.findAll().forEach(localCouponDownload -> {
+    public void updateLocalCouponAvg(int statisticsYear, int statisticsMonth) {
+        int month = checkMonth(statisticsMonth);
+        int year = checkYear(statisticsYear);
+        localCouponDownloadRepository.findAllByStatisticsYearAndStatisticsMonth(year,month)
+            .forEach(localCouponDownload -> {
             List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
                 localCouponDownload.getRegion());
             for (Accommodation accommodation : accommodations) {
-                localCouponDownload.setCount(couponRepository.exposureCoupons
-                        (accommodation.getMember().getId(), accommodation.getId()).size(),
+                localCouponDownload.setCount(couponRepository
+                        .findAllByAccommodationAndExposureStartDateGreaterThanEqual
+                            (accommodation,LocalDate.of(year,month,1)).size(),
                     accommodation.getAccommodationType());
             }
         });
