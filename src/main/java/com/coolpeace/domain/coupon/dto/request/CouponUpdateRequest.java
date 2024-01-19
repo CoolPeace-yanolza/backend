@@ -17,7 +17,7 @@ public record CouponUpdateRequest(
 //        @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 고객의 유형입니다.")
         String couponRoomType,
         Boolean registerAllRoom,
-        List<Integer> registerRooms,
+        List<String> registerRooms,
         Integer minimumReservationPrice,
         List<String> couponUseConditionDays,
         @JsonFormat(pattern = "yyyy-MM-dd")

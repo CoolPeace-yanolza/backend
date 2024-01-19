@@ -22,7 +22,7 @@ public class RoomTestBuilder {
 
     public Room build() {
         return Room.from(
-                faker.number().numberBetween(101, 1000),
+                String.valueOf(faker.number().numberBetween(101, 1000)),
                 CouponRoomType.values()[faker.random().nextInt(CouponRoomType.values().length)].getValue(),
                 faker.number().numberBetween(1, 100) * 10000,
                 accommodation
@@ -36,7 +36,7 @@ public class RoomTestBuilder {
         Collections.shuffle(roomNumberList);
         return IntStream.range(0, roomCount)
                 .mapToObj(i -> Room.from(
-                        roomNumberList.get(i),
+                                String.valueOf(roomNumberList.get(i)),
                         CouponRoomType.values()[faker.random().nextInt(CouponRoomType.values().length)].getValue(),
                         faker.number().numberBetween(1, 100) * 10000,
                         accommodation

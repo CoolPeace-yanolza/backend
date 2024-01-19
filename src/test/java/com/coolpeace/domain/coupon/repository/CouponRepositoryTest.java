@@ -77,7 +77,8 @@ class CouponRepositoryTest extends QueryDSLRepositoryTest {
         );
 
         //when
-        Page<Coupon> couponPage = couponRepository.findAllCoupons(member.getId(), params, PageRequest.of(0, 10));
+        Page<Coupon> couponPage = couponRepository.findAllCoupons(member.getId(), accommodation.getId(),
+                params, PageRequest.of(0, 10));
 
         //then
         assertThat(couponPage).isNotNull();
@@ -89,7 +90,7 @@ class CouponRepositoryTest extends QueryDSLRepositoryTest {
             }
             Coupon coupon = couponOptional.get();
             assertThat(coupon.getCouponStatus() == CouponStatusType.EXPOSURE_OFF
-                || coupon.getCouponStatus() == CouponStatusType.EXPOSURE_WAIT).isTrue();
+                    || coupon.getCouponStatus() == CouponStatusType.EXPOSURE_WAIT).isTrue();
             assertThat(coupon.getCreatedAt()).isAfter(LocalDateTime.now().minusMonths(6));
         }
     }

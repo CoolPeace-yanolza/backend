@@ -5,17 +5,17 @@ import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
-import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface CouponRepositoryCustom {
 
-    Page<Coupon> findAllCoupons(Long memberId, SearchCouponParams params, PageRequest pageable);
+    Page<Coupon> findAllCoupons(Long memberId, Long accommodationId, SearchCouponParams params, PageRequest pageable);
 
     Map<CouponStatusType, Long> countCouponsByCouponStatus();
 

@@ -8,7 +8,7 @@ public record RoomResponse(
 
     Long id,
 
-    Integer roomNumber,
+    String roomNumber,
 
     String roomType,
 

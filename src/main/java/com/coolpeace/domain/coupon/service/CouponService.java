@@ -48,8 +48,8 @@ public class CouponService {
     private final RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
-    public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
-        return couponRepository.findAllCoupons(memberId, searchCouponParams,
+    public Page<CouponResponse> searchCoupons(Long memberId, Long accommodationId, SearchCouponParams searchCouponParams, Pageable pageable) {
+        return couponRepository.findAllCoupons(memberId, accommodationId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                                 pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
                 .map(CouponResponse::from);

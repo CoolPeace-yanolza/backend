@@ -40,7 +40,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Page<Coupon> findAllCoupons(Long memberId, SearchCouponParams params, PageRequest pageable) {
+    public Page<Coupon> findAllCoupons(Long memberId, Long accommodationId, SearchCouponParams params, PageRequest pageable) {
         // 검색 필터링
         BooleanBuilder searchCouponPredicate = new BooleanBuilder(coupon.member.id.eq(memberId));
 
@@ -73,9 +73,11 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
+                .where(coupon.accommodation.id.eq(accommodationId))
                 .where(searchCouponPredicate);
 
         JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count()).from(coupon)
+                .where(coupon.accommodation.id.eq(accommodationId))
                 .where(searchCouponPredicate);
 
         List<Coupon> coupons = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, couponJPAQuery).fetch();
