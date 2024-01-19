@@ -6,8 +6,10 @@ import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
+import com.coolpeace.domain.statistics.entity.DailySearchDate;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
+import com.coolpeace.domain.statistics.entity.MonthlySearchDate;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
@@ -30,8 +32,11 @@ public class MonthlyStatisticsService {
     private final AccommodationRepository accommodationRepository;
 
     public void updateMonthlySum(int statisticsYear, int statisticsMonth) {
-        int month = checkMonth(statisticsMonth);
-        int year = checkYear(statisticsYear);
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.
+            getMonthlySearchDate(statisticsYear,statisticsMonth);
+        int year = monthlySearchDate.year();
+        int month = monthlySearchDate.month();
+
         List<Accommodation> accommodations = accommodationRepository.findAll();
 
         accommodations.forEach(accommodation -> {
@@ -61,8 +66,11 @@ public class MonthlyStatisticsService {
 
 
     public void updateCouponDownloadTop3(int statisticsYear, int statisticsMonth) {
-        int month = checkMonth(statisticsMonth);
-        int year = checkYear(statisticsYear);
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.
+            getMonthlySearchDate(statisticsYear,statisticsMonth);
+        int year = monthlySearchDate.year();
+        int month = monthlySearchDate.month();
+
         List<LocalCouponDownload> localCouponDownloads = localCouponDownloadRepository
             .findAllByStatisticsYearAndStatisticsMonth(year,month);
         localCouponDownloads.forEach(localCouponDownload -> {
@@ -81,8 +89,11 @@ public class MonthlyStatisticsService {
     }
 
     public void updateLocalCouponDownload(int statisticsYear, int statisticsMonth) {
-        int month = checkMonth(statisticsMonth);
-        int year = checkYear(statisticsYear);
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.
+            getMonthlySearchDate(statisticsYear,statisticsMonth);
+        int year = monthlySearchDate.year();
+        int month = monthlySearchDate.month();
+
         List<Coupon> coupons = couponRepository.findAllByExposureStartDateGreaterThanEqual
             (LocalDate.of(year,month,1));
         for (Coupon coupon : coupons) {
@@ -119,8 +130,11 @@ public class MonthlyStatisticsService {
     }
 
     public void updateLocalCouponAvg(int statisticsYear, int statisticsMonth) {
-        int month = checkMonth(statisticsMonth);
-        int year = checkYear(statisticsYear);
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.
+            getMonthlySearchDate(statisticsYear,statisticsMonth);
+        int year = monthlySearchDate.year();
+        int month = monthlySearchDate.month();
+
         localCouponDownloadRepository.findAllByStatisticsYearAndStatisticsMonth(year,month)
             .forEach(localCouponDownload -> {
             List<Accommodation> accommodations = accommodationRepository.findAllBySigunguName(
@@ -137,19 +151,6 @@ public class MonthlyStatisticsService {
     private int getDownloadCountFromId(Long couponId) {
         return couponRepository.findById(couponId)
             .orElseThrow(CouponNotFoundException::new).getDownloadCount();
-    }
-
-    private int checkYear(int year) {
-        if (year == 0 ) {
-            return LocalDate.now().getYear();
-        }
-        return year;
-    }
-    private int checkMonth(int month) {
-        if (month == 0 ) {
-            return LocalDate.now().getDayOfMonth();
-        }
-        return month;
     }
 
 }

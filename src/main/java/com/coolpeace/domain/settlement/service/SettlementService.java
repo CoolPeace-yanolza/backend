@@ -10,7 +10,7 @@ import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
-import com.coolpeace.domain.settlement.entity.SearchDate;
+import com.coolpeace.domain.statistics.entity.MonthlySearchDate;
 import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.settlement.repository.SettlementRepository;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
@@ -38,7 +38,7 @@ public class SettlementService {
 
     public SumSettlementResponse sumSettlement(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
-        SearchDate searchDate = SearchDate.getsearchDate();
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
         List<DailyStatistics> dailyStatisticsList = dailyStatisticsRepository
             .findAllByAccommodation(accommodation);
 
@@ -50,7 +50,7 @@ public class SettlementService {
 
         lastMonthSumSettlement = monthlyStatisticsRepository
             .findByAccommodationAndStatisticsYearAndStatisticsMonth
-                (accommodation, searchDate.year(), searchDate.month())
+                (accommodation, monthlySearchDate.year(), monthlySearchDate.month())
             .orElseGet(MonthlyStatistics::emptyMonthlyStatistics).getSettlementAmount();
 
         return SumSettlementResponse.from(thisMonthSumSettlement, lastMonthSumSettlement);
