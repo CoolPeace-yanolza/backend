@@ -5,23 +5,30 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class ValuedEnumValidator implements ConstraintValidator<ValidEnum, String> {
-    private ValidEnum annotation;
+    private Class<? extends Enum<?>> enumClass;
+    private boolean required;
 
     @Override
-    public void initialize(ValidEnum constraintAnnotation) {
-        this.annotation = constraintAnnotation;
+    public void initialize(ValidEnum constraintAnnotation)
+    {
+        this.enumClass = constraintAnnotation.enumClass();
+        this.required = constraintAnnotation.required();
     }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        ValuedEnum[] enumValues = (ValuedEnum[]) this.annotation.enumClass().getEnumConstants();
+        ValuedEnum[] enumValues = (ValuedEnum[]) this.enumClass.getEnumConstants();
         if (enumValues != null) {
+            // 값이 있으면 무조건 검사 후 유효하면 통과, 유효하지 않으면 실패
             for (ValuedEnum enumValue : enumValues) {
                 if (enumValue.getValue().equals(value)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
+
+        // 필수인 경우 실패, 선택인 경우 통과
+        return !required;
     }
 }

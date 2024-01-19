@@ -58,7 +58,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
 
         // 쿠폰 이름
         if (params.title() != null) {
-            searchCouponPredicate.and(coupon.title.like(params.title()));
+            searchCouponPredicate.and(coupon.title.contains(params.title()));
         }
 
         // 쿠폰 날짜
