@@ -25,6 +25,7 @@ import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
+import com.coolpeace.global.common.DayOfWeekUtil;
 import com.coolpeace.global.util.CouponTestUtil;
 import com.coolpeace.global.util.RoomTestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +123,7 @@ class CouponServiceTest {
             for (SearchCouponStatusFilterType statusType : SearchCouponStatusFilterType.values()) {
                 for (SearchCouponDateFilterType dateType : SearchCouponDateFilterType.values()) {
                     for (String title : titles) {
-                        params.add(new SearchCouponParams(statusType, title, dateType));
+                        params.add(new SearchCouponParams(statusType.getValue(), title, dateType.getValue()));
                     }
                 }
             }
@@ -150,7 +151,7 @@ class CouponServiceTest {
         @Test
         void paged_filtered_search_success() {
             // given
-            SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, SearchCouponDateFilterType.YEAR);
+            SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, SearchCouponDateFilterType.YEAR.getValue());
             PageRequest firstPageRequest = PageRequest.of(0, 10);
 
             given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
@@ -312,15 +313,15 @@ class CouponServiceTest {
         private CouponRegisterRequest getCouponRegisterRequest(boolean registerAllRoom) {
             return new CouponRegisterRequest(
                     coupon.getTitle(),
-                    coupon.getCustomerType(),
-                    coupon.getDiscountType(),
+                    coupon.getCustomerType().getValue(),
+                    coupon.getDiscountType().getValue(),
                     coupon.getDiscountValue(),
-                    coupon.getCouponRoomType(),
+                    coupon.getCouponRoomType().getValue(),
                     accommodation.getId(),
                     registerAllRoom,
                     !registerAllRoom ? registerRoomNumbers : null,
                     coupon.getMinimumReservationPrice(),
-                    coupon.getCouponUseConditionDays(),
+                    DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
                     coupon.getExposureStartDate(),
                     coupon.getExposureEndDate()
             );
@@ -375,14 +376,14 @@ class CouponServiceTest {
 
             //when
             executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
-                    couponB.getCustomerType(),
+                    couponB.getCustomerType().getValue(),
                     null,
                     null,
-                    couponB.getCouponRoomType(),
+                    couponB.getCouponRoomType().getValue(),
                     null,
                     null,
                     couponB.getMinimumReservationPrice(),
-                    couponB.getCouponUseConditionDays(),
+                    DayOfWeekUtil.fromDayOfWeeks(couponB.getCouponUseConditionDays()),
                     couponB.getExposureStartDate(),
                     couponB.getExposureEndDate()
             ));
@@ -403,7 +404,7 @@ class CouponServiceTest {
             //when
             executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
                     null,
-                    couponB.getDiscountType(),
+                    couponB.getDiscountType().getValue(),
                     couponB.getDiscountValue(),
                     null,
                     null,
@@ -444,7 +445,7 @@ class CouponServiceTest {
             generateCouponOfBetweenExposureDate();
 
             CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_OFF;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
 
@@ -462,7 +463,7 @@ class CouponServiceTest {
             generateCouponOfBetweenExposureDate();
 
             CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_WAIT;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
 
@@ -481,7 +482,7 @@ class CouponServiceTest {
             //given
             generateCouponOfBeforeExposureDate();
 
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
 
@@ -498,7 +499,7 @@ class CouponServiceTest {
             generateCouponOfBetweenExposureDate();
 
             CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_END;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState);
+            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
 

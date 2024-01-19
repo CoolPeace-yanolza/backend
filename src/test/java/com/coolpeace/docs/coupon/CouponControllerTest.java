@@ -5,7 +5,6 @@ import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
-import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
@@ -23,6 +22,7 @@ import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
+import com.coolpeace.global.common.DayOfWeekUtil;
 import com.coolpeace.global.common.RestDocsIntegrationTest;
 import com.coolpeace.global.util.CouponTestUtil;
 import com.coolpeace.global.util.MemberTestUtil;
@@ -102,15 +102,15 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
         CouponRegisterRequest couponRegisterRequest = new CouponRegisterRequest(
                 coupon.getTitle(),
-                coupon.getCustomerType(),
-                coupon.getDiscountType(),
+                coupon.getCustomerType().getValue(),
+                coupon.getDiscountType().getValue(),
                 coupon.getDiscountValue(),
-                coupon.getCouponRoomType(),
+                coupon.getCouponRoomType().getValue(),
                 accommodation.getId(),
                 false,
                 randomRoomNumbers,
                 coupon.getMinimumReservationPrice(),
-                coupon.getCouponUseConditionDays(),
+                DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate()
         );
@@ -170,13 +170,12 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         // when
         MultiValueMap<String, String> requestParams = createCouponSearchParams();
         ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
-                        .params(requestParams));
+                        .queryParams(requestParams));
 
         // then
         result
-//                .andDo(print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("coupon-search",
                         resource(ResourceSnippetParameters.builder()
@@ -229,17 +228,10 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
     }
 
     private static MultiValueMap<String, String> createCouponSearchParams() {
-        SearchCouponParams searchCouponParams = new SearchCouponParams(
-                SearchCouponStatusFilterType.All,
-                null,
-                SearchCouponDateFilterType.YEAR
-        );
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        requestParams.add("status", searchCouponParams.status().name());
-        if (searchCouponParams.title() != null) {
-            requestParams.add("title", searchCouponParams.title());
-        }
-        requestParams.add("date", searchCouponParams.date().name());
+        requestParams.add("status", SearchCouponStatusFilterType.All.getValue());
+//        requestParams.add("title", "");
+        requestParams.add("date", SearchCouponDateFilterType.YEAR.getValue());
         requestParams.add("page", "1");
         return requestParams;
     }
@@ -332,14 +324,14 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponUpdateRequest request = new CouponUpdateRequest(
                 accommodation.getId(),
-                coupon.getCustomerType(),
-                coupon.getDiscountType(),
+                coupon.getCustomerType().getValue(),
+                coupon.getDiscountType().getValue(),
                 coupon.getDiscountValue(),
-                coupon.getCouponRoomType(),
+                coupon.getCouponRoomType().getValue(),
                 coupon.getCouponRooms().isEmpty(),
                 coupon.getCouponRooms().stream().map(room -> room.getRoom().getRoomNumber()).toList(),
                 coupon.getMinimumReservationPrice() + 10000,
-                coupon.getCouponUseConditionDays(),
+                DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate()
         );
@@ -389,12 +381,12 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponExposeRequest request;
         if (coupon.betweenExposureDate(LocalDate.now())) {
-            request = new CouponExposeRequest(CouponStatusType.EXPOSURE_OFF);
+            request = new CouponExposeRequest(CouponStatusType.EXPOSURE_OFF.getValue());
         } else {
             if (coupon.getExposureEndDate().isBefore(LocalDate.now())) {
-                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_END);
+                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_END.getValue());
             } else {
-                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_WAIT);
+                request = new CouponExposeRequest(CouponStatusType.EXPOSURE_WAIT.getValue());
             }
         }
 
