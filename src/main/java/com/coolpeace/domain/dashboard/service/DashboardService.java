@@ -25,6 +25,7 @@ import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundExcept
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -94,7 +95,9 @@ public class DashboardService {
     public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
-            .findAllByAccommodationAndStatisticsYear(accommodation, year);
+            .findAllByAccommodationAndStatisticsYear(accommodation, year).stream()
+            .sorted(Comparator.comparing(MonthlyStatistics::getStatisticsYear)
+                    .thenComparing(MonthlyStatistics::getStatisticsMonth)).toList();
 
         int couponTotalSales = 0;
         int couponUseSales = 0;
@@ -157,8 +160,7 @@ public class DashboardService {
     }
 
     private int[] findLast6Months(int year, int month) {
-        if (month >= 7) return new int[]{year, month - 6, year, month};
-        if (month == 1) return new int[]{year - 1, 7, year - 1, 12};
-        return new int[]{year - 1, 6 + month, year, month};
+        if (month >= 6) return new int[]{year, month - 5, year, month};
+        return new int[]{year - 1, 7 + month, year, month};
     }
 }
