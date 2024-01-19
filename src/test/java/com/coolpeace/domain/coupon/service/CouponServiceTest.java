@@ -105,14 +105,15 @@ class CouponServiceTest {
         void no_filter_success() {
             // given
             SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, null);
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons));
 
             // when
-            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), searchCouponParams, Pageable.ofSize(10));
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    searchCouponParams, Pageable.ofSize(10));
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
 
             assertThat(result).isNotNull();
         }
@@ -135,14 +136,15 @@ class CouponServiceTest {
         @MethodSource("searchFilterMethodSource")
         void filtered_search_success(SearchCouponParams params) {
             // given
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons));
 
             // when
-            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), params, Pageable.ofSize(10));
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    params, Pageable.ofSize(10));
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
 
             assertThat(result).isNotNull();
         }
@@ -154,14 +156,15 @@ class CouponServiceTest {
             SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, SearchCouponDateFilterType.YEAR.getValue());
             PageRequest firstPageRequest = PageRequest.of(0, 10);
 
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons.subList(0, 10)));
 
             // when
-            Page<CouponResponse> firstPageResult = couponService.searchCoupons(member.getId(), searchCouponParams, firstPageRequest);
+            Page<CouponResponse> firstPageResult = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    searchCouponParams, firstPageRequest);
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
             assertThat(firstPageResult).isNotNull();
             assertThat(firstPageResult.getContent().size()).isEqualTo(10);
         }
@@ -215,7 +218,7 @@ class CouponServiceTest {
     @DisplayName("쿠폰 등록")
     @Nested
     class CouponRegisterTest {
-        private List<Integer> registerRoomNumbers;
+        private List<String> registerRoomNumbers;
         private Coupon coupon;
 
         @BeforeEach
@@ -237,7 +240,7 @@ class CouponServiceTest {
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(accommodationRepository.findById(anyLong())).willReturn(Optional.of(accommodation));
             if (!registerAllRoom) {
-                given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.of(rooms.get(0)));
+                given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.of(rooms.get(0)));
             }
             given(couponRepository.save(any(Coupon.class))).willReturn(coupon);
 
@@ -298,7 +301,7 @@ class CouponServiceTest {
             CouponRegisterRequest request = getCouponRegisterRequest(false);
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(accommodationRepository.findById(anyLong())).willReturn(Optional.of(accommodation));
-            given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.empty());
+            given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.empty());
 
             // when
             // then
@@ -425,7 +428,7 @@ class CouponServiceTest {
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(couponA));
             if (request.registerRooms() != null) {
-                given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.of(rooms.get(0)));
+                given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.of(rooms.get(0)));
             }
 
             //when
@@ -456,23 +459,6 @@ class CouponServiceTest {
             assertThat(coupon.getCouponStatus()).isEqualTo(expectedCouponState);
         }
 
-        @DisplayName("노출 시작 이후로 대기중을 요청할 경우 쿠폰 노출 여부 변경을 할 수 없다.")
-        @Test
-        void after_exposure_start_date_but_request_exposure_wait_fail() {
-            //given
-            generateCouponOfBetweenExposureDate();
-
-            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_WAIT;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
-            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
-            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
-
-            //when
-            //then
-            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
-                    .isInstanceOf(InvalidCouponStateWaitExposureDateException.class);
-        }
-
         @DisplayName("노출 기간이 아닌데 ON/OFF를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
         @ParameterizedTest
         @EnumSource(value = CouponStatusType.class,
@@ -490,23 +476,6 @@ class CouponServiceTest {
             //then
             assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
                     .isInstanceOf(InvalidCouponStateOutsideExposureDateException.class);
-        }
-
-        @DisplayName("노출 종료 이전에 종료를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
-        @Test
-        void before_exposure_end_date_but_request_exposure_end_fail() {
-            //given
-            generateCouponOfBetweenExposureDate();
-
-            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_END;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
-            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
-            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
-
-            //when
-            //then
-            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
-                    .isInstanceOf(InvalidCouponStateEndExposureDateException.class);
         }
 
         void generateCouponOfBeforeExposureDate() {

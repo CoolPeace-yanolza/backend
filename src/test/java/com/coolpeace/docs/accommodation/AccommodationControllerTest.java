@@ -1,12 +1,5 @@
 package com.coolpeace.docs.accommodation;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.coolpeace.global.util.MemberTestUtil;
 import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
@@ -20,9 +13,9 @@ import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
 import com.coolpeace.global.common.RestDocsIntegrationTest;
+import com.coolpeace.global.util.MemberTestUtil;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +25,14 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 public class AccommodationControllerTest extends RestDocsIntegrationTest {
@@ -125,7 +124,7 @@ public class AccommodationControllerTest extends RestDocsIntegrationTest {
                     .responseSchema(Schema.schema(RoomResponse.class.getSimpleName()))
                     .responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("방ID"),
-                        fieldWithPath("[].room_number").type(JsonFieldType.NUMBER).description("방번호"),
+                        fieldWithPath("[].room_number").type(JsonFieldType.STRING).description("방번호"),
                         fieldWithPath("[].room_type").type(JsonFieldType.STRING).description("방타입"),
                         fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격")
                     )

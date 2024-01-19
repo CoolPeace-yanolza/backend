@@ -16,7 +16,7 @@ import com.coolpeace.domain.dashboard.dto.response.WeeklyCouponResponse;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
-import com.coolpeace.domain.settlement.entity.SearchDate;
+import com.coolpeace.domain.statistics.entity.MonthlySearchDate;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.LocalCouponDownload;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
@@ -25,6 +25,7 @@ import com.coolpeace.domain.statistics.exception.MonthlyStatisticsNotFoundExcept
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,9 @@ public class DashboardService {
 
     public List<MonthlyDataResponse> monthlyData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
-        SearchDate searchDate = SearchDate.getsearchDate();
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
 
-        int[] last6Months = findLast6Months(searchDate.year(), searchDate.month());
+        int[] last6Months = findLast6Months(monthlySearchDate.year(), monthlySearchDate.month());
         List<MonthlyStatistics> last6monthsMonthlyStatistics =
             monthlyStatisticsRepository.findLast6monthsMonthlyStatistics
             (accommodation, last6Months[0], last6Months[1], last6Months[2], last6Months[3]);
@@ -66,11 +67,11 @@ public class DashboardService {
 
     public MonthlyCouponDownloadResponse downloadCouponTop3(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
-        SearchDate searchDate = SearchDate.getsearchDate();
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
 
         MonthlyStatistics monthlyStatistics = monthlyStatisticsRepository
-            .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, searchDate.year(),
-                searchDate.month())
+            .findByAccommodationAndStatisticsYearAndStatisticsMonth(accommodation, monthlySearchDate.year(),
+                monthlySearchDate.month())
             .orElseThrow(MonthlyStatisticsNotFoundException::new);
 
         return MonthlyCouponDownloadResponse.from(monthlyStatistics.getLocalCouponDownload());
@@ -79,12 +80,12 @@ public class DashboardService {
 
     public CouponCountAvgResponse couponCountAvg(String memberId,Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
-        SearchDate searchDate = SearchDate.getsearchDate();
+        MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
         String address = accommodation.getSigungu().getName();
         AccommodationType type = accommodation.getAccommodationType();
         LocalCouponDownload localCouponDownload = localCouponDownloadRepository
             .findByRegionAndStatisticsYearAndStatisticsMonth
-                (address,searchDate.year(), searchDate.month())
+                (address, monthlySearchDate.year(), monthlySearchDate.month())
             .orElseThrow(LocalCouponDownloadNotFoundException::new);
 
         return getCouponCountAvgResponse(type, localCouponDownload, address);
@@ -94,7 +95,9 @@ public class DashboardService {
     public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
-            .findAllByAccommodationAndStatisticsYear(accommodation, year);
+            .findAllByAccommodationAndStatisticsYear(accommodation, year).stream()
+            .sorted(Comparator.comparing(MonthlyStatistics::getStatisticsYear)
+                    .thenComparing(MonthlyStatistics::getStatisticsMonth)).toList();
 
         int couponTotalSales = 0;
         int couponUseSales = 0;
@@ -157,8 +160,7 @@ public class DashboardService {
     }
 
     private int[] findLast6Months(int year, int month) {
-        if (month >= 7) return new int[]{year, month - 6, year, month};
-        if (month == 1) return new int[]{year - 1, 7, year - 1, 12};
-        return new int[]{year - 1, 6 + month, year, month};
+        if (month >= 6) return new int[]{year, month - 5, year, month};
+        return new int[]{year - 1, 7 + month, year, month};
     }
 }

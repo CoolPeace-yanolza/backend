@@ -20,7 +20,7 @@ public class Room extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int roomNumber;
+    private String roomNumber;
 
     private String roomType;
 
@@ -31,19 +31,19 @@ public class Room extends BaseTimeEntity {
     private Accommodation accommodation;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<RoomReservation> roomReservations = new ArrayList<>();
+    private final List<RoomReservation> roomReservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CouponRooms> couponRooms = new ArrayList<>();
+    private final List<CouponRooms> couponRooms = new ArrayList<>();
 
-    public Room(int roomNumber, String roomType, int price, Accommodation accommodation) {
+    public Room(String roomNumber, String roomType, int price, Accommodation accommodation) {
         this.roomNumber = roomNumber;
         this.roomType = roomType;
         this.price = price;
         this.accommodation = accommodation;
     }
 
-    public static Room from(int roomNumber, String roomType, int price, Accommodation accommodation) {
+    public static Room from(String roomNumber, String roomType, int price, Accommodation accommodation) {
         return new Room(roomNumber, roomType, price, accommodation);
     }
 }

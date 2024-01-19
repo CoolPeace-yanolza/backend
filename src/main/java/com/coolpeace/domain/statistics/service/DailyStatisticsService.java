@@ -9,6 +9,7 @@ import com.coolpeace.domain.reservation.entity.Reservation;
 import com.coolpeace.domain.reservation.repository.ReservationRepository;
 import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.settlement.repository.SettlementRepository;
+import com.coolpeace.domain.statistics.entity.DailySearchDate;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.exception.DailyStatisticsNotFoundException;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
@@ -33,9 +34,12 @@ public class DailyStatisticsService {
     private final SettlementRepository settlementRepository;
 
     public void updateSales(int statisticsYear, int statisticsMonth, int statisticsDay){
-        int year = checkYear(statisticsYear);
-        int month = checkMonth(statisticsMonth);
-        int day = checkDay(statisticsDay);
+        DailySearchDate dailySearchDate = DailySearchDate.
+            getDailySearchDate(statisticsYear,statisticsMonth,statisticsDay);
+        int year = dailySearchDate.year();
+        int month = dailySearchDate.month();
+        int day = dailySearchDate.day();
+
         List<Accommodation> accommodations = accommodationRepository.findAll();
         accommodations.forEach(accommodation -> {
             Member member = accommodation.getMember();
@@ -61,9 +65,12 @@ public class DailyStatisticsService {
     }
 
     public void updateCoupon(int statisticsYear, int statisticsMonth, int statisticsDay){
-        int year = checkYear(statisticsYear);
-        int month = checkMonth(statisticsMonth);
-        int day = checkDay(statisticsDay);
+        DailySearchDate dailySearchDate = DailySearchDate.
+            getDailySearchDate(statisticsYear,statisticsMonth,statisticsDay);
+        int year = dailySearchDate.year();
+        int month = dailySearchDate.month();
+        int day = dailySearchDate.day();
+
         List<Accommodation> accommodations = accommodationRepository.findAll();
         accommodations.forEach(accommodation -> {
             int downloadCount = 0;
@@ -84,9 +91,12 @@ public class DailyStatisticsService {
     }
 
     public void updateSettlement(int statisticsYear, int statisticsMonth, int statisticsDay){
-        int year = checkYear(statisticsYear);
-        int month = checkMonth(statisticsMonth);
-        int day = checkDay(statisticsDay);
+        DailySearchDate dailySearchDate = DailySearchDate.
+            getDailySearchDate(statisticsYear,statisticsMonth,statisticsDay);
+        int year = dailySearchDate.year();
+        int month = dailySearchDate.month();
+        int day = dailySearchDate.day();
+
         List<Accommodation> accommodations = accommodationRepository.findAll();
 
         accommodations.forEach(accommodation -> {
@@ -108,24 +118,6 @@ public class DailyStatisticsService {
 
     }
 
-    private int checkDay(int day){
-        if (day == 0) {
-            return LocalDate.now().getDayOfMonth();
-        }
-        return day;
-    }
-    private int checkYear(int year) {
-        if (year == 0 ) {
-            return LocalDate.now().getYear();
-        }
-        return year;
-    }
-    private int checkMonth(int month) {
-        if (month == 0 ) {
-            return LocalDate.now().getDayOfMonth();
-        }
-        return month;
-    }
 }
 
 

@@ -48,8 +48,8 @@ public class CouponService {
     private final RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
-    public Page<CouponResponse> searchCoupons(Long memberId, SearchCouponParams searchCouponParams, Pageable pageable) {
-        return couponRepository.findAllCoupons(memberId, searchCouponParams,
+    public Page<CouponResponse> searchCoupons(Long memberId, Long accommodationId, SearchCouponParams searchCouponParams, Pageable pageable) {
+        return couponRepository.findAllCoupons(memberId, accommodationId, searchCouponParams,
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                                 pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
                 .map(CouponResponse::from);
@@ -158,26 +158,16 @@ public class CouponService {
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
                 .orElseThrow(CouponNotFoundException::new);
 
-        // 노출 시작 이후로 대기중을 요청한 경우 예외처리
-        boolean isAfterExposureStartDate = !(LocalDate.now().isBefore(storedCoupon.getExposureStartDate()));
-        boolean isWaitRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_WAIT.getValue());
-        if (isAfterExposureStartDate && isWaitRequest) {
-            throw new InvalidCouponStateWaitExposureDateException();
-        }
-
-        // 노출 기간이 아닌데 ON/OFF를 요청한 경우 예외처리
-        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
+        // 노출 ON/노출 OFF 외의 요청을 한 경우 예외처리
         boolean isONOFFRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON.getValue())
                 || couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_OFF.getValue());
-        if (!isBetweenExposureDate && isONOFFRequest) {
-            throw new InvalidCouponStateOutsideExposureDateException();
+        if (!isONOFFRequest) {
+            throw new CouponUpdateLimitExposureStateException();
         }
-
-        // 노출 종료 이전에 종료를 요청한 경우 예외처리
-        boolean isBeforeExposureEndDate = !(LocalDate.now().isAfter(storedCoupon.getExposureEndDate()));
-        boolean isEndRequest = couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_END.getValue());
-        if (isBeforeExposureEndDate && isEndRequest) {
-            throw new InvalidCouponStateEndExposureDateException();
+        // 노출 기간이 아닌데 노출 ON/노출 OF F를요 청한 경우 예외처리
+        boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
+        if (!isBetweenExposureDate) {
+            throw new InvalidCouponStateOutsideExposureDateException();
         }
 
         storedCoupon.changeCouponStatus(ValuedEnum.of(CouponStatusType.class, couponExposeRequest.couponStatus()));

@@ -27,14 +27,15 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
 
-    @GetMapping
+    @GetMapping("/{accommodation_id}")
     public ResponseEntity<CouponSearchResponse> searchCoupons(
+            @PathVariable("accommodation_id") Long accommodationId,
             @Valid SearchCouponParams searchCouponParams,
             @PageableDefault Pageable pageable,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
         Page<CouponResponse> couponResponses = couponService.searchCoupons(
-                Long.valueOf(jwtPrincipal.getMemberId()), searchCouponParams, pageable);
+                Long.valueOf(jwtPrincipal.getMemberId()), accommodationId, searchCouponParams, pageable);
         CouponCategoryResponse categoryResponse = couponService.getCouponCategories();
         return ResponseEntity.ok(CouponSearchResponse.from(couponResponses, categoryResponse));
     }
