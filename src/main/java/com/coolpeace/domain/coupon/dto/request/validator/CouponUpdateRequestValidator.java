@@ -20,7 +20,7 @@ public class CouponUpdateRequestValidator implements Validator {
         CouponRegisterRequest request = (CouponRegisterRequest) target;
 
         // 할인 유형
-        if (request.discountType().equals(DiscountType.FIXED_PRICE)) {
+        if (request.discountType().equals(DiscountType.FIXED_PRICE.getValue())) {
             if (request.discountValue() < 100) {
                 errors.reject("discountValue",
                         "정액 할인일 경우 값을 100 이상으로 설정해야 합니다.");
