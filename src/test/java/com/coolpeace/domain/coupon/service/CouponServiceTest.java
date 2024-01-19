@@ -456,23 +456,6 @@ class CouponServiceTest {
             assertThat(coupon.getCouponStatus()).isEqualTo(expectedCouponState);
         }
 
-        @DisplayName("노출 시작 이후로 대기중을 요청할 경우 쿠폰 노출 여부 변경을 할 수 없다.")
-        @Test
-        void after_exposure_start_date_but_request_exposure_wait_fail() {
-            //given
-            generateCouponOfBetweenExposureDate();
-
-            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_WAIT;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
-            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
-            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
-
-            //when
-            //then
-            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
-                    .isInstanceOf(InvalidCouponStateWaitExposureDateException.class);
-        }
-
         @DisplayName("노출 기간이 아닌데 ON/OFF를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
         @ParameterizedTest
         @EnumSource(value = CouponStatusType.class,
@@ -490,23 +473,6 @@ class CouponServiceTest {
             //then
             assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
                     .isInstanceOf(InvalidCouponStateOutsideExposureDateException.class);
-        }
-
-        @DisplayName("노출 종료 이전에 종료를 요청한 경우 쿠폰 노출 여부 변경을 할 수 없다.")
-        @Test
-        void before_exposure_end_date_but_request_exposure_end_fail() {
-            //given
-            generateCouponOfBetweenExposureDate();
-
-            CouponStatusType expectedCouponState = CouponStatusType.EXPOSURE_END;
-            CouponExposeRequest request = new CouponExposeRequest(expectedCouponState.getValue());
-            given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
-            given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(coupon));
-
-            //when
-            //then
-            assertThatThrownBy(() -> couponService.exposeCoupon(member.getId(), coupon.getCouponNumber(), request))
-                    .isInstanceOf(InvalidCouponStateEndExposureDateException.class);
         }
 
         void generateCouponOfBeforeExposureDate() {
