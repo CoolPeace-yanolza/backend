@@ -1,9 +1,10 @@
 package com.coolpeace.global.common.validator;
 
+import com.coolpeace.global.common.ValuedEnum;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class EnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
+public class ValuedEnumValidator implements ConstraintValidator<ValidEnum, String> {
     private ValidEnum annotation;
 
     @Override
@@ -12,11 +13,11 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
     }
 
     @Override
-    public boolean isValid(Enum value, ConstraintValidatorContext context) {
-        Object[] enumValues = this.annotation.enumClass().getEnumConstants();
+    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
+        ValuedEnum[] enumValues = (ValuedEnum[]) this.annotation.enumClass().getEnumConstants();
         if (enumValues != null) {
-            for (Object enumValue : enumValues) {
-                if (value == enumValue) {
+            for (ValuedEnum enumValue : enumValues) {
+                if (enumValue.getValue().equals(value)) {
                     return true;
                 }
             }

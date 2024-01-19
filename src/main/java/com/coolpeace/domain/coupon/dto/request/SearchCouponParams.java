@@ -6,9 +6,9 @@ import com.coolpeace.global.common.validator.ValidEnum;
 
 public record SearchCouponParams(
         @ValidEnum(enumClass = SearchCouponStatusFilterType.class, message = "올바른 쿠폰 상태 값을 입력해주세요.")
-        SearchCouponStatusFilterType status,
+        String status,
         String title,
         @ValidEnum(enumClass = SearchCouponDateFilterType.class, message = "올바른 쿠폰 날짜 값을 입력해주세요.")
-        SearchCouponDateFilterType date
+        String date
 ) {
 }
