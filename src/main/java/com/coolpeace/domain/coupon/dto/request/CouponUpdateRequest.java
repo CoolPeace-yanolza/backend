@@ -15,10 +15,10 @@ public record CouponUpdateRequest(
         Long accommodationId,
         @ValidEnum(enumClass = CustomerType.class, message = "올바르지 않은 고객의 유형입니다.", required = false)
         String customerType,
-        @ValidEnum(enumClass = DiscountType.class, message = "올바르지 않은 고객의 유형입니다.", required = false)
+        @ValidEnum(enumClass = DiscountType.class, message = "올바르지 않은 할인의 유형입니다.", required = false)
         String discountType,
         Integer discountValue,
-        @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 고객의 유형입니다.", required = false)
+        @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 객실의 유형입니다.", required = false)
         String couponRoomType,
         Boolean registerAllRoom,
         List<String> registerRooms,
