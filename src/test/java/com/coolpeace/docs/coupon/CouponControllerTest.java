@@ -95,7 +95,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                 .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
 
         List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
-        List<Integer> randomRoomNumbers = rooms.stream().map(Room::getRoomNumber).toList();
+        List<String> randomRoomNumbers = rooms.stream().map(Room::getRoomNumber).toList();
         Coupon coupon = new CouponTestBuilder(accommodation, storedMember, randomRooms).build();
 
         CouponRegisterRequest couponRegisterRequest = new CouponRegisterRequest(

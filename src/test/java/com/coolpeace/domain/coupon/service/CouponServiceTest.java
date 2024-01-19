@@ -218,7 +218,7 @@ class CouponServiceTest {
     @DisplayName("쿠폰 등록")
     @Nested
     class CouponRegisterTest {
-        private List<Integer> registerRoomNumbers;
+        private List<String> registerRoomNumbers;
         private Coupon coupon;
 
         @BeforeEach
@@ -240,7 +240,7 @@ class CouponServiceTest {
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(accommodationRepository.findById(anyLong())).willReturn(Optional.of(accommodation));
             if (!registerAllRoom) {
-                given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.of(rooms.get(0)));
+                given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.of(rooms.get(0)));
             }
             given(couponRepository.save(any(Coupon.class))).willReturn(coupon);
 
@@ -301,7 +301,7 @@ class CouponServiceTest {
             CouponRegisterRequest request = getCouponRegisterRequest(false);
             given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             given(accommodationRepository.findById(anyLong())).willReturn(Optional.of(accommodation));
-            given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.empty());
+            given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.empty());
 
             // when
             // then
@@ -428,7 +428,7 @@ class CouponServiceTest {
             given(couponRepository.existsByMemberIdAndCouponNumber(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByCouponNumber(anyString())).willReturn(Optional.of(couponA));
             if (request.registerRooms() != null) {
-                given(roomRepository.findByRoomNumber(anyInt())).willReturn(Optional.of(rooms.get(0)));
+                given(roomRepository.findByRoomNumber(anyString())).willReturn(Optional.of(rooms.get(0)));
             }
 
             //when
