@@ -44,8 +44,7 @@ public class ReservationService {
         }
 
         List<RoomReservation> roomReservations = request.rooms().stream().map(roomWithCoupon -> {
-            String roomNumberStr = roomWithCoupon.roomNumber();
-            int roomNumber = getRoomNumberFromStr(roomNumberStr);
+            String roomNumber = parseRoomNumber(roomWithCoupon.roomNumber());
             Room room = roomRepository.findByRoomNumber(roomNumber).orElseThrow(RoomNotFoundException::new);
             Coupon coupon = couponRepository.findByCouponNumber(roomWithCoupon.couponNumber())
                     .orElseThrow(CouponNotFoundException::new);
@@ -65,12 +64,9 @@ public class ReservationService {
         reservation.updateReservation(changeRequest.status());
     }
 
-    private int getRoomNumberFromStr(String roomNumberStr) {
-        int roomNumber;
-        if (roomNumberStr.endsWith("호")) {
-            roomNumber = Integer.parseInt(roomNumberStr.substring(0, roomNumberStr.length() - 1));
-        } else {
-            roomNumber = Integer.parseInt(roomNumberStr);
+    private String parseRoomNumber(String roomNumber) {
+        if (roomNumber.endsWith("호")) {
+            return roomNumber.substring(0, roomNumber.length() - 1);
         }
         return roomNumber;
     }

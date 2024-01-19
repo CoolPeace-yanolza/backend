@@ -39,7 +39,7 @@ public record CouponRegisterRequest(
         // 방 등록
         @NotNull(message = "객실 등록 여부를 입력해야 합니다.")
         Boolean registerAllRoom,
-        List<Integer> registerRooms,
+        List<String> registerRooms,
 
         // 쿠폰 사용 조건
         Integer minimumReservationPrice,
