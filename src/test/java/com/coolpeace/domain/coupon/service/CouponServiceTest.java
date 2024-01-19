@@ -105,14 +105,15 @@ class CouponServiceTest {
         void no_filter_success() {
             // given
             SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, null);
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons));
 
             // when
-            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), searchCouponParams, Pageable.ofSize(10));
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    searchCouponParams, Pageable.ofSize(10));
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
 
             assertThat(result).isNotNull();
         }
@@ -135,14 +136,15 @@ class CouponServiceTest {
         @MethodSource("searchFilterMethodSource")
         void filtered_search_success(SearchCouponParams params) {
             // given
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons));
 
             // when
-            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), params, Pageable.ofSize(10));
+            Page<CouponResponse> result = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    params, Pageable.ofSize(10));
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
 
             assertThat(result).isNotNull();
         }
@@ -154,14 +156,15 @@ class CouponServiceTest {
             SearchCouponParams searchCouponParams = new SearchCouponParams(null, null, SearchCouponDateFilterType.YEAR.getValue());
             PageRequest firstPageRequest = PageRequest.of(0, 10);
 
-            given(couponRepository.findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
+            given(couponRepository.findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class)))
                     .willReturn(new PageImpl<>(coupons.subList(0, 10)));
 
             // when
-            Page<CouponResponse> firstPageResult = couponService.searchCoupons(member.getId(), searchCouponParams, firstPageRequest);
+            Page<CouponResponse> firstPageResult = couponService.searchCoupons(member.getId(), accommodation.getId(),
+                    searchCouponParams, firstPageRequest);
 
             // then
-            verify(couponRepository).findAllCoupons(anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
+            verify(couponRepository).findAllCoupons(anyLong(), anyLong(), any(SearchCouponParams.class), any(PageRequest.class));
             assertThat(firstPageResult).isNotNull();
             assertThat(firstPageResult.getContent().size()).isEqualTo(10);
         }

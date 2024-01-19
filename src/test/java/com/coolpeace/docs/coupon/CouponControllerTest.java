@@ -167,7 +167,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
         // when
         MultiValueMap<String, String> requestParams = createCouponSearchParams();
-        ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX)
+        ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/{accommodation_id}", accommodation.getId())
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
                 .queryParams(requestParams));
 
