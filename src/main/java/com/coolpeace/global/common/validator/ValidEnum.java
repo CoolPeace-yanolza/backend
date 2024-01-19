@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEnum {
     String message() default "";
+    boolean required() default true;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     Class<? extends Enum<?>> enumClass();
