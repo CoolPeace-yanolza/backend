@@ -13,10 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 @Entity
@@ -52,7 +49,10 @@ public class Coupon extends BaseTimeEntity {
     private Integer minimumReservationPrice = 0;
 
     @Convert(converter = CouponUseConditionDaysTypeConverter.class)
-    private List<DayOfWeek> couponUseConditionDays;
+    private final List<DayOfWeek> couponUseConditionDays = Collections.emptyList();
+
+    @Enumerated(EnumType.STRING)
+    private CouponUseDaysType couponUseDays = CouponUseDaysType.ALL;
 
     @Column(nullable = false)
     private LocalDate exposureStartDate;
@@ -86,7 +86,7 @@ public class Coupon extends BaseTimeEntity {
                   CustomerType customerType,
                   CouponRoomType couponRoomType,
                   Integer minimumReservationPrice,
-                  List<DayOfWeek> couponUseConditionDays,
+                  CouponUseDaysType couponUseDays,
                   LocalDate exposureStartDate,
                   LocalDate exposureEndDate,
                   Accommodation accommodation,
@@ -98,7 +98,7 @@ public class Coupon extends BaseTimeEntity {
         this.customerType = customerType;
         this.couponRoomType = couponRoomType;
         this.minimumReservationPrice = minimumReservationPrice;
-        this.couponUseConditionDays = couponUseConditionDays;
+        this.couponUseDays = couponUseDays;
         this.exposureStartDate = exposureStartDate;
         this.exposureEndDate = exposureEndDate;
         this.accommodation = accommodation;
@@ -114,7 +114,7 @@ public class Coupon extends BaseTimeEntity {
             CustomerType customerType,
             CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
-            List<DayOfWeek> couponUseConditionDays,
+            CouponUseDaysType couponUseDays,
             LocalDate exposureStartDate,
             LocalDate exposureEndDate,
             Accommodation accommodation,
@@ -128,7 +128,7 @@ public class Coupon extends BaseTimeEntity {
                 customerType,
                 couponRoomType,
                 minimumReservationPrice,
-                couponUseConditionDays,
+                couponUseDays,
                 exposureStartDate,
                 exposureEndDate,
                 accommodation,
@@ -146,7 +146,7 @@ public class Coupon extends BaseTimeEntity {
 
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
         this.couponNumber =
-            couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
+            couponIssuerType.getValue() + String.format("%07d", Objects.requireNonNull(id));
     }
 
     public void changeCouponStatus(CouponStatusType couponStatusType) {
@@ -175,17 +175,18 @@ public class Coupon extends BaseTimeEntity {
             CustomerType customerType,
             CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
-            List<DayOfWeek> couponUseConditionDays,
+            CouponUseDaysType couponUseDays,
             List<Room> rooms,
             LocalDate exposureStartDate,
             LocalDate exposureEndDate
     ) {
+        this.title = Optional.ofNullable(title).orElse(this.title);
         this.discountType = Optional.ofNullable(discountType).orElse(this.discountType);
         this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
         this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
         this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);
-        this.couponUseConditionDays = Optional.ofNullable(couponUseConditionDays).orElse(this.couponUseConditionDays);
+        this.couponUseDays = Optional.ofNullable(couponUseDays).orElse(this.couponUseDays);
         if (rooms != null) {
             this.couponRooms = rooms.stream().map(room -> CouponRooms.from(this, room)).toList();
         }
