@@ -5,7 +5,7 @@ import com.coolpeace.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
+import com.coolpeace.global.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

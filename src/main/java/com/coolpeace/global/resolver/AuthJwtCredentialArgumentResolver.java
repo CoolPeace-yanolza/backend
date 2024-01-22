@@ -1,6 +1,6 @@
 package com.coolpeace.global.resolver;
 
-import com.coolpeace.global.jwt.security.JwtAuthenticationToken;
+import com.coolpeace.global.security.JwtAuthenticationToken;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

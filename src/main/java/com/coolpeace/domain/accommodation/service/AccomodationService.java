@@ -9,10 +9,11 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.room.repository.RoomRepository;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
-import java.util.List;
+import com.coolpeace.global.security.MemberPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

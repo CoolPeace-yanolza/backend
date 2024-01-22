@@ -7,7 +7,7 @@ import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
 import com.coolpeace.domain.member.service.MemberService;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
+import com.coolpeace.global.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtCredential;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;

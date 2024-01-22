@@ -1,7 +1,7 @@
 package com.coolpeace.global.config;
 
-import com.coolpeace.global.jwt.security.JwtAuthenticationEntryPoint;
-import com.coolpeace.global.jwt.security.JwtFilter;
+import com.coolpeace.global.security.JwtAuthenticationEntryPoint;
+import com.coolpeace.global.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

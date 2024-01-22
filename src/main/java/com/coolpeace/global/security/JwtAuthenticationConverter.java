@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import com.coolpeace.global.jwt.exception.InvalidAuthorizationHeaderException;
 import jakarta.servlet.http.HttpServletRequest;

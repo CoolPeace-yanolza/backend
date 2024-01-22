@@ -2,7 +2,7 @@ package com.coolpeace.domain.dashboard.controller;
 
 import com.coolpeace.domain.coupon.service.CouponQueryService;
 import com.coolpeace.domain.dashboard.service.DashboardService;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
+import com.coolpeace.global.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

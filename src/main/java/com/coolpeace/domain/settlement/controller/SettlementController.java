@@ -2,7 +2,7 @@ package com.coolpeace.domain.settlement.controller;
 
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.service.SettlementService;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
+import com.coolpeace.global.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;

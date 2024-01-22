@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import com.coolpeace.global.jwt.dto.JwtPayload;
 import com.coolpeace.global.jwt.exception.JwtInvalidAccessTokenException;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
-    private final JwtUserDetailsService jwtUserDetailsService;
+    private final MemberPrincipalService memberPrincipalService;
     private final JwtService jwtService;
 
     @Override
@@ -23,7 +23,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new JwtInvalidAccessTokenException();
         }
         JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
-        MemberPrincipal memberPrincipal = (MemberPrincipal) jwtUserDetailsService.loadUserByUsername(jwtPayload.email());
+        MemberPrincipal memberPrincipal = (MemberPrincipal) memberPrincipalService.loadUserByUsername(jwtPayload.email());
         return JwtAuthenticationToken.authenticated(memberPrincipal, accessToken);
     }
 

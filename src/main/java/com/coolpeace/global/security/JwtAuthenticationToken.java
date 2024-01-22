@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;

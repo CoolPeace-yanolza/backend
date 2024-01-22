@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import com.coolpeace.global.exception.ErrorCode;
 import com.coolpeace.global.exception.ErrorMessage;

@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

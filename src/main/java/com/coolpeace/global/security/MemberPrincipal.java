@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import com.coolpeace.domain.member.entity.Member;
 import lombok.EqualsAndHashCode;

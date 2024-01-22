@@ -1,4 +1,4 @@
-package com.coolpeace.global.jwt.security;
+package com.coolpeace.global.security;
 
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.service.MemberService;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class JwtUserDetailsService implements UserDetailsService {
+public class MemberPrincipalService implements UserDetailsService {
 
     private final MemberService memberService;
 

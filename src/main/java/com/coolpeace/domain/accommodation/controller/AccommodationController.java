@@ -3,7 +3,7 @@ package com.coolpeace.domain.accommodation.controller;
 import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.service.AccomodationService;
-import com.coolpeace.global.jwt.security.MemberPrincipal;
+import com.coolpeace.global.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
