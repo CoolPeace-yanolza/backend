@@ -11,7 +11,10 @@ import com.coolpeace.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.*;
-import com.coolpeace.domain.coupon.exception.*;
+import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
+import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
+import com.coolpeace.domain.coupon.exception.CouponUpdateLimitExposureStateException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateOutsideExposureDateException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
@@ -20,7 +23,6 @@ import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.exception.RegisterRoomsEmptyException;
 import com.coolpeace.domain.room.exception.RoomNotFoundException;
 import com.coolpeace.domain.room.repository.RoomRepository;
-import com.coolpeace.global.common.DayOfWeekUtil;
 import com.coolpeace.global.common.ValuedEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -108,8 +109,7 @@ public class CouponService {
                 ValuedEnum.of(CustomerType.class, couponRegisterRequest.customerType()),
                 ValuedEnum.of(CouponRoomType.class, couponRegisterRequest.couponRoomType()),
                 couponRegisterRequest.minimumReservationPrice(),
-                DayOfWeekUtil.fromDayOfWeekStrings(couponRegisterRequest.couponUseConditionDays())
-                ,
+                ValuedEnum.of(CouponUseDaysType.class, couponRegisterRequest.couponUseConditionDays()),
                 couponRegisterRequest.exposureStartDate(),
                 couponRegisterRequest.exposureEndDate(),
                 accommodation,
@@ -142,8 +142,8 @@ public class CouponService {
         CouponRoomType couponRoomType = Optional.ofNullable(couponUpdateRequest.couponRoomType())
                 .map(str -> ValuedEnum.of(CouponRoomType.class, str))
                 .orElse(null);
-        List<DayOfWeek> dayOfWeeks = Optional.ofNullable(couponUpdateRequest.couponUseConditionDays())
-                .map(DayOfWeekUtil::fromDayOfWeekStrings)
+        CouponUseDaysType couponUseDays = Optional.ofNullable(couponUpdateRequest.couponUseConditionDays())
+                .map(str -> ValuedEnum.of(CouponUseDaysType.class, str))
                 .orElse(null);
 
         storedCoupon.updateCoupon(
@@ -152,7 +152,7 @@ public class CouponService {
                 customerType,
                 couponRoomType,
                 couponUpdateRequest.minimumReservationPrice(),
-                dayOfWeeks,
+                couponUseDays,
                 rooms,
                 couponUpdateRequest.exposureStartDate(),
                 couponUpdateRequest.exposureEndDate()
