@@ -378,7 +378,9 @@ class CouponServiceTest {
         void updateCoupon_mono_update_success() {
 
             //when
-            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+            executeUpdateCoupon(new CouponUpdateRequest(
+                    couponB.getTitle(),
+                    accommodation.getId(),
                     couponB.getCustomerType().getValue(),
                     null,
                     null,
@@ -405,7 +407,9 @@ class CouponServiceTest {
         void updateCoupon_discountType_update_success() {
 
             //when
-            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+            executeUpdateCoupon(new CouponUpdateRequest(
+                    null,
+                    accommodation.getId(),
                     null,
                     couponB.getDiscountType().getValue(),
                     couponB.getDiscountValue(),

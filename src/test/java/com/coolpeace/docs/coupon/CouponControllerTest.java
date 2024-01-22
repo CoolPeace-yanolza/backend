@@ -367,6 +367,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponUpdateRequest request = new CouponUpdateRequest(
+                coupon.getTitle(),
                 accommodation.getId(),
                 coupon.getCustomerType().getValue(),
                 coupon.getDiscountType().getValue(),
@@ -396,6 +397,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                 .description("쿠폰 수정 API")
                                 .requestSchema(Schema.schema(CouponUpdateRequest.class.getSimpleName()))
                                 .requestFields(
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
                                         fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
                                         fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형").optional(),
                                         fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형").optional(),
