@@ -73,12 +73,15 @@ class SettlementControllerTest extends RestDocsUnitTest {
     @WithMockUser
     void searchSettlement_success() throws Exception {
         //given
-        SettlementResponse settlementResponse1 = SettlementResponse.from(LocalDate.now(), 2,
-            10000, 0, 0, 10000,
-            LocalDate.now().plusMonths(1));
-        SettlementResponse settlementResponse2 = SettlementResponse.from(LocalDate.now(), 2,
-            20000, 1000, 0, 19000,
-            LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse1 = SettlementResponse
+            .from("크리스마스 쿠폰",LocalDate.now(), 2,
+                10000, 0, 0, 10000,
+                LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse2 = SettlementResponse
+            .from("대박 할인 쿠폰",LocalDate.now(), 2,
+                20000, 1000, 0, 19000,
+                LocalDate.now().plusMonths(1));
+
         List<SettlementResponse> settlementResponseList = new ArrayList<>();
         settlementResponseList.add(settlementResponse1);
         settlementResponseList.add(settlementResponse2);
@@ -105,6 +108,7 @@ class SettlementControllerTest extends RestDocsUnitTest {
                     )
                     .responseSchema(Schema.schema(SettlementResponse.class.getSimpleName()))
                     .responseFields(
+                        fieldWithPath("[].coupon_name").type(JsonFieldType.STRING).description("쿠폰 관리 이름"),
                         fieldWithPath("[].coupon_use_date").type(JsonFieldType.STRING).description("쿠폰 사용일"),
                         fieldWithPath("[].coupon_count").type(JsonFieldType.NUMBER).description("사용건수"),
                         fieldWithPath("[].discount_price").type(JsonFieldType.NUMBER).description("쿠폰할인금액"),
