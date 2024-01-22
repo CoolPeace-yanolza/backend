@@ -10,7 +10,6 @@ public record SettlementResponse(
     int couponCount,
     int discountPrice,
     int cancelPrice,
-    int supplyPrice,
     int sumPrice,
     LocalDate completeAt
 ) {
@@ -23,7 +22,6 @@ public record SettlementResponse(
             settlement.getCouponCount(),
             settlement.getDiscountPrice(),
             settlement.getCancelPrice(),
-            settlement.getSupplyPrice(),
             settlement.getSumPrice(),
             settlement.getCompleteAt()
         );
@@ -31,7 +29,7 @@ public record SettlementResponse(
 
     public static SettlementResponse from(LocalDate couponUseDate, String couponNumber,
         String couponName, int couponCount, int discountPrice, int cancelPrice,
-        int supplyPrice, int sumPrice, LocalDate completeAt) {
+        int sumPrice, LocalDate completeAt) {
         return new SettlementResponse(
             couponUseDate,
             couponNumber,
@@ -39,7 +37,6 @@ public record SettlementResponse(
             couponCount,
             discountPrice,
             cancelPrice,
-            supplyPrice,
             sumPrice,
             completeAt
         );
