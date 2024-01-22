@@ -13,6 +13,7 @@ import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataLightResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.WeeklyCouponResponse;
+import com.coolpeace.domain.dashboard.dto.response.WrapMonthlyDataResponse;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
@@ -44,7 +45,7 @@ public class DashboardService {
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
 
     @Cacheable(value = "monthlyData", key = "#accommodationId", cacheManager = "contentCacheManager")
-    public List<MonthlyDataResponse> monthlyData(String memberId, Long accommodationId) {
+    public WrapMonthlyDataResponse monthlyData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
 
@@ -53,9 +54,8 @@ public class DashboardService {
             monthlyStatisticsRepository.findLast6monthsMonthlyStatistics
             (accommodation, last6Months[0], last6Months[1], last6Months[2], last6Months[3]);
 
-        return last6monthsMonthlyStatistics.stream()
-            .map(MonthlyDataResponse::from).toList();
-
+        return WrapMonthlyDataResponse.from(last6monthsMonthlyStatistics.stream()
+            .map(MonthlyDataResponse::from).toList());
     }
 
     @Cacheable(value = "weeklyCoupon", key = "#accommodationId", cacheManager = "contentCacheManager")
