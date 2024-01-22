@@ -164,7 +164,7 @@ public class CouponService {
         if (!isONOFFRequest) {
             throw new CouponUpdateLimitExposureStateException();
         }
-        // 노출 기간이 아닌데 노출 ON/노출 OF F를요 청한 경우 예외처리
+        // 노출 기간이 아닌데 노출 ON/노출 OFF를 요청한 경우 예외처리
         boolean isBetweenExposureDate = storedCoupon.betweenExposureDate(LocalDate.now());
         if (!isBetweenExposureDate) {
             throw new InvalidCouponStateOutsideExposureDateException();
