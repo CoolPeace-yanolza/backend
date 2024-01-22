@@ -11,9 +11,11 @@ import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotMatchMemberException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
+import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
@@ -24,7 +26,10 @@ import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
+import com.coolpeace.global.builder.AccommodationTestBuilder;
+import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
+import com.coolpeace.global.builder.RoomTestBuilder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,14 +181,17 @@ class SettlementServiceTest {
             SearchSettlementParams settlementParams = new SearchSettlementParams
                     ("2023-12-01", "2024-03-31", OrderBy.COUPON_USE_DATE);
             Pageable pageable = Pageable.ofSize(10);
-
             Member member = new MemberTestBuilder().encoded().build();
-            Accommodation accommodation =
-                new Accommodation(1L, "신라호텔", "주소주소", member);
+            Accommodation accommodation = new AccommodationTestBuilder(member).build();
+            List<Room> randomsRooms = new RoomTestBuilder(accommodation).buildList();
+
+            Coupon coupon = new CouponTestBuilder(accommodation, member, randomsRooms).build();
             Settlement settlement1 = new Settlement(1L, LocalDate.now(), 10,
-                1000, 0, 0, 1000, LocalDate.now().plusMonths(1),accommodation);
+                1000, 0, 0, 1000,
+                LocalDate.now().plusMonths(1),coupon,accommodation);
             Settlement settlement2 = new Settlement(2L, LocalDate.now(), 10,
-                1000, 0, 0, 1000, LocalDate.now().plusMonths(1),accommodation);
+                1000, 0, 0, 1000,
+                LocalDate.now().plusMonths(1),coupon,accommodation);
             List<Settlement> settlements = new ArrayList<>();
             settlements.add(settlement1);
             settlements.add(settlement2);

@@ -52,7 +52,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         .or(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT));
                 case EXPIRED -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END)
                         .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
-                case All -> coupon.couponStatus.isNotNull();
+                case All -> coupon.couponStatus.ne(CouponStatusType.DELETED);
             });
         }
 

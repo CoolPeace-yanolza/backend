@@ -59,12 +59,15 @@ class SettlementControllerTest  {
     @WithMockUser
     void searchSettlement_success() throws Exception {
         //given
-        SettlementResponse settlementResponse1 = SettlementResponse.from(LocalDate.now(), 2,
-            10000, 0, 0, 10000,
-            LocalDate.now().plusMonths(1));
-        SettlementResponse settlementResponse2 = SettlementResponse.from(LocalDate.now(), 2,
-            20000, 1000, 0, 19000,
-            LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse1 = SettlementResponse
+            .from(LocalDate.now(),"YC000011","크리스마스 쿠폰", 2,
+                10000, 0, 0, 10000,
+                LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse2 = SettlementResponse
+            .from(LocalDate.now(),"YC000012","대박 할인 쿠폰", 2,
+                20000, 1000, 0, 19000,
+                LocalDate.now().plusMonths(1));
+
         List<SettlementResponse> settlementResponseList = new ArrayList<>();
         settlementResponseList.add(settlementResponse1);
         settlementResponseList.add(settlementResponse2);
@@ -73,10 +76,12 @@ class SettlementControllerTest  {
                 anyInt(),anyInt())).willReturn(settlementResponseList);
         //when,then
         mockMvc.perform(get("/v1/settlements/{accommodation_id}", 1L)
-                .queryParam("start","2023-09-27")
+                .queryParam("start", "2023-09-27")
                 .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
-                .queryParam("end","2023-12-03"))
+                .queryParam("end", "2023-12-03"))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].coupon_number").isString())
+            .andExpect(jsonPath("$[0].coupon_name").isString())
             .andExpect(jsonPath("$[0].coupon_use_date").exists())
             .andExpect(jsonPath("$[0].coupon_count").isNumber())
             .andExpect(jsonPath("$[0].discount_price").isNumber())
@@ -84,6 +89,8 @@ class SettlementControllerTest  {
             .andExpect(jsonPath("$[0].supply_price").isNumber())
             .andExpect(jsonPath("$[0].sum_price").isNumber())
             .andExpect(jsonPath("$[0].complete_at").exists())
+            .andExpect(jsonPath("$[1].coupon_number").isString())
+            .andExpect(jsonPath("$[1].coupon_name").isString())
             .andExpect(jsonPath("$[1].coupon_use_date").exists())
             .andExpect(jsonPath("$[1].coupon_count").isNumber())
             .andExpect(jsonPath("$[1].discount_price").isNumber())

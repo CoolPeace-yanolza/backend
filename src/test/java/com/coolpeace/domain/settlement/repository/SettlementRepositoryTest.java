@@ -4,13 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.repository.MemberRepository;
+import com.coolpeace.domain.room.entity.Room;
+import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.statistics.entity.MonthlyStatistics;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
+import com.coolpeace.global.builder.AccommodationTestBuilder;
+import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
+import com.coolpeace.global.builder.RoomTestBuilder;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +40,10 @@ class SettlementRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private AccommodationRepository accommodationRepository;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Test
     @DisplayName("숙소,연도,월을 통해 월별 통계를 찾아낼 수 있다.")
@@ -62,15 +73,20 @@ class SettlementRepositoryTest {
     void findAllByAccommodationAndCouponUseDateAfterAndCouponUseDateBeforeOrderByCouponUseDate(){
         //given
         Member member = new MemberTestBuilder().encoded().build();
-        Accommodation accommodation = new Accommodation(1L, "신라호텔", "주소주소", member);
+        Accommodation accommodation = new AccommodationTestBuilder(member).build();
+        List<Room> randomsRooms = new RoomTestBuilder(accommodation).buildList();
+        Coupon coupon = new CouponTestBuilder(accommodation, member, randomsRooms).build();
+
         Settlement settlement1 = new Settlement(1L, LocalDate.of(2023, 10, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2023, 11, 10),accommodation);
+            0, 0, 1000, LocalDate.of(2023, 11, 10),coupon,accommodation);
         Settlement settlement2 = new Settlement(2L, LocalDate.of(2023, 12, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2024, 1, 10),accommodation);
+            0, 0, 1000, LocalDate.of(2024, 1, 10),coupon,accommodation);
         Settlement settlement3 = new Settlement(3L, LocalDate.of(2023, 8, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2023, 9, 10),accommodation);
+            0, 0, 1000, LocalDate.of(2023, 9, 10),coupon,accommodation);
         memberRepository.save(member);
         accommodationRepository.save(accommodation);
+        roomRepository.saveAll(randomsRooms);
+        couponRepository.save(coupon);
         settlementRepository.save(settlement1);
         settlementRepository.save(settlement2);
         settlementRepository.save(settlement3);
