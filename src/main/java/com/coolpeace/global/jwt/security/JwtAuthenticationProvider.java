@@ -23,8 +23,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new JwtInvalidAccessTokenException();
         }
         JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
-        JwtPrincipal jwtPrincipal = (JwtPrincipal) jwtUserDetailsService.loadUserByUsername(jwtPayload.email());
-        return JwtAuthenticationToken.authenticated(jwtPrincipal, accessToken);
+        MemberPrincipal memberPrincipal = (MemberPrincipal) jwtUserDetailsService.loadUserByUsername(jwtPayload.email());
+        return JwtAuthenticationToken.authenticated(memberPrincipal, accessToken);
     }
 
     @Override

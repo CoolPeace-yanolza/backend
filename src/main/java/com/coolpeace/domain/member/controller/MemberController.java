@@ -7,7 +7,7 @@ import com.coolpeace.domain.member.dto.request.RefreshAccessTokenRequest;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.dto.response.MemberRefreshAccessTokenResponse;
 import com.coolpeace.domain.member.service.MemberService;
-import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.jwt.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtCredential;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
@@ -48,10 +48,10 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal,
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal,
             @AuthJwtCredential String accessToken
     ) {
-        memberService.logout(jwtPrincipal.getMemberEmail(), accessToken);
+        memberService.logout(memberPrincipal.getMemberEmail(), accessToken);
         return ResponseEntity.ok().build();
     }
 

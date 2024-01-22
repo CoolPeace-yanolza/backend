@@ -3,7 +3,7 @@ package com.coolpeace.domain.accommodation.controller;
 import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
 import com.coolpeace.domain.accommodation.service.AccomodationService;
-import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.jwt.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +22,17 @@ public class AccommodationController {
 
     @GetMapping
     public ResponseEntity<List<AccommodationResponse>> accommodations(
-        @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+        @AuthJwtPrincipal MemberPrincipal memberPrincipal
     ) {
-        return ResponseEntity.ok(accomodationService.getAccommodations(jwtPrincipal));
+        return ResponseEntity.ok(accomodationService.getAccommodations(memberPrincipal));
     }
 
     @GetMapping("/{accommodationId}")
     public ResponseEntity<List<RoomResponse>> rooms(
-        @AuthJwtPrincipal JwtPrincipal jwtPrincipal,
+        @AuthJwtPrincipal MemberPrincipal memberPrincipal,
         @PathVariable Long accommodationId
     ) {
-        return ResponseEntity.ok(accomodationService.getRooms(jwtPrincipal, accommodationId));
+        return ResponseEntity.ok(accomodationService.getRooms(memberPrincipal, accommodationId));
     }
 
 }

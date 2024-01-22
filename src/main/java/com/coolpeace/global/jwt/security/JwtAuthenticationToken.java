@@ -5,12 +5,12 @@ import org.springframework.security.core.authority.AuthorityUtils;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private JwtPrincipal jwtPrincipal;
+    private MemberPrincipal memberPrincipal;
     private final String credentials;
 
-    public JwtAuthenticationToken(JwtPrincipal jwtPrincipal, String credentials, boolean isAuthenticated) {
-        super(jwtPrincipal.getAuthorities());
-        this.jwtPrincipal = jwtPrincipal;
+    public JwtAuthenticationToken(MemberPrincipal memberPrincipal, String credentials, boolean isAuthenticated) {
+        super(memberPrincipal.getAuthorities());
+        this.memberPrincipal = memberPrincipal;
         this.credentials = credentials;
         setAuthenticated(isAuthenticated);
     }
@@ -25,8 +25,8 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         return new JwtAuthenticationToken(accessToken,false);
     }
 
-    public static JwtAuthenticationToken authenticated(JwtPrincipal jwtPrincipal, String accessToken) {
-        return new JwtAuthenticationToken(jwtPrincipal, accessToken, true);
+    public static JwtAuthenticationToken authenticated(MemberPrincipal memberPrincipal, String accessToken) {
+        return new JwtAuthenticationToken(memberPrincipal, accessToken, true);
     }
 
     @Override
@@ -36,6 +36,6 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return this.jwtPrincipal;
+        return this.memberPrincipal;
     }
 }

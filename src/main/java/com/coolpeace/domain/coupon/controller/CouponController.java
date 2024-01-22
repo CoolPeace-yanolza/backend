@@ -5,7 +5,7 @@ import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
-import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.jwt.security.MemberPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +24,16 @@ public class CouponController {
     @GetMapping("/{coupon_number}")
     public ResponseEntity<CouponResponse> getCouponByCouponNumber(
             @PathVariable("coupon_number") String couponNumber,
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
         return ResponseEntity.ok(CouponResponse.from(couponService.getCouponByCouponNumber(
-                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber)));
+                Long.valueOf(memberPrincipal.getMemberId()), couponNumber)));
     }
 
     @GetMapping("/recent")
     public ResponseEntity<?> getCouponRecentHistory(
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal
     ) {
-        List<CouponResponse> couponResponses = couponService.getRecentHistory(Long.valueOf(jwtPrincipal.getMemberId()));
+        List<CouponResponse> couponResponses = couponService.getRecentHistory(Long.valueOf(memberPrincipal.getMemberId()));
         if (couponResponses.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -43,9 +43,9 @@ public class CouponController {
     @PostMapping("/register")
     public ResponseEntity<Void> registerCoupon(
             @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal
     ) {
-        couponService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
+        couponService.register(Long.valueOf(memberPrincipal.getMemberId()), couponRegisterRequest);
         return ResponseEntity.created(URI.create("/")).build();
     }
 
@@ -53,9 +53,9 @@ public class CouponController {
     public ResponseEntity<Void> updateCoupon(
             @PathVariable("coupon_number") String couponNumber,
             @Valid @RequestBody CouponUpdateRequest couponUpdateRequest,
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
         couponService.updateCoupon(
-                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
+                Long.valueOf(memberPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -63,19 +63,19 @@ public class CouponController {
     public ResponseEntity<Void> exposeCoupon(
             @PathVariable("coupon_number") String couponNumber,
             @Valid @RequestBody CouponExposeRequest couponExposeRequest,
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal
     ) {
         couponService.exposeCoupon(
-                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponExposeRequest);
+                Long.valueOf(memberPrincipal.getMemberId()), couponNumber, couponExposeRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{coupon_number}")
     public ResponseEntity<Void> deleteCoupon(
             @PathVariable("coupon_number") String couponNumber,
-            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+            @AuthJwtPrincipal MemberPrincipal memberPrincipal
     ) {
-        couponService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), couponNumber);
+        couponService.deleteCoupon(Long.valueOf(memberPrincipal.getMemberId()), couponNumber);
         return ResponseEntity.ok().build();
     }
 }

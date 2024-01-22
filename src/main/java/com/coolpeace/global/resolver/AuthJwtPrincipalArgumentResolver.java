@@ -1,7 +1,7 @@
 package com.coolpeace.global.resolver;
 
 import com.coolpeace.global.jwt.security.JwtAuthenticationToken;
-import com.coolpeace.global.jwt.security.JwtPrincipal;
+import com.coolpeace.global.jwt.security.MemberPrincipal;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +16,7 @@ public class AuthJwtPrincipalArgumentResolver implements HandlerMethodArgumentRe
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(AuthJwtPrincipal.class) != null
-                && parameter.getParameterType().isAssignableFrom(JwtPrincipal.class);
+                && parameter.getParameterType().isAssignableFrom(MemberPrincipal.class);
     }
 
     @Override
@@ -25,6 +25,6 @@ public class AuthJwtPrincipalArgumentResolver implements HandlerMethodArgumentRe
         if (authentication instanceof JwtAuthenticationToken && authentication.isAuthenticated()) {
             return authentication.getPrincipal();
         }
-        return JwtPrincipal.emptyPrincipal();
+        return MemberPrincipal.emptyPrincipal();
     }
 }

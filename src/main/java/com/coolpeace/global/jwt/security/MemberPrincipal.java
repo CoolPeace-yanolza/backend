@@ -14,32 +14,32 @@ import java.util.List;
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public class JwtPrincipal implements UserDetails {
+public class MemberPrincipal implements UserDetails {
     private final String memberId;
     private final String memberEmail;
     private final boolean enabled;
     private final List<GrantedAuthority> authorities;
 
-    public JwtPrincipal(String memberId, String memberEmail, boolean enabled, List<GrantedAuthority> authorities) {
+    public MemberPrincipal(String memberId, String memberEmail, boolean enabled, List<GrantedAuthority> authorities) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.enabled = enabled;
         this.authorities = authorities;
     }
 
-    public static JwtPrincipal from(Member member) {
+    public static MemberPrincipal from(Member member) {
         List<String> roles = member.getRoles().stream()
                 .map(memberRole -> memberRole.getRole().getRoleType().getValue())
                 .toList();
-        return new JwtPrincipal(
+        return new MemberPrincipal(
                 String.valueOf(member.getId()),
                 member.getEmail(),
                 !member.isDeleted(),
                 AuthorityUtils.createAuthorityList(roles)
         );
     }
-    public static JwtPrincipal emptyPrincipal() {
-        return new JwtPrincipal(null, null, false, AuthorityUtils.NO_AUTHORITIES);
+    public static MemberPrincipal emptyPrincipal() {
+        return new MemberPrincipal(null, null, false, AuthorityUtils.NO_AUTHORITIES);
     }
 
     @Override

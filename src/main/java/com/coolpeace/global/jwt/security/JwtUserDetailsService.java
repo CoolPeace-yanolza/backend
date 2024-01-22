@@ -21,7 +21,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
             Member storedMember = memberService.getMemberByEmail(email);
-            return JwtPrincipal.from(storedMember);
+            return MemberPrincipal.from(storedMember);
         } catch (ApplicationException e) {
             throw new JwtAuthenticationException(ErrorCode.MEMBER_NOT_FOUND);
         }
