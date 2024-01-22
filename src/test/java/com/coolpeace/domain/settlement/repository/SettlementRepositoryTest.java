@@ -78,11 +78,11 @@ class SettlementRepositoryTest {
         Coupon coupon = new CouponTestBuilder(accommodation, member, randomsRooms).build();
 
         Settlement settlement1 = new Settlement(1L, LocalDate.of(2023, 10, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2023, 11, 10),coupon,accommodation);
+             0, 1000, LocalDate.of(2023, 11, 10),coupon,accommodation);
         Settlement settlement2 = new Settlement(2L, LocalDate.of(2023, 12, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2024, 1, 10),coupon,accommodation);
+             0, 1000, LocalDate.of(2024, 1, 10),coupon,accommodation);
         Settlement settlement3 = new Settlement(3L, LocalDate.of(2023, 8, 27), 10, 1000,
-            0, 0, 1000, LocalDate.of(2023, 9, 10),coupon,accommodation);
+             0, 1000, LocalDate.of(2023, 9, 10),coupon,accommodation);
         memberRepository.save(member);
         accommodationRepository.save(accommodation);
         roomRepository.saveAll(randomsRooms);

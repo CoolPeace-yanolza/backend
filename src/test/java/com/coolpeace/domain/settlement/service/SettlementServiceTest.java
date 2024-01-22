@@ -187,10 +187,10 @@ class SettlementServiceTest {
 
             Coupon coupon = new CouponTestBuilder(accommodation, member, randomsRooms).build();
             Settlement settlement1 = new Settlement(1L, LocalDate.now(), 10,
-                1000, 0, 0, 1000,
+                1000,  0, 1000,
                 LocalDate.now().plusMonths(1),coupon,accommodation);
             Settlement settlement2 = new Settlement(2L, LocalDate.now(), 10,
-                1000, 0, 0, 1000,
+                1000,  0, 1000,
                 LocalDate.now().plusMonths(1),coupon,accommodation);
             List<Settlement> settlements = new ArrayList<>();
             settlements.add(settlement1);
@@ -213,17 +213,15 @@ class SettlementServiceTest {
             //then
             assertThat(settlementResponses.get(0)).extracting
                     ("couponUseDate", "couponCount", "discountPrice", "cancelPrice",
-                        "supplyPrice", "sumPrice", "completeAt")
+                        "sumPrice", "completeAt")
                 .containsExactly(settlement1.getCouponUseDate(), settlement1.getCouponCount(),
                     settlement1.getDiscountPrice(), settlement1.getCancelPrice(),
-                    settlement1.getSupplyPrice(),
                     settlement1.getSumPrice(), settlement1.getCompleteAt());
             assertThat(settlementResponses.get(1)).extracting
                     ("couponUseDate", "couponCount", "discountPrice", "cancelPrice",
-                        "supplyPrice", "sumPrice", "completeAt")
+                         "sumPrice", "completeAt")
                 .containsExactly(settlement1.getCouponUseDate(), settlement2.getCouponCount(),
                     settlement2.getDiscountPrice(), settlement2.getCancelPrice(),
-                    settlement2.getSupplyPrice(),
                     settlement2.getSumPrice(), settlement2.getCompleteAt());
 
         }

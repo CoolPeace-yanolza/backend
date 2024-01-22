@@ -61,11 +61,11 @@ class SettlementControllerTest  {
         //given
         SettlementResponse settlementResponse1 = SettlementResponse
             .from(LocalDate.now(),"YC000011","크리스마스 쿠폰", 2,
-                10000, 0, 0, 10000,
+                10000, 0,  10000,
                 LocalDate.now().plusMonths(1));
         SettlementResponse settlementResponse2 = SettlementResponse
             .from(LocalDate.now(),"YC000012","대박 할인 쿠폰", 2,
-                20000, 1000, 0, 19000,
+                20000, -1000,  19000,
                 LocalDate.now().plusMonths(1));
 
         List<SettlementResponse> settlementResponseList = new ArrayList<>();
