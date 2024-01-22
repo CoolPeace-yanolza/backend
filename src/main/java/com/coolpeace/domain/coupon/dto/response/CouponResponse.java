@@ -2,7 +2,6 @@ package com.coolpeace.domain.coupon.dto.response;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.global.common.DayOfWeekUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +17,7 @@ public record CouponResponse(
         String customerType,
         String couponRoomType,
         Integer minimumReservationPrice,
-        List<String> couponUseConditionDays,
+        String couponUseConditionDays,
         LocalDate exposureStartDate,
         LocalDate exposureEndDate,
         Integer couponExpiration,
@@ -40,7 +39,7 @@ public record CouponResponse(
                 coupon.getCustomerType().getValue(),
                 coupon.getCouponRoomType().getValue(),
                 coupon.getMinimumReservationPrice(),
-                DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
+                coupon.getCouponUseDays().getValue(),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate(),
                 coupon.getCouponExpiration(),
