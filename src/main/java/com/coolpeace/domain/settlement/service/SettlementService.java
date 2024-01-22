@@ -8,6 +8,7 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
+import com.coolpeace.domain.settlement.dto.response.PageSettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
 import com.coolpeace.domain.statistics.entity.MonthlySearchDate;
@@ -56,7 +57,7 @@ public class SettlementService {
         return SumSettlementResponse.from(thisMonthSumSettlement, lastMonthSumSettlement);
     }
 
-    public List<SettlementResponse> searchSettlement(String memberId, Long accommodationId,
+    public PageSettlementResponse searchSettlement(String memberId, Long accommodationId,
         SearchSettlementParams searchSettlementParams, int page, int pageSize) {
 
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
@@ -77,7 +78,15 @@ public class SettlementService {
                 .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponCountDesc
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
         };
-        return settlements.stream().map(SettlementResponse::from).toList();
+
+        long totalElements = settlements.getTotalElements();
+        int totalPages = settlements.getTotalPages();
+
+        List<SettlementResponse> settlementResponses =
+            settlements.stream().map(SettlementResponse::from).toList();
+
+        return PageSettlementResponse.from(totalElements, totalPages, settlementResponses);
+
     }
 
 
