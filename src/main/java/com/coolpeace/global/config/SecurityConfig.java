@@ -54,7 +54,9 @@ public class SecurityConfig {
                             .requestMatchers("/actuator/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/v1/member/login", "/v1/member/register").permitAll()
                             .requestMatchers(HttpMethod.GET, "/v1/member/register/check/*").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/v1/member/refresh").permitAll();
+                            .requestMatchers(HttpMethod.POST, "/v1/member/refresh").permitAll()
+                            .requestMatchers("v1/data/**").permitAll();
+
 
                     request.anyRequest().authenticated();
                 }
