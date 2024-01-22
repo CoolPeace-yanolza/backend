@@ -12,8 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
+import com.coolpeace.domain.settlement.dto.response.PageSettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
+import com.coolpeace.domain.settlement.entity.Settlement;
 import com.coolpeace.domain.settlement.repository.OrderBy;
 import com.coolpeace.domain.settlement.service.SettlementService;
 import java.time.LocalDate;
@@ -24,6 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -68,37 +73,42 @@ class SettlementControllerTest  {
                 20000, -1000,  19000,
                 LocalDate.now().plusMonths(1));
 
+
         List<SettlementResponse> settlementResponseList = new ArrayList<>();
         settlementResponseList.add(settlementResponse1);
         settlementResponseList.add(settlementResponse2);
 
+        PageSettlementResponse pageSettlementResponse =
+            PageSettlementResponse.from(2L, 1, settlementResponseList);
+
         given(settlementService.searchSettlement(any(), anyLong(), any(SearchSettlementParams.class),
-                anyInt(),anyInt())).willReturn(settlementResponseList);
+                anyInt(),anyInt())).willReturn(pageSettlementResponse);
         //when,then
         mockMvc.perform(get("/v1/settlements/{accommodation_id}", 1L)
                 .queryParam("start", "2023-09-27")
                 .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
                 .queryParam("end", "2023-12-03"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].coupon_number").isString())
-            .andExpect(jsonPath("$[0].coupon_name").isString())
-            .andExpect(jsonPath("$[0].coupon_use_date").exists())
-            .andExpect(jsonPath("$[0].coupon_count").isNumber())
-            .andExpect(jsonPath("$[0].discount_price").isNumber())
-            .andExpect(jsonPath("$[0].cancel_price").isNumber())
-            .andExpect(jsonPath("$[0].supply_price").isNumber())
-            .andExpect(jsonPath("$[0].sum_price").isNumber())
-            .andExpect(jsonPath("$[0].complete_at").exists())
-            .andExpect(jsonPath("$[1].coupon_number").isString())
-            .andExpect(jsonPath("$[1].coupon_name").isString())
-            .andExpect(jsonPath("$[1].coupon_use_date").exists())
-            .andExpect(jsonPath("$[1].coupon_count").isNumber())
-            .andExpect(jsonPath("$[1].discount_price").isNumber())
-            .andExpect(jsonPath("$[1].cancel_price").isNumber())
-            .andExpect(jsonPath("$[1].supply_price").isNumber())
-            .andExpect(jsonPath("$[1].sum_price").isNumber())
-            .andExpect(jsonPath("$[1].complete_at").exists())
+            .andExpect(jsonPath("$.total_settlement_count").isNumber())
+            .andExpect(jsonPath("$.total_page_count").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[0].coupon_number").isString())
+            .andExpect(jsonPath("$.settlement_responses[0].coupon_name").isString())
+            .andExpect(jsonPath("$.settlement_responses[0].coupon_use_date").exists())
+            .andExpect(jsonPath("$.settlement_responses[0].coupon_count").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[0].discount_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[0].cancel_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[0].sum_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[0].complete_at").exists())
+            .andExpect(jsonPath("$.settlement_responses[1].coupon_number").isString())
+            .andExpect(jsonPath("$.settlement_responses[1].coupon_name").isString())
+            .andExpect(jsonPath("$.settlement_responses[1].coupon_use_date").exists())
+            .andExpect(jsonPath("$.settlement_responses[1].coupon_count").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[1].discount_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[1].cancel_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[1].sum_price").isNumber())
+            .andExpect(jsonPath("$.settlement_responses[1].complete_at").exists())
             .andDo(print());
+
         verify(settlementService,times(1))
             .searchSettlement(any(), anyLong(), any(SearchSettlementParams.class), anyInt(),anyInt());
     }

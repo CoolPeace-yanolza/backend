@@ -1,5 +1,6 @@
 package com.coolpeace.domain.settlement.service;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +18,7 @@ import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
+import com.coolpeace.domain.settlement.dto.response.PageSettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SettlementResponse;
 import com.coolpeace.domain.settlement.dto.response.SumSettlementResponse;
 import com.coolpeace.domain.settlement.entity.Settlement;
@@ -207,17 +209,23 @@ class SettlementServiceTest {
                 .findAllByAccommodationAndCouponUseDateGreaterThanEqualAndCouponUseDateLessThanEqualOrderByCouponUseDateDesc
                     (any(Pageable.class), any(Accommodation.class), any(LocalDate.class),
                         any(LocalDate.class))).willReturn(settlementPage);
+
+
             //when
-            List<SettlementResponse> settlementResponses = settlementService.searchSettlement("1",
-                1L, settlementParams, 1,10);
+            PageSettlementResponse pageSettlementResponse = settlementService.searchSettlement("1",
+                1L, settlementParams, 1, 10);
             //then
-            assertThat(settlementResponses.get(0)).extracting
+            assertThat(pageSettlementResponse.totalSettlementCount()).isEqualTo(
+                settlementPage.getTotalElements());
+            assertThat(pageSettlementResponse.totalPageCount()).isEqualTo(
+                settlementPage.getTotalPages());
+            assertThat(pageSettlementResponse.settlementResponses().get(0)).extracting
                     ("couponUseDate", "couponCount", "discountPrice", "cancelPrice",
                         "sumPrice", "completeAt")
                 .containsExactly(settlement1.getCouponUseDate(), settlement1.getCouponCount(),
                     settlement1.getDiscountPrice(), settlement1.getCancelPrice(),
                     settlement1.getSumPrice(), settlement1.getCompleteAt());
-            assertThat(settlementResponses.get(1)).extracting
+            assertThat(pageSettlementResponse.settlementResponses().get(1)).extracting
                     ("couponUseDate", "couponCount", "discountPrice", "cancelPrice",
                          "sumPrice", "completeAt")
                 .containsExactly(settlement1.getCouponUseDate(), settlement2.getCouponCount(),
