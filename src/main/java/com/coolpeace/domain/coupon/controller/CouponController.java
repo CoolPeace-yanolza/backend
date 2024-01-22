@@ -40,6 +40,15 @@ public class CouponController {
         return ResponseEntity.ok(CouponSearchResponse.from(couponResponses, categoryResponse));
     }
 
+    @GetMapping("/{coupon_number}")
+    public ResponseEntity<CouponResponse> getCouponByCouponNumber(
+            @PathVariable("coupon_number") String couponNumber,
+            @AuthJwtPrincipal JwtPrincipal jwtPrincipal
+    ) {
+        return ResponseEntity.ok(CouponResponse.from(couponService.getCouponByCouponNumber(
+                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber)));
+    }
+
     @GetMapping("/recent")
     public ResponseEntity<?> getCouponRecentHistory(
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal

@@ -70,6 +70,13 @@ public class CouponService {
     }
 
     @Transactional(readOnly = true)
+    public Coupon getCouponByCouponNumber(Long memberId, String couponNumber) {
+        validateMemberHasCoupon(memberId, couponNumber);
+        return couponRepository.findByCouponNumber(couponNumber)
+                .orElseThrow(CouponNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
     public List<CouponResponse> getRecentHistory(Long memberId) {
         return couponRepository.findRecentCouponByMemberId(memberId)
                 .stream().map(CouponResponse::from).toList();
