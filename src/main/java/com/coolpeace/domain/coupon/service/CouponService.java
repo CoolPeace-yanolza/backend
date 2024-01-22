@@ -60,7 +60,8 @@ public class CouponService {
     public CouponCategoryResponse getCouponCategories(Long memberId, Long accommodationId) {
         Map<CouponStatusType, Long> counts = couponRepository.countCouponsByCouponStatus(memberId, accommodationId);
 
-        long all = counts.values().stream().mapToLong(Long::longValue).sum();
+        long all = counts.values().stream().mapToLong(Long::longValue).sum()
+                - counts.getOrDefault(CouponStatusType.DELETED, 0L);
         long exposureOn = counts.getOrDefault(CouponStatusType.EXPOSURE_ON, 0L);
         long exposureOff = counts.getOrDefault(CouponStatusType.EXPOSURE_OFF, 0L)
                 + counts.getOrDefault(CouponStatusType.EXPOSURE_WAIT, 0L);
