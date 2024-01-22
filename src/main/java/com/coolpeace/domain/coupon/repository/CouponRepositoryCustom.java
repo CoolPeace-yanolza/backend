@@ -17,7 +17,7 @@ public interface CouponRepositoryCustom {
 
     Page<Coupon> findAllCoupons(Long memberId, Long accommodationId, SearchCouponParams params, PageRequest pageable);
 
-    Map<CouponStatusType, Long> countCouponsByCouponStatus();
+    Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId);
 
     List<Coupon> findRecentCouponByMemberId(Long memberId);
 
