@@ -22,7 +22,6 @@ import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
-import com.coolpeace.global.common.DayOfWeekUtil;
 import com.coolpeace.global.common.RestDocsIntegrationTest;
 import com.coolpeace.global.util.CouponTestUtil;
 import com.coolpeace.global.util.MemberTestUtil;
@@ -108,7 +107,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                 false,
                 randomRoomNumbers,
                 coupon.getMinimumReservationPrice(),
-                DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
+                coupon.getCouponUseDays().getValue(),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate()
         );
@@ -138,7 +137,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("register_all_room").type(JsonFieldType.BOOLEAN).description("객실 등록 여부"),
                                         fieldWithPath("register_rooms").type(JsonFieldType.ARRAY).description("등록될 객실의 리스트"),
                                         fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격"),
-                                        fieldWithPath("coupon_use_condition_days").type(JsonFieldType.ARRAY).description("쿠폰 사용 가능 요일"),
+                                        fieldWithPath("coupon_use_condition_days").type(JsonFieldType.STRING).description("쿠폰 사용 가능 요일"),
                                         fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜"),
                                         fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜")
                                 )
@@ -167,7 +166,8 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
 
         // when
         MultiValueMap<String, String> requestParams = createCouponSearchParams();
-        ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/{accommodation_id}", accommodation.getId())
+        ResultActions result = mockMvc.perform(get("/v1/accommodations/{accommodation_id}/coupons",
+                accommodation.getId())
                 .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken())
                 .queryParams(requestParams));
 
@@ -308,6 +308,54 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         }
     }
 
+    @DisplayName("쿠폰 번호로 쿠폰 조회")
+    @Test
+    void getCouponByCouponNumber_success() throws Exception {
+        // given
+        MemberLoginResponse loginResponse = MemberTestUtil
+                .obtainAccessTokenByTestMember(mockMvc, objectMapper, registeredMember);
+
+        List<Room> randomRooms = RoomTestUtil.getRandomRooms(rooms);
+        Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
+        coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+
+        // when
+        ResultActions result = mockMvc.perform(get(URL_DOMAIN_PREFIX + "/{coupon_number}", coupon.getCouponNumber())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, BEARER_PREFIX + loginResponse.accessToken()));
+
+        // then
+        result.andExpect(status().isOk());
+        result.andDo(document("get-coupon-by-coupon-number",
+                resource(ResourceSnippetParameters.builder()
+                        .tag(RESOURCE_TAG)
+                        .description("쿠폰 번호로 쿠폰 조회 API")
+                        .responseSchema(Schema.schema(CouponResponse.class.getSimpleName()))
+                        .responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
+                                fieldWithPath("coupon_number").type(JsonFieldType.STRING).description("쿠폰 번호"),
+                                fieldWithPath("coupon_status").type(JsonFieldType.STRING).description("쿠폰 상태"),
+                                fieldWithPath("coupon_concat_title").type(JsonFieldType.STRING).description("고객 유형 + 할인 유형 + 할인의 값"),
+                                fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형"),
+                                fieldWithPath("discount_value").type(JsonFieldType.NUMBER).description("할인의 값"),
+                                fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형"),
+                                fieldWithPath("coupon_room_type").type(JsonFieldType.STRING).description("객실의 유형"),
+                                fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격"),
+                                fieldWithPath("coupon_use_condition_days").type(JsonFieldType.ARRAY).description("쿠폰 사용 가능 요일"),
+                                fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜"),
+                                fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜"),
+                                fieldWithPath("coupon_expiration").type(JsonFieldType.NUMBER).description("쿠폰 만료 일자"),
+                                fieldWithPath("download_count").type(JsonFieldType.NUMBER).description("다운로드 횟수"),
+                                fieldWithPath("use_count").type(JsonFieldType.NUMBER).description("사용 수"),
+                                fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
+                                fieldWithPath("register_room_numbers").type(JsonFieldType.ARRAY).description("등록된 객실 번호"),
+                                fieldWithPath("created_date").type(JsonFieldType.STRING).description("생성 날짜")
+                        )
+                        .build()
+                )
+        ));
+    }
+
     @DisplayName("쿠폰 수정")
     @Test
     void updateCoupon_success() throws Exception {
@@ -319,6 +367,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
         Coupon coupon = couponRepository.save(new CouponTestBuilder(accommodation, storedMember, randomRooms).build());
         coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
         CouponUpdateRequest request = new CouponUpdateRequest(
+                coupon.getTitle(),
                 accommodation.getId(),
                 coupon.getCustomerType().getValue(),
                 coupon.getDiscountType().getValue(),
@@ -327,7 +376,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                 coupon.getCouponRooms().isEmpty(),
                 coupon.getCouponRooms().stream().map(room -> room.getRoom().getRoomNumber()).toList(),
                 coupon.getMinimumReservationPrice() + 10000,
-                DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
+                coupon.getCouponUseDays().getValue(),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate()
         );
@@ -348,6 +397,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                 .description("쿠폰 수정 API")
                                 .requestSchema(Schema.schema(CouponUpdateRequest.class.getSimpleName()))
                                 .requestFields(
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
                                         fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
                                         fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형").optional(),
                                         fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형").optional(),
@@ -356,7 +406,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("register_all_room").type(JsonFieldType.BOOLEAN).description("객실 등록 여부").optional(),
                                         fieldWithPath("register_rooms").type(JsonFieldType.ARRAY).description("등록될 객실의 리스트").optional(),
                                         fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격").optional(),
-                                        fieldWithPath("coupon_use_condition_days").type(JsonFieldType.ARRAY).description("쿠폰 사용 가능 요일").optional(),
+                                        fieldWithPath("coupon_use_condition_days").type(JsonFieldType.STRING).description("쿠폰 사용 가능 요일").optional(),
                                         fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜").optional(),
                                         fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜").optional()
                                 )

@@ -1,6 +1,7 @@
 package com.coolpeace.domain.coupon.dto.request;
 
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.global.common.validator.ValidEnum;
@@ -43,7 +44,8 @@ public record CouponRegisterRequest(
 
         // 쿠폰 사용 조건
         Integer minimumReservationPrice,
-        List<String> couponUseConditionDays,
+        @ValidEnum(enumClass = CouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.", required = false)
+        String couponUseConditionDays,
 
         // 노출 날짜
         @NotNull(message = "노출 시작 날짜를 입력해야 합니다.")

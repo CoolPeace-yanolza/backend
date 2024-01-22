@@ -54,6 +54,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
                 case All -> coupon.couponStatus.ne(CouponStatusType.DELETED);
             });
+        } else {
+            searchCouponPredicate.and(coupon.couponStatus.ne(CouponStatusType.DELETED));
         }
 
         // 쿠폰 이름

@@ -12,7 +12,9 @@ import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.*;
-import com.coolpeace.domain.coupon.exception.*;
+import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
+import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
+import com.coolpeace.domain.coupon.exception.InvalidCouponStateOutsideExposureDateException;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
@@ -25,7 +27,6 @@ import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.CouponTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
 import com.coolpeace.global.builder.RoomTestBuilder;
-import com.coolpeace.global.common.DayOfWeekUtil;
 import com.coolpeace.global.util.CouponTestUtil;
 import com.coolpeace.global.util.RoomTestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
@@ -324,7 +324,7 @@ class CouponServiceTest {
                     registerAllRoom,
                     !registerAllRoom ? registerRoomNumbers : null,
                     coupon.getMinimumReservationPrice(),
-                    DayOfWeekUtil.fromDayOfWeeks(coupon.getCouponUseConditionDays()),
+                    coupon.getCouponUseDays().getValue(),
                     coupon.getExposureStartDate(),
                     coupon.getExposureEndDate()
             );
@@ -345,7 +345,7 @@ class CouponServiceTest {
                     CustomerType.ALL_CLIENT,
                     CouponRoomType.LODGE,
                     0,
-                    Collections.emptyList(),
+                    CouponUseDaysType.ALL,
                     LocalDate.now().plusDays(100),
                     LocalDate.now().plusDays(130),
                     accommodation,
@@ -362,7 +362,7 @@ class CouponServiceTest {
                     CustomerType.FIRST_CLIENT,
                     CouponRoomType.RENTAL,
                     1000,
-                    List.of(DayOfWeek.MONDAY),
+                    CouponUseDaysType.WEEKDAY,
                     LocalDate.now().plusDays(30),
                     LocalDate.now().plusDays(60),
                     accommodation,
@@ -378,7 +378,9 @@ class CouponServiceTest {
         void updateCoupon_mono_update_success() {
 
             //when
-            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+            executeUpdateCoupon(new CouponUpdateRequest(
+                    couponB.getTitle(),
+                    accommodation.getId(),
                     couponB.getCustomerType().getValue(),
                     null,
                     null,
@@ -386,7 +388,7 @@ class CouponServiceTest {
                     null,
                     null,
                     couponB.getMinimumReservationPrice(),
-                    DayOfWeekUtil.fromDayOfWeeks(couponB.getCouponUseConditionDays()),
+                    couponB.getCouponUseDays().getValue(),
                     couponB.getExposureStartDate(),
                     couponB.getExposureEndDate()
             ));
@@ -405,7 +407,9 @@ class CouponServiceTest {
         void updateCoupon_discountType_update_success() {
 
             //when
-            executeUpdateCoupon(new CouponUpdateRequest(accommodation.getId(),
+            executeUpdateCoupon(new CouponUpdateRequest(
+                    null,
+                    accommodation.getId(),
                     null,
                     couponB.getDiscountType().getValue(),
                     couponB.getDiscountValue(),
