@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record CouponUpdateRequest(
+        String title,
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
         Long accommodationId,
         @ValidEnum(enumClass = CustomerType.class, message = "올바르지 않은 고객의 유형입니다.", required = false)

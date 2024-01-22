@@ -146,7 +146,7 @@ public class Coupon extends BaseTimeEntity {
 
     public void generateCouponNumber(CouponIssuerType couponIssuerType, Long id) {
         this.couponNumber =
-            couponIssuerType.getValue() + String.format("%06d", Objects.requireNonNull(id));
+            couponIssuerType.getValue() + String.format("%07d", Objects.requireNonNull(id));
     }
 
     public void changeCouponStatus(CouponStatusType couponStatusType) {
@@ -180,6 +180,7 @@ public class Coupon extends BaseTimeEntity {
             LocalDate exposureStartDate,
             LocalDate exposureEndDate
     ) {
+        this.title = Optional.ofNullable(title).orElse(this.title);
         this.discountType = Optional.ofNullable(discountType).orElse(this.discountType);
         this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
