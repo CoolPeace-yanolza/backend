@@ -28,6 +28,7 @@ import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,7 @@ public class DashboardService {
     private final AccommodationRepository accommodationRepository;
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
 
+    @Cacheable(value = "monthlyData", key = "#accommodationId", cacheManager = "contentCacheManager")
     public List<MonthlyDataResponse> monthlyData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
@@ -56,6 +58,7 @@ public class DashboardService {
 
     }
 
+    @Cacheable(value = "weeklyCoupon", key = "#accommodationId", cacheManager = "contentCacheManager")
     public WeeklyCouponResponse weeklyCoupon(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
 
@@ -65,6 +68,7 @@ public class DashboardService {
         return WeeklyCouponResponse.from(dailyStatisticsList);
     }
 
+    @Cacheable(value = "downloadCouponTop3", key = "#accommodationId", cacheManager = "contentCacheManager")
     public MonthlyCouponDownloadResponse downloadCouponTop3(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
@@ -78,6 +82,7 @@ public class DashboardService {
 
     }
 
+    @Cacheable(value = "couponCountAvg", key = "#accommodationId", cacheManager = "contentCacheManager")
     public CouponCountAvgResponse couponCountAvg(String memberId,Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);
@@ -91,7 +96,7 @@ public class DashboardService {
         return getCouponCountAvgResponse(type, localCouponDownload, address);
     }
 
-
+    @Cacheable(value = "byYearCumulativeData", key = "#accommodationId", cacheManager = "contentCacheManager")
     public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
@@ -113,7 +118,7 @@ public class DashboardService {
             .map(MonthlyDataLightResponse::from).toList());
     }
 
-
+    @Cacheable(value = "cumulativeData", key = "#accommodationId", cacheManager = "contentCacheManager")
     public CumulativeDataResponse cumulativeData(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
