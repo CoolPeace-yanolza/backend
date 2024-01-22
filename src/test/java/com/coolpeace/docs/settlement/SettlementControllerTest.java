@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,12 +72,15 @@ class SettlementControllerTest extends RestDocsUnitTest {
     @WithMockUser
     void searchSettlement_success() throws Exception {
         //given
-        SettlementResponse settlementResponse1 = SettlementResponse.from(LocalDate.now(), 2,
-            10000, 0, 0, 10000,
-            LocalDate.now().plusMonths(1));
-        SettlementResponse settlementResponse2 = SettlementResponse.from(LocalDate.now(), 2,
-            20000, 1000, 0, 19000,
-            LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse1 = SettlementResponse
+            .from(LocalDate.now(),"YC000011","크리스마스 쿠폰", 2,
+                10000, 0, 0, 10000,
+                LocalDate.now().plusMonths(1));
+        SettlementResponse settlementResponse2 = SettlementResponse
+            .from(LocalDate.now(),"YC000012","대박 할인 쿠폰", 2,
+                20000, 1000, 0, 19000,
+                LocalDate.now().plusMonths(1));
+
         List<SettlementResponse> settlementResponseList = new ArrayList<>();
         settlementResponseList.add(settlementResponse1);
         settlementResponseList.add(settlementResponse2);
@@ -106,6 +108,8 @@ class SettlementControllerTest extends RestDocsUnitTest {
                     .responseSchema(Schema.schema(SettlementResponse.class.getSimpleName()))
                     .responseFields(
                         fieldWithPath("[].coupon_use_date").type(JsonFieldType.STRING).description("쿠폰 사용일"),
+                        fieldWithPath("[].coupon_number").type(JsonFieldType.STRING).description("쿠폰 번호"),
+                        fieldWithPath("[].coupon_name").type(JsonFieldType.STRING).description("관리 쿠폰명"),
                         fieldWithPath("[].coupon_count").type(JsonFieldType.NUMBER).description("사용건수"),
                         fieldWithPath("[].discount_price").type(JsonFieldType.NUMBER).description("쿠폰할인금액"),
                         fieldWithPath("[].cancel_price").type(JsonFieldType.NUMBER).description("쿠폰취소금액"),
