@@ -87,9 +87,12 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Map<CouponStatusType, Long> countCouponsByCouponStatus() {
+    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId) {
+
         List<Tuple> results = jpaQueryFactory
                 .select(coupon.couponStatus, coupon.count())
+                .where(coupon.member.id.eq(memberId)
+                        .and(coupon.accommodation.id.eq(accommodationId)))
                 .from(coupon)
                 .groupBy(coupon.couponStatus)
                 .fetch();
