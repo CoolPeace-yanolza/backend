@@ -6,7 +6,7 @@ import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
 import com.coolpeace.global.security.MemberPrincipal;
-import com.coolpeace.global.resolver.AuthJwtPrincipal;
+import com.coolpeace.global.resolver.AuthMemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +27,7 @@ public class CouponSearchController {
             @PathVariable("accommodation_id") Long accommodationId,
             @Valid SearchCouponParams searchCouponParams,
             @PageableDefault Pageable pageable,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal
     ) {
         Page<CouponResponse> couponResponses = couponService.searchCoupons(
                 Long.valueOf(memberPrincipal.getMemberId()), accommodationId, searchCouponParams, pageable);

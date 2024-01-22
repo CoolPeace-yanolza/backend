@@ -3,7 +3,7 @@ package com.coolpeace.domain.settlement.controller;
 import com.coolpeace.domain.settlement.dto.request.SearchSettlementParams;
 import com.coolpeace.domain.settlement.service.SettlementService;
 import com.coolpeace.global.security.MemberPrincipal;
-import com.coolpeace.global.resolver.AuthJwtPrincipal;
+import com.coolpeace.global.resolver.AuthMemberPrincipal;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class SettlementController {
 
     @GetMapping("/{accommodation_id}/summary")
     public ResponseEntity<?> sumSettlement(@PathVariable("accommodation_id") Long accommodationId,
-        @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
+        @AuthMemberPrincipal MemberPrincipal memberPrincipal) {
         return ResponseEntity.ok().body(settlementService.sumSettlement
             (memberPrincipal.getMemberId(), accommodationId));
     }
@@ -33,7 +33,7 @@ public class SettlementController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int pageSize,
         @Valid SearchSettlementParams searchSettlementParams,
-        @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
+        @AuthMemberPrincipal MemberPrincipal memberPrincipal) {
         return ResponseEntity.ok().body(settlementService.searchSettlement
             (memberPrincipal.getMemberId(), accommodationId, searchSettlementParams,page,pageSize));
     }

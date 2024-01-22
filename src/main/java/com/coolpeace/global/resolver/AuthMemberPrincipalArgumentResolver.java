@@ -12,10 +12,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class AuthJwtPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthMemberPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(AuthJwtPrincipal.class) != null
+        return parameter.getParameterAnnotation(AuthMemberPrincipal.class) != null
                 && parameter.getParameterType().isAssignableFrom(MemberPrincipal.class);
     }
 

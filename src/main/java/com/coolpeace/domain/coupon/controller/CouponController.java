@@ -6,7 +6,7 @@ import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.service.CouponService;
 import com.coolpeace.global.security.MemberPrincipal;
-import com.coolpeace.global.resolver.AuthJwtPrincipal;
+import com.coolpeace.global.resolver.AuthMemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +24,14 @@ public class CouponController {
     @GetMapping("/{coupon_number}")
     public ResponseEntity<CouponResponse> getCouponByCouponNumber(
             @PathVariable("coupon_number") String couponNumber,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal) {
         return ResponseEntity.ok(CouponResponse.from(couponService.getCouponByCouponNumber(
                 Long.valueOf(memberPrincipal.getMemberId()), couponNumber)));
     }
 
     @GetMapping("/recent")
     public ResponseEntity<?> getCouponRecentHistory(
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal
     ) {
         List<CouponResponse> couponResponses = couponService.getRecentHistory(Long.valueOf(memberPrincipal.getMemberId()));
         if (couponResponses.isEmpty()) {
@@ -43,7 +43,7 @@ public class CouponController {
     @PostMapping("/register")
     public ResponseEntity<Void> registerCoupon(
             @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal
     ) {
         couponService.register(Long.valueOf(memberPrincipal.getMemberId()), couponRegisterRequest);
         return ResponseEntity.created(URI.create("/")).build();
@@ -53,7 +53,7 @@ public class CouponController {
     public ResponseEntity<Void> updateCoupon(
             @PathVariable("coupon_number") String couponNumber,
             @Valid @RequestBody CouponUpdateRequest couponUpdateRequest,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal) {
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal) {
         couponService.updateCoupon(
                 Long.valueOf(memberPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
         return ResponseEntity.ok().build();
@@ -63,7 +63,7 @@ public class CouponController {
     public ResponseEntity<Void> exposeCoupon(
             @PathVariable("coupon_number") String couponNumber,
             @Valid @RequestBody CouponExposeRequest couponExposeRequest,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal
     ) {
         couponService.exposeCoupon(
                 Long.valueOf(memberPrincipal.getMemberId()), couponNumber, couponExposeRequest);
@@ -73,7 +73,7 @@ public class CouponController {
     @DeleteMapping("/{coupon_number}")
     public ResponseEntity<Void> deleteCoupon(
             @PathVariable("coupon_number") String couponNumber,
-            @AuthJwtPrincipal MemberPrincipal memberPrincipal
+            @AuthMemberPrincipal MemberPrincipal memberPrincipal
     ) {
         couponService.deleteCoupon(Long.valueOf(memberPrincipal.getMemberId()), couponNumber);
         return ResponseEntity.ok().build();
