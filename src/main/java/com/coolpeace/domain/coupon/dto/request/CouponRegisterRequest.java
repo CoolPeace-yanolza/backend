@@ -1,6 +1,5 @@
 package com.coolpeace.domain.coupon.dto.request;
 
-import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
 import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
@@ -30,9 +29,8 @@ public record CouponRegisterRequest(
         Integer maximumDiscountPrice,
 
         // 객실 유형
-        @NotNull(message = "객실의 유형을 선택해야 합니다.")
-        @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 객실의 유형입니다.")
-        String couponRoomType,
+        List<String> couponRoomTypes,
+        Boolean couponRoomStayMore,
 
         // 숙소 ID
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
