@@ -45,8 +45,11 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private CustomerType customerType = CustomerType.ALL_CLIENT;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CouponRoomType couponRoomType;
+
+    @Enumerated(EnumType.STRING)
+    private CouponRoomType couponRoomStayType;
 
     private Integer minimumReservationPrice = 0;
 
@@ -88,6 +91,7 @@ public class Coupon extends BaseTimeEntity {
                   Integer maximumDiscountPrice,
                   CustomerType customerType,
                   CouponRoomType couponRoomType,
+                  CouponRoomType couponRoomStayType,
                   Integer minimumReservationPrice,
                   CouponUseDaysType couponUseDays,
                   LocalDate exposureStartDate,
@@ -101,6 +105,7 @@ public class Coupon extends BaseTimeEntity {
         this.maximumDiscountPrice = maximumDiscountPrice;
         this.customerType = customerType;
         this.couponRoomType = couponRoomType;
+        this.couponRoomStayType = couponRoomStayType;
         this.minimumReservationPrice = minimumReservationPrice;
         this.couponUseDays = couponUseDays;
         this.exposureStartDate = exposureStartDate;
@@ -118,6 +123,7 @@ public class Coupon extends BaseTimeEntity {
             Integer maximumDiscountPrice,
             CustomerType customerType,
             CouponRoomType couponRoomType,
+            CouponRoomType couponRoomStayType,
             Integer minimumReservationPrice,
             CouponUseDaysType couponUseDays,
             LocalDate exposureStartDate,
@@ -133,6 +139,7 @@ public class Coupon extends BaseTimeEntity {
                 maximumDiscountPrice,
                 customerType,
                 couponRoomType,
+                couponRoomStayType,
                 minimumReservationPrice,
                 couponUseDays,
                 exposureStartDate,
@@ -181,6 +188,7 @@ public class Coupon extends BaseTimeEntity {
             Integer maximumDiscountPrice,
             CustomerType customerType,
             CouponRoomType couponRoomType,
+            CouponRoomType couponRoomStayType,
             Integer minimumReservationPrice,
             CouponUseDaysType couponUseDays,
             List<Room> rooms,
@@ -193,6 +201,7 @@ public class Coupon extends BaseTimeEntity {
         this.maximumDiscountPrice = Optional.ofNullable(maximumDiscountPrice).orElse(this.maximumDiscountPrice);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
         this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
+        this.couponRoomStayType = Optional.ofNullable(couponRoomStayType).orElse(this.couponRoomStayType);
         this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);
         this.couponUseDays = Optional.ofNullable(couponUseDays).orElse(this.couponUseDays);
         if (rooms != null) {
