@@ -12,6 +12,7 @@ import com.coolpeace.domain.coupon.dto.response.CouponSearchResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
+import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.dto.response.MemberLoginResponse;
 import com.coolpeace.domain.member.entity.Member;
@@ -101,7 +102,9 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                 coupon.getTitle(),
                 coupon.getCustomerType().getValue(),
                 coupon.getDiscountType().getValue(),
-                coupon.getDiscountValue(),
+                coupon.getDiscountType().equals(DiscountType.FIXED_PRICE) ? coupon.getDiscountValue() : null,
+                coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
+                coupon.getMaximumDiscountPrice(),
                 coupon.getCouponRoomType().getValue(),
                 accommodation.getId(),
                 false,
@@ -131,7 +134,9 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("쿠폰의 이름"),
                                         fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형"),
                                         fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형"),
-                                        fieldWithPath("discount_value").type(JsonFieldType.NUMBER).description("할인의 값"),
+                                        fieldWithPath("discount_flat_value").type(JsonFieldType.NUMBER).description("정액 할인의 값").optional(),
+                                        fieldWithPath("discount_flat_rate").type(JsonFieldType.NUMBER).description("정률 할인의 비율").optional(),
+                                        fieldWithPath("maximum_discount_price").type(JsonFieldType.NUMBER).description("정률 할인일 때 최대 할인 한도").optional(),
                                         fieldWithPath("coupon_room_type").type(JsonFieldType.STRING).description("객실의 유형"),
                                         fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
                                         fieldWithPath("register_all_room").type(JsonFieldType.BOOLEAN).description("객실 등록 여부"),
@@ -371,7 +376,9 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                 accommodation.getId(),
                 coupon.getCustomerType().getValue(),
                 coupon.getDiscountType().getValue(),
-                coupon.getDiscountValue(),
+                coupon.getDiscountType().equals(DiscountType.FIXED_PRICE) ? coupon.getDiscountValue() : null,
+                coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
+                coupon.getMaximumDiscountPrice(),
                 coupon.getCouponRoomType().getValue(),
                 coupon.getCouponRooms().isEmpty(),
                 coupon.getCouponRooms().stream().map(room -> room.getRoom().getRoomNumber()).toList(),
@@ -401,7 +408,9 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                         fieldWithPath("accommodation_id").type(JsonFieldType.NUMBER).description("숙박업체의 ID"),
                                         fieldWithPath("customer_type").type(JsonFieldType.STRING).description("고객의 유형").optional(),
                                         fieldWithPath("discount_type").type(JsonFieldType.STRING).description("할인의 유형").optional(),
-                                        fieldWithPath("discount_value").type(JsonFieldType.NUMBER).description("할인의 값").optional(),
+                                        fieldWithPath("discount_flat_value").type(JsonFieldType.NUMBER).description("정액 할인의 값").optional(),
+                                        fieldWithPath("discount_flat_rate").type(JsonFieldType.NUMBER).description("정률 할인의 비율").optional(),
+                                        fieldWithPath("maximum_discount_price").type(JsonFieldType.NUMBER).description("정률 할인일 때 최대 할인 한도").optional(),
                                         fieldWithPath("coupon_room_type").type(JsonFieldType.STRING).description("객실의 유형").optional(),
                                         fieldWithPath("register_all_room").type(JsonFieldType.BOOLEAN).description("객실 등록 여부").optional(),
                                         fieldWithPath("register_rooms").type(JsonFieldType.ARRAY).description("등록될 객실의 리스트").optional(),
