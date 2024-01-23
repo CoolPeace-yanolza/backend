@@ -110,10 +110,11 @@ public class CouponService {
             case FIXED_RATE -> couponRegisterRequest.discountFlatRate();
             case FIXED_PRICE -> couponRegisterRequest.discountFlatValue();
         };
+
         CouponRoomType couponRoomTypeValue = getCouponRoomType(
-                couponRegisterRequest.couponRoomTypes(), List.of(CouponRoomType.RENTAL));
-        CouponRoomType couponRoomStayTypeValue = getCouponRoomType(
-                couponRegisterRequest.couponRoomTypes(), List.of(CouponRoomType.LODGE, CouponRoomType.TWO_NIGHT));
+                couponRegisterRequest.couponRoomTypes(), CouponRoomType.RENTAL);
+        CouponRoomType couponRoomStayTypeValue = getCouponRoomStayTypeValue(couponRegisterRequest.couponRoomTypes(),
+                couponRoomTypeValue, couponRegisterRequest.couponRoomStayMore());
 
         Coupon savedCoupon = couponRepository.save(Coupon.from(
                 couponRegisterRequest.title(),
@@ -164,10 +165,12 @@ public class CouponService {
         CustomerType customerType = Optional.ofNullable(couponUpdateRequest.customerType())
                 .map(str -> ValuedEnum.of(CustomerType.class, str))
                 .orElse(null);
+
         CouponRoomType couponRoomTypeValue = getCouponRoomType(
-                couponUpdateRequest.couponRoomTypes(), List.of(CouponRoomType.RENTAL));
-        CouponRoomType couponRoomStayTypeValue = getCouponRoomType(
-                couponUpdateRequest.couponRoomTypes(), List.of(CouponRoomType.LODGE, CouponRoomType.TWO_NIGHT));
+                couponUpdateRequest.couponRoomTypes(), CouponRoomType.RENTAL);
+        CouponRoomType couponRoomStayTypeValue = getCouponRoomStayTypeValue(couponUpdateRequest.couponRoomTypes(),
+                couponRoomTypeValue, couponUpdateRequest.couponRoomStayMore());
+
         CouponUseDaysType couponUseDays = Optional.ofNullable(couponUpdateRequest.couponUseConditionDays())
                 .map(str -> ValuedEnum.of(CouponUseDaysType.class, str))
                 .orElse(null);
@@ -187,10 +190,19 @@ public class CouponService {
         );
     }
 
-    private CouponRoomType getCouponRoomType(List<String> request, List<CouponRoomType> couponRoomTypes) {
+    private CouponRoomType getCouponRoomStayTypeValue(List<String> couponRoomTypeStrings,
+                                                      CouponRoomType couponRoomTypeValue,
+                                                      boolean CouponRoomStayMore) {
+        if (CouponRoomStayMore && couponRoomTypeValue != null && couponRoomTypeValue.equals(CouponRoomType.LODGE)) {
+            return CouponRoomType.TWO_NIGHT;
+        }
+        return getCouponRoomType(couponRoomTypeStrings, CouponRoomType.LODGE);
+    }
+
+    private CouponRoomType getCouponRoomType(List<String> request, CouponRoomType couponRoomType) {
         return request.stream()
                 .map(str -> ValuedEnum.of(CouponRoomType.class, str))
-                .filter(couponRoomTypes::contains)
+                .filter(roomType -> roomType.equals(couponRoomType))
                 .findFirst().orElse(null);
     }
 

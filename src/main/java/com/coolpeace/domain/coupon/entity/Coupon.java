@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -148,6 +149,13 @@ public class Coupon extends BaseTimeEntity {
                 room,
                 member
         );
+    }
+
+    public List<String> getCouponRoomTypeStringsExcludingTwoNight() {
+        return Stream.of(this.getCouponRoomType(), this.getCouponRoomStayType())
+                .filter(Objects::nonNull)
+                .filter(roomType -> roomType != CouponRoomType.TWO_NIGHT)
+                .map(CouponRoomType::getValue).toList();
     }
 
     public String getCouponTitle() {

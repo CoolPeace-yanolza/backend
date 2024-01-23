@@ -7,9 +7,7 @@ import com.coolpeace.domain.coupon.entity.type.DiscountType;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public record CouponResponse(
         String title,
@@ -22,6 +20,7 @@ public record CouponResponse(
         Integer maximumDiscountPrice,
         String customerType,
         List<String> couponRoomTypes,
+        Boolean couponRoomStayMore,
         Integer minimumReservationPrice,
         String couponUseConditionDays,
         LocalDate exposureStartDate,
@@ -45,8 +44,8 @@ public record CouponResponse(
                 coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
                 coupon.getMaximumDiscountPrice(),
                 coupon.getCustomerType().getValue(),
-                Stream.of(coupon.getCouponRoomType(), coupon.getCouponRoomStayType())
-                        .filter(Objects::nonNull).map(CouponRoomType::getValue).toList(),
+                coupon.getCouponRoomTypeStringsExcludingTwoNight(),
+                coupon.getCouponRoomStayType() != null && coupon.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
                 coupon.getMinimumReservationPrice(),
                 coupon.getCouponUseDays().getValue(),
                 coupon.getExposureStartDate(),

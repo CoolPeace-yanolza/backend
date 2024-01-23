@@ -30,6 +30,7 @@ public record CouponRegisterRequest(
 
         // 객실 유형
         List<String> couponRoomTypes,
+        Boolean couponRoomStayMore,
 
         // 숙소 ID
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
