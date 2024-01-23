@@ -21,6 +21,7 @@ import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class SettlementService {
     private final AccommodationRepository accommodationRepository;
     private final MemberRepository memberRepository;
 
+    @Cacheable(value = "sumSettlement", key = "#accommodationId", cacheManager = "contentCacheManager")
     public SumSettlementResponse sumSettlement(String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.getMonthlySearchDate(0,0);

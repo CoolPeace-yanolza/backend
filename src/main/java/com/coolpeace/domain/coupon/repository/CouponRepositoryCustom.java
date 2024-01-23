@@ -33,4 +33,8 @@ public interface CouponRepositoryCustom {
 
     List<Coupon> findAllByExposureDate(Accommodation accommodation, LocalDate localDate);
 
+    List<Coupon> startExposureCoupons(LocalDate localDate);
+
+    List<Coupon> endExposureCoupons(LocalDate localDate);
+
 }

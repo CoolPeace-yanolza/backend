@@ -19,7 +19,9 @@ public record CouponUpdateRequest(
         String customerType,
         @ValidEnum(enumClass = DiscountType.class, message = "올바르지 않은 할인의 유형입니다.", required = false)
         String discountType,
-        Integer discountValue,
+        Integer discountFlatValue,
+        Integer discountFlatRate,
+        Integer maximumDiscountPrice,
         @ValidEnum(enumClass = CouponRoomType.class, message = "올바르지 않은 객실의 유형입니다.", required = false)
         String couponRoomType,
         Boolean registerAllRoom,

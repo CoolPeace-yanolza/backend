@@ -25,8 +25,9 @@ public record CouponRegisterRequest(
         @NotNull(message = "할인의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = DiscountType.class, message = "올바르지 않은 할인의 유형입니다.")
         String discountType,
-        @NotNull(message = "할인의 값을 입력해야 합니다.")
-        Integer discountValue,
+        Integer discountFlatValue,
+        Integer discountFlatRate,
+        Integer maximumDiscountPrice,
 
         // 객실 유형
         @NotNull(message = "객실의 유형을 선택해야 합니다.")

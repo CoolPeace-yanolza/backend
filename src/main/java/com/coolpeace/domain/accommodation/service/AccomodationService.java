@@ -12,6 +12,7 @@ import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ public class AccomodationService {
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
 
+    @Cacheable(value = "accommodation", key = "#jwtPrincipal.toString()",cacheManager = "contentCacheManager")
     public List<AccommodationResponse> getAccommodations(JwtPrincipal jwtPrincipal) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());
@@ -34,6 +36,7 @@ public class AccomodationService {
             .toList();
     }
 
+    @Cacheable(value = "rooms", key = "#accommodationId",cacheManager = "contentCacheManager")
     public List<RoomResponse> getRooms(JwtPrincipal jwtPrincipal, Long accommodationId) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());

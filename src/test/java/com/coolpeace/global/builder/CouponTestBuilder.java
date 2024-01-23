@@ -59,6 +59,10 @@ public class CouponTestBuilder {
             case FIXED_PRICE -> faker.random().nextInt(1, 300) * 100;
             case FIXED_RATE -> faker.random().nextInt(5, 50);
         };
+        Integer maximumDiscountPrice = null;
+        if (discountType.equals(DiscountType.FIXED_RATE)) {
+            maximumDiscountPrice = faker.random().nextBoolean() ? faker.random().nextInt(1, 10) * 1000 : null;
+        }
 
         CustomerType customerType = CustomerType.values()[faker.random().nextInt(CustomerType.values().length)];
         CouponRoomType couponRoomType = CouponRoomType.values()[faker.random().nextInt(CouponRoomType.values().length)];
@@ -80,6 +84,7 @@ public class CouponTestBuilder {
                 title,
                 discountType,
                 discountValue,
+                maximumDiscountPrice,
                 customerType,
                 couponRoomType,
                 minimumReservationPrice,

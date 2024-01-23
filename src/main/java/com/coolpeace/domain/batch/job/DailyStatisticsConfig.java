@@ -1,5 +1,6 @@
 package com.coolpeace.domain.batch.job;
 
+import com.coolpeace.domain.batch.tasklet.CouponStatusTasklet;
 import com.coolpeace.domain.batch.tasklet.SettlementTasklet;
 import com.coolpeace.domain.statistics.service.DailyStatisticsService;
 import com.coolpeace.domain.batch.tasklet.CouponTasklet;
@@ -33,11 +34,10 @@ public class DailyStatisticsConfig {
             .start(saleStep(jobRepository, platformTransactionManager))
             .next(couponStep(jobRepository, platformTransactionManager))
             .next(settlementStep(jobRepository, platformTransactionManager))
+            .next(couponStatusStep(jobRepository,platformTransactionManager))
             .build();
     }
-    
 
-    
     @Bean
     public Step saleStep(JobRepository jobRepository,
         PlatformTransactionManager platformTransactionManager) throws  Exception{
@@ -64,6 +64,16 @@ public class DailyStatisticsConfig {
         log.info("settlement step start");
         return new StepBuilder("settlementStep", jobRepository)
             .tasklet(new SettlementTasklet(dailyStatisticsService), platformTransactionManager)
+            .listener(customStepListener)
+            .build();
+    }
+
+    @Bean
+    public Step couponStatusStep(JobRepository jobRepository,
+        PlatformTransactionManager platformTransactionManager) {
+        log.info("couponStatus step start");
+        return new StepBuilder("couponStatusStep", jobRepository)
+            .tasklet(new CouponStatusTasklet(dailyStatisticsService), platformTransactionManager)
             .listener(customStepListener)
             .build();
     }

@@ -174,4 +174,20 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .and(coupon.exposureStartDate.before(localDate))
                 .and(coupon.exposureEndDate.after(localDate))).fetch();
     }
+
+    @Override
+    public List<Coupon> endExposureCoupons(LocalDate nowDate) {
+        return jpaQueryFactory.selectFrom(coupon)
+            .where(coupon.couponStatus.ne(CouponStatusType.DELETED)
+                .and((coupon.exposureEndDate.before(nowDate))
+                    .or(coupon.exposureEndDate.eq(nowDate)))).fetch();
+    }
+
+    @Override
+    public List<Coupon> startExposureCoupons(LocalDate nowDate) {
+        return jpaQueryFactory.selectFrom(coupon)
+            .where(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT)
+                .and((coupon.exposureStartDate.after(nowDate))
+                    .or(coupon.exposureStartDate.eq(LocalDate.now())))).fetch();
+    }
 }

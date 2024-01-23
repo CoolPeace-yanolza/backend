@@ -39,6 +39,8 @@ public class Coupon extends BaseTimeEntity {
 
     private Integer discountValue;
 
+    private Integer maximumDiscountPrice;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CustomerType customerType = CustomerType.ALL_CLIENT;
@@ -83,6 +85,7 @@ public class Coupon extends BaseTimeEntity {
     public Coupon(String title,
                   DiscountType discountType,
                   Integer discountValue,
+                  Integer maximumDiscountPrice,
                   CustomerType customerType,
                   CouponRoomType couponRoomType,
                   Integer minimumReservationPrice,
@@ -95,6 +98,7 @@ public class Coupon extends BaseTimeEntity {
         this.title = title;
         this.discountType = discountType;
         this.discountValue = discountValue;
+        this.maximumDiscountPrice = maximumDiscountPrice;
         this.customerType = customerType;
         this.couponRoomType = couponRoomType;
         this.minimumReservationPrice = minimumReservationPrice;
@@ -111,6 +115,7 @@ public class Coupon extends BaseTimeEntity {
             String title,
             DiscountType discountType,
             Integer discountValue,
+            Integer maximumDiscountPrice,
             CustomerType customerType,
             CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
@@ -125,6 +130,7 @@ public class Coupon extends BaseTimeEntity {
                 title,
                 discountType,
                 discountValue,
+                maximumDiscountPrice,
                 customerType,
                 couponRoomType,
                 minimumReservationPrice,
@@ -172,6 +178,7 @@ public class Coupon extends BaseTimeEntity {
     public void updateCoupon(
             DiscountType discountType,
             Integer discountValue,
+            Integer maximumDiscountPrice,
             CustomerType customerType,
             CouponRoomType couponRoomType,
             Integer minimumReservationPrice,
@@ -183,6 +190,7 @@ public class Coupon extends BaseTimeEntity {
         this.title = Optional.ofNullable(title).orElse(this.title);
         this.discountType = Optional.ofNullable(discountType).orElse(this.discountType);
         this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
+        this.maximumDiscountPrice = Optional.ofNullable(maximumDiscountPrice).orElse(this.maximumDiscountPrice);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
         this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
         this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);

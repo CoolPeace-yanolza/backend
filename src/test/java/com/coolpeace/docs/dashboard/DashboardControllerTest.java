@@ -24,6 +24,7 @@ import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataLightResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.WeeklyCouponResponse;
+import com.coolpeace.domain.dashboard.dto.response.WrapMonthlyDataResponse;
 import com.coolpeace.domain.dashboard.service.DashboardService;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
@@ -68,7 +69,9 @@ class DashboardControllerTest extends RestDocsUnitTest {
         List<MonthlyDataResponse> monthlyDataResponses = monthlyStatistics.stream()
             .map(MonthlyDataResponse::from).toList();
 
-        given(dashboardService.monthlyData(any(), anyLong())).willReturn(monthlyDataResponses);
+        WrapMonthlyDataResponse wrapMonthlyDataResponse =
+            WrapMonthlyDataResponse.from(monthlyDataResponses);
+        given(dashboardService.monthlyData(any(), anyLong())).willReturn(wrapMonthlyDataResponse);
         //when,then
         mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/v1/dashboards/{accommodation_id}/reports/month", 1L)
@@ -80,21 +83,21 @@ class DashboardControllerTest extends RestDocsUnitTest {
                     .description("월간 비교 그래프 조회 API")
                     .responseSchema(Schema.schema(MonthlyDataResponse.class.getSimpleName()))
                     .responseFields(
-                        fieldWithPath("[].statistics_year").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].statistics_year").type(JsonFieldType.NUMBER)
                             .description("통계 집계한 연도"),
-                        fieldWithPath("[].statistics_month").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].statistics_month").type(JsonFieldType.NUMBER)
                             .description("통계 집계한 월"),
-                        fieldWithPath("[].total_sales").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].total_sales").type(JsonFieldType.NUMBER)
                             .description("해당 월 총 매출 "),
-                        fieldWithPath("[].coupon_total_sales").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].coupon_total_sales").type(JsonFieldType.NUMBER)
                             .description("쿠폰 적용 매출"),
-                        fieldWithPath("[].download_count").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].download_count").type(JsonFieldType.NUMBER)
                             .description("쿠폰 다운로드 수"),
-                        fieldWithPath("[].used_count").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].used_count").type(JsonFieldType.NUMBER)
                             .description("쿠폰 사용 완료 수 "),
-                        fieldWithPath("[].settlement_amount").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].settlement_amount").type(JsonFieldType.NUMBER)
                             .description("이번달 쿠폰 정산 금액"),
-                        fieldWithPath("[].conversion_rate").type(JsonFieldType.NUMBER)
+                        fieldWithPath(".monthly_data_responses[].conversion_rate").type(JsonFieldType.NUMBER)
                             .description("전환율")
                     )
                     .build()
