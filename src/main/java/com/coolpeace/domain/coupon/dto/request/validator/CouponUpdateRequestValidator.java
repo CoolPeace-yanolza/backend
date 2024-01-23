@@ -17,5 +17,6 @@ public class CouponUpdateRequestValidator extends CouponRequestValidator {
 
         validateRegisterRooms(errors, request.registerAllRoom());
         validateDiscountValues(errors, request.discountType(), request.discountFlatValue(), request.discountFlatRate());
+        validateCouponRoomTypes(errors, request.couponRoomTypes());
     }
 }
