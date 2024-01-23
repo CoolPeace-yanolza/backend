@@ -51,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -322,8 +321,9 @@ class CouponServiceTest {
                     coupon.getDiscountType().equals(DiscountType.FIXED_PRICE) ? coupon.getDiscountValue() : null,
                     coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
                     coupon.getMaximumDiscountPrice(),
-                    Stream.of(coupon.getCouponRoomType(), coupon.getCouponRoomStayType())
-                            .filter(Objects::nonNull).map(CouponRoomType::getValue).toList(),
+                    coupon.getCouponRoomTypeStringsExcludingTwoNight(),
+                    coupon.getCouponRoomStayType() != null &&
+                    coupon.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
                     accommodation.getId(),
                     registerAllRoom,
                     !registerAllRoom ? registerRoomNumbers : null,
@@ -394,8 +394,9 @@ class CouponServiceTest {
                     null,
                     null,
                     null,
-                    Stream.of(couponB.getCouponRoomType(), couponB.getCouponRoomStayType())
-                            .filter(Objects::nonNull).map(CouponRoomType::getValue).toList(),
+                    couponB.getCouponRoomTypeStringsExcludingTwoNight(),
+                    couponB.getCouponRoomStayType() != null &&
+                            couponB.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
                     null,
                     null,
                     couponB.getMinimumReservationPrice(),
@@ -426,8 +427,9 @@ class CouponServiceTest {
                     couponB.getDiscountType().equals(DiscountType.FIXED_PRICE) ? couponB.getDiscountValue() : null,
                     couponB.getDiscountType().equals(DiscountType.FIXED_RATE) ? couponB.getDiscountValue() : null,
                     couponB.getMaximumDiscountPrice(),
-                    Stream.of(couponB.getCouponRoomType(), couponB.getCouponRoomStayType())
-                            .filter(Objects::nonNull).map(CouponRoomType::getValue).toList(),
+                    couponB.getCouponRoomTypeStringsExcludingTwoNight(),
+                    couponB.getCouponRoomStayType() != null &&
+                            couponB.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
                     null,
                     null,
                     null,
