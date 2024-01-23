@@ -3,6 +3,7 @@ package com.coolpeace.domain.statistics.service;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.reservation.entity.Reservation;
@@ -115,6 +116,17 @@ public class DailyStatisticsService {
                 .orElseThrow(DailyStatisticsNotFoundException::new);
             dailyStatistics.setSettlement(sumSettlement);
         });
+    }
+
+    public void updateCouponStatusStartExposure() {
+        LocalDate now = LocalDate.now();
+        List<Coupon> coupons = couponRepository.startExposureCoupons(now);
+        coupons.forEach(coupon -> coupon.changeCouponStatus(CouponStatusType.EXPOSURE_ON));
+    }
+    public void updateCouponStatusEndExposure() {
+        LocalDate now = LocalDate.now();
+        List<Coupon> coupons = couponRepository.endExposureCoupons(now);
+        coupons.forEach(coupon -> coupon.changeCouponStatus(CouponStatusType.EXPOSURE_END));
 
     }
 
