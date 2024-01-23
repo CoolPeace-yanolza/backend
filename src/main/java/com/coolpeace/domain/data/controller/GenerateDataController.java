@@ -2,7 +2,9 @@ package com.coolpeace.domain.data.controller;
 
 import com.coolpeace.domain.data.dto.request.GenerateAccommodationRequest;
 import com.coolpeace.domain.data.dto.request.GenerateCouponRequest;
+import com.coolpeace.domain.data.dto.request.GenerateReservationRequest;
 import com.coolpeace.domain.data.service.GenerateDataService;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,14 @@ public class GenerateDataController {
         @RequestBody GenerateCouponRequest req
     ){
         return ResponseEntity.ok(generateDataService.generateCoupon(req));
+    }
+
+
+    @PostMapping("/reservation")
+    public ResponseEntity<Integer> generateReservation(
+        @RequestBody GenerateReservationRequest req
+    ){
+        return ResponseEntity.ok(generateDataService.generateReservation(req));
     }
 
 

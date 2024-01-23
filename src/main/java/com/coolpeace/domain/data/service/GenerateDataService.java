@@ -13,6 +13,7 @@ import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundExcepti
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.accommodation.repository.SidoRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.CouponRooms;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
 import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
@@ -22,14 +23,21 @@ import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.data.dto.request.GenerateAccommodationRequest;
 import com.coolpeace.domain.data.dto.request.GenerateCouponRequest;
+import com.coolpeace.domain.data.dto.request.GenerateReservationRequest;
 import com.coolpeace.domain.data.util.InfoGenerator;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
+import com.coolpeace.domain.reservation.entity.Reservation;
+import com.coolpeace.domain.reservation.repository.ReservationRepository;
 import com.coolpeace.domain.room.entity.Room;
+import com.coolpeace.domain.room.entity.RoomReservation;
 import com.coolpeace.domain.room.repository.RoomRepository;
+import com.coolpeace.domain.room.repository.RoomReservationRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +56,9 @@ public class GenerateDataService {
     private final AccommodationRepository accommodationRepository;
     private final CouponRepository couponRepository;
     private final RoomRepository roomRepository;
+    private final ReservationRepository reservationRepository;
+    private final RoomReservationRepository roomReservationRepository;
+
     public Integer generateAccommodation(GenerateAccommodationRequest req) {
 
         Member member = memberRepository.findById(req.member())
@@ -187,7 +198,7 @@ public class GenerateDataService {
 
     public static LocalDate getRandomDateInPeriod() {
         LocalDate startDate = LocalDate.of(2022, 1, 1);
-        LocalDate endDate = LocalDate.of(2022, 12, 31);
+        LocalDate endDate = LocalDate.of(2024, 1, 31);
 
         // 특정 기간 내에서 랜덤한 날짜 얻기
         long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
@@ -198,4 +209,44 @@ public class GenerateDataService {
     }
 
 
+    public Integer generateReservation(GenerateReservationRequest req) {
+
+        List<Reservation> reservations = new ArrayList<>();
+        List<RoomReservation> roomReservations = new ArrayList<>();
+
+        for(int i = 0 ; i < req.count() ; i++){
+
+            Room room = roomRepository.findRandom();
+            List<CouponRooms> couponRooms = room.getCouponRooms();
+            Coupon coupon = couponRooms.get(randomNum(0, couponRooms.size() - 1)).getCoupon();
+
+            LocalDate date = getRandomDateInPeriod();
+
+            Reservation reservation = new Reservation(
+                 LocalDateTime.of(date, LocalTime.of(15, 0)),
+                LocalDateTime.of(date.plusDays(randomNum(1, 3)), LocalTime.of(11, 0))
+            );
+
+            reservationRepository.save(reservation);
+
+            RoomReservation roomReservation = new RoomReservation(
+                room,
+                reservation,
+                coupon
+            );
+
+            roomReservationRepository.save(roomReservation);
+
+            reservation.updateRoomReservationAndPrices(
+                List.of(roomReservation)
+                ,room.getPrice()
+            );
+
+            reservations.add(reservation);
+            roomReservations.add(roomReservation);
+
+        }
+
+        return reservations.size();
+    }
 }
