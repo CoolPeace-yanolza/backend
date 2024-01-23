@@ -3,6 +3,7 @@ package com.coolpeace.domain.statistics.service;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.reservation.entity.Reservation;
@@ -13,11 +14,12 @@ import com.coolpeace.domain.statistics.entity.DailySearchDate;
 import com.coolpeace.domain.statistics.entity.DailyStatistics;
 import com.coolpeace.domain.statistics.exception.DailyStatisticsNotFoundException;
 import com.coolpeace.domain.statistics.repository.DailyStatisticsRepository;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class DailyStatisticsService {
 
     private final SettlementRepository settlementRepository;
 
+    @CacheEvict(value = "weeklyCoupon", cacheManager = "contentCacheManager")
     public void updateSales(int statisticsYear, int statisticsMonth, int statisticsDay){
         DailySearchDate dailySearchDate = DailySearchDate.
             getDailySearchDate(statisticsYear,statisticsMonth,statisticsDay);
@@ -90,6 +93,7 @@ public class DailyStatisticsService {
         });
     }
 
+    @CacheEvict(value = "sumSettlement", cacheManager = "contentCacheManager")
     public void updateSettlement(int statisticsYear, int statisticsMonth, int statisticsDay){
         DailySearchDate dailySearchDate = DailySearchDate.
             getDailySearchDate(statisticsYear,statisticsMonth,statisticsDay);
@@ -115,6 +119,17 @@ public class DailyStatisticsService {
                 .orElseThrow(DailyStatisticsNotFoundException::new);
             dailyStatistics.setSettlement(sumSettlement);
         });
+    }
+
+    public void updateCouponStatusStartExposure() {
+        LocalDate now = LocalDate.now();
+        List<Coupon> coupons = couponRepository.startExposureCoupons(now);
+        coupons.forEach(coupon -> coupon.changeCouponStatus(CouponStatusType.EXPOSURE_ON));
+    }
+    public void updateCouponStatusEndExposure() {
+        LocalDate now = LocalDate.now();
+        List<Coupon> coupons = couponRepository.endExposureCoupons(now);
+        coupons.forEach(coupon -> coupon.changeCouponStatus(CouponStatusType.EXPOSURE_END));
 
     }
 

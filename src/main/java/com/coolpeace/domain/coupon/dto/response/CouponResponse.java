@@ -1,24 +1,28 @@
 package com.coolpeace.domain.coupon.dto.response;
 
+import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.DiscountType;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 
 public record CouponResponse(
         String title,
         String couponNumber,
         String couponStatus,
-        Boolean couponPromotion,
         String couponConcatTitle,
         String discountType,
-        Integer discountValue,
+        Integer discountFlatValue,
+        Integer discountFlatRate,
+        Integer maximumDiscountPrice,
         String customerType,
-        String couponRoomType,
+        List<String> couponRoomTypes,
+        Boolean couponRoomStayMore,
         Integer minimumReservationPrice,
-        List<String> couponUseConditionDays,
+        String couponUseConditionDays,
         LocalDate exposureStartDate,
         LocalDate exposureEndDate,
         Integer couponExpiration,
@@ -34,24 +38,23 @@ public record CouponResponse(
                 coupon.getTitle(),
                 coupon.getCouponNumber(),
                 coupon.getCouponStatus().getValue(),
-                false, // 프로모션이 개발되면 추후 수정 예정
                 coupon.getCouponTitle(),
                 coupon.getDiscountType().getValue(),
-                coupon.getDiscountValue(),
+                coupon.getDiscountType().equals(DiscountType.FIXED_PRICE) ? coupon.getDiscountValue() : null,
+                coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
+                coupon.getMaximumDiscountPrice(),
                 coupon.getCustomerType().getValue(),
-                coupon.getCouponRoomType().getValue(),
+                coupon.getCouponRoomTypeStringsExcludingTwoNight(),
+                coupon.getCouponRoomStayType() != null && coupon.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
                 coupon.getMinimumReservationPrice(),
-                coupon.getCouponUseConditionDays()
-                        .stream().map(dayOfWeek -> dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN))
-                        .toList(),
+                coupon.getCouponUseDays().getValue(),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate(),
                 coupon.getCouponExpiration(),
                 coupon.getDownloadCount(),
                 coupon.getUseCount(),
-                coupon.getAccommodation() != null ? coupon.getAccommodation().getId() : null,
-                coupon.getCouponRooms().stream()
-                        .map(couponRooms -> couponRooms.getRoom().getRoomNumber() + "호").toList(),
+                Optional.ofNullable(coupon.getAccommodation()).map(Accommodation::getId).orElse(null),
+                coupon.getCouponRooms().stream().map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList(),
                 coupon.getCreatedAt().toLocalDate()
         );
     }

@@ -3,16 +3,14 @@ package com.coolpeace.global.builder;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.room.entity.Room;
 import com.github.javafaker.Faker;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CouponTestBuilder {
@@ -61,22 +59,26 @@ public class CouponTestBuilder {
             case FIXED_PRICE -> faker.random().nextInt(1, 300) * 100;
             case FIXED_RATE -> faker.random().nextInt(5, 50);
         };
+        Integer maximumDiscountPrice = null;
+        if (discountType.equals(DiscountType.FIXED_RATE)) {
+            maximumDiscountPrice = faker.random().nextBoolean() ? faker.random().nextInt(1, 10) * 1000 : null;
+        }
 
         CustomerType customerType = CustomerType.values()[faker.random().nextInt(CustomerType.values().length)];
-        CouponRoomType couponRoomType = CouponRoomType.values()[faker.random().nextInt(CouponRoomType.values().length)];
-
+        boolean existCouponRoomType = faker.random().nextBoolean();
+        CouponRoomType couponRoomType = null;
+        if (existCouponRoomType) {
+            couponRoomType = CouponRoomType.values()[0];
+        }
+        boolean existCouponRoomStayType = faker.random().nextBoolean();
+        CouponRoomType couponRoomStayType = null;
+        if (existCouponRoomStayType) {
+            couponRoomStayType = CouponRoomType.values()[faker.random().nextInt(1, 2)];
+        }
         boolean checkMinReservationPrice = faker.random().nextBoolean();
         int minimumReservationPrice = checkMinReservationPrice ? faker.random().nextInt(1, 100) * 100 : 0;
 
-        boolean checkUseConditionDays = faker.random().nextBoolean();
-        List<DayOfWeek> useConditionDays;
-        if (checkUseConditionDays) {
-            List<DayOfWeek> allDays = Arrays.asList(DayOfWeek.values());
-            Collections.shuffle(allDays);
-            useConditionDays = allDays.subList(0, faker.random().nextInt(allDays.size()));
-        } else {
-            useConditionDays = Collections.emptyList();
-        }
+        CouponUseDaysType couponUseDays = CouponUseDaysType.values()[faker.random().nextInt(CouponUseDaysType.values().length)];
 
         if (exposureStartDate == null || exposureEndDate == null) {
             long startDate = faker.number().numberBetween(-200, 200);
@@ -90,10 +92,12 @@ public class CouponTestBuilder {
                 title,
                 discountType,
                 discountValue,
+                maximumDiscountPrice,
                 customerType,
                 couponRoomType,
+                couponRoomStayType,
                 minimumReservationPrice,
-                useConditionDays,
+                couponUseDays,
                 exposureStartDate,
                 exposureEndDate,
                 accommodation,

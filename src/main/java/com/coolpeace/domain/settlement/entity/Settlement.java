@@ -31,8 +31,6 @@ public class Settlement extends BaseTimeEntity {
     private int discountPrice = 0;
     @Column(nullable = false)
     private int cancelPrice = 0;
-    @Column(nullable = false)
-    private int supplyPrice = 0;
 
     @Column(nullable = false)
     private int sumPrice = 0;
@@ -46,16 +44,17 @@ public class Settlement extends BaseTimeEntity {
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
-    public Settlement(Long id, LocalDate couponUseDate, int couponCount, int discountPrice,
-        int cancelPrice, int supplyPrice, int sumPrice, LocalDate completeAt,Accommodation accommodation) {
+    public Settlement(Long id, LocalDate couponUseDate, int couponCount,
+        int discountPrice, int cancelPrice, int sumPrice,
+        LocalDate completeAt,Coupon coupon, Accommodation accommodation) {
         this.id = id;
         this.couponUseDate = couponUseDate;
         this.couponCount = couponCount;
         this.discountPrice = discountPrice;
         this.cancelPrice = cancelPrice;
-        this.supplyPrice = supplyPrice;
         this.sumPrice = sumPrice;
         this.completeAt = completeAt;
+        this.coupon = coupon;
         this.accommodation = accommodation;
     }
 
@@ -64,6 +63,6 @@ public class Settlement extends BaseTimeEntity {
     }
 
     public void sumPrice() {
-        this.sumPrice = this.discountPrice + this.cancelPrice + this.supplyPrice;
+        this.sumPrice = this.discountPrice + this.cancelPrice ;
     }
 }

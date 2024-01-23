@@ -17,6 +17,7 @@ import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class MonthlyStatisticsService {
     private final LocalCouponDownloadRepository localCouponDownloadRepository;
     private final AccommodationRepository accommodationRepository;
 
+    @CacheEvict(value = {"monthlyData","byYearCumulativeData","cumulativeData "}, cacheManager = "contentCacheManager")
     public void updateMonthlySum(int statisticsYear, int statisticsMonth) {
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.
             getMonthlySearchDate(statisticsYear,statisticsMonth);
@@ -64,7 +66,7 @@ public class MonthlyStatisticsService {
         });
     }
 
-
+    @CacheEvict(value = {"downloadCouponTop3","couponCountAvg"}, cacheManager = "contentCacheManager")
     public void updateCouponDownloadTop3(int statisticsYear, int statisticsMonth) {
         MonthlySearchDate monthlySearchDate = MonthlySearchDate.
             getMonthlySearchDate(statisticsYear,statisticsMonth);

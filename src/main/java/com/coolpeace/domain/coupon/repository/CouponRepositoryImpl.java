@@ -26,8 +26,7 @@ import java.util.stream.Collectors;
 
 import static com.coolpeace.domain.coupon.entity.QCoupon.coupon;
 import static com.coolpeace.domain.coupon.entity.QCouponRooms.couponRooms;
-import static com.coolpeace.domain.coupon.entity.type.CouponStatusType.EXPOSURE_OFF;
-import static com.coolpeace.domain.coupon.entity.type.CouponStatusType.EXPOSURE_ON;
+import static com.coolpeace.domain.coupon.entity.type.CouponStatusType.*;
 import static com.coolpeace.domain.room.entity.QRoom.room;
 
 public class CouponRepositoryImpl extends QuerydslRepositorySupport implements CouponRepositoryCustom {
@@ -49,11 +48,13 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
             searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponStatusFilterType.class, params.status())) {
                 case EXPOSURE_ON -> coupon.couponStatus.eq(EXPOSURE_ON);
                 case EXPOSURE_OFF -> coupon.couponStatus.eq(EXPOSURE_OFF)
-                        .or(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT));
-                case EXPIRED -> coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END)
-                        .or(coupon.couponStatus.eq(CouponStatusType.DELETED));
-                case All -> coupon.couponStatus.isNotNull();
+                        .or(coupon.couponStatus.eq(EXPOSURE_WAIT));
+                case EXPIRED -> coupon.couponStatus.eq(EXPOSURE_END)
+                        .or(coupon.couponStatus.eq(DELETED));
+                case All -> coupon.couponStatus.ne(DELETED);
             });
+        } else {
+            searchCouponPredicate.and(coupon.couponStatus.ne(DELETED));
         }
 
         // 쿠폰 이름
@@ -68,6 +69,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
                 case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
             });
+        } else {
+            searchCouponPredicate.and(coupon.createdAt.after(LocalDateTime.now().minusYears(1)));
         }
 
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
@@ -85,9 +88,12 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Map<CouponStatusType, Long> countCouponsByCouponStatus() {
+    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId) {
+
         List<Tuple> results = jpaQueryFactory
                 .select(coupon.couponStatus, coupon.count())
+                .where(coupon.member.id.eq(memberId)
+                        .and(coupon.accommodation.id.eq(accommodationId)))
                 .from(coupon)
                 .groupBy(coupon.couponStatus)
                 .fetch();
@@ -105,7 +111,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(coupon.member.id.eq(memberId),
-                        coupon.couponStatus.eq(CouponStatusType.EXPOSURE_END))
+                        coupon.couponStatus.eq(EXPOSURE_END))
                 .orderBy(coupon.createdAt.desc())
                 .limit(6)
                 .fetch();
@@ -136,7 +142,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
-                        .and(coupon.couponStatus.ne(CouponStatusType.DELETED)))
+                        .and(coupon.couponStatus.ne(DELETED)))
                 .fetch().isEmpty();
     }
 
@@ -156,7 +162,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         return jpaQueryFactory.selectFrom(coupon)
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
-                        .and(coupon.couponStatus.ne(CouponStatusType.DELETED))
+                        .and(coupon.couponStatus.ne(DELETED))
                         .and(coupon.exposureEndDate.before(LocalDate.now().plusDays(3))))
                 .fetch();
     }
@@ -167,5 +173,21 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
             .where(coupon.accommodation.eq(accommodation)
                 .and(coupon.exposureStartDate.before(localDate))
                 .and(coupon.exposureEndDate.after(localDate))).fetch();
+    }
+
+    @Override
+    public List<Coupon> endExposureCoupons(LocalDate nowDate) {
+        return jpaQueryFactory.selectFrom(coupon)
+            .where(coupon.couponStatus.ne(CouponStatusType.DELETED)
+                .and((coupon.exposureEndDate.before(nowDate))
+                    .or(coupon.exposureEndDate.eq(nowDate)))).fetch();
+    }
+
+    @Override
+    public List<Coupon> startExposureCoupons(LocalDate nowDate) {
+        return jpaQueryFactory.selectFrom(coupon)
+            .where(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT)
+                .and((coupon.exposureStartDate.after(nowDate))
+                    .or(coupon.exposureStartDate.eq(LocalDate.now())))).fetch();
     }
 }
