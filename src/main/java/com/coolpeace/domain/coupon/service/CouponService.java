@@ -10,12 +10,7 @@ import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
-import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
-import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
-import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
-import com.coolpeace.domain.coupon.entity.type.CustomerType;
-import com.coolpeace.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.domain.coupon.entity.type.*;
 import com.coolpeace.domain.coupon.exception.CouponAccessDeniedException;
 import com.coolpeace.domain.coupon.exception.CouponNotFoundException;
 import com.coolpeace.domain.coupon.exception.CouponUpdateLimitExposureStateException;
@@ -29,11 +24,6 @@ import com.coolpeace.domain.room.exception.RegisterRoomsEmptyException;
 import com.coolpeace.domain.room.exception.RoomNotFoundException;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.common.ValuedEnum;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
@@ -43,6 +33,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -90,7 +86,7 @@ public class CouponService {
     }
 
     @Transactional
-    @CacheEvict(value = "dailyReport", key = "#couponRegisterRequest.accommodationId()",cacheManager = "contentCacheManager")
+    @CacheEvict(value = "dailyReport", key = "#couponRegisterRequest.accommodationId()", cacheManager = "contentCacheManager")
     public void register(Long memberId, CouponRegisterRequest couponRegisterRequest) {
         Member storedMember = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Accommodation accommodation = accommodationRepository.findById(couponRegisterRequest.accommodationId())
@@ -114,6 +110,10 @@ public class CouponService {
             case FIXED_RATE -> couponRegisterRequest.discountFlatRate();
             case FIXED_PRICE -> couponRegisterRequest.discountFlatValue();
         };
+        CouponRoomType couponRoomTypeValue = getCouponRoomType(
+                couponRegisterRequest.couponRoomTypes(), List.of(CouponRoomType.RENTAL));
+        CouponRoomType couponRoomStayTypeValue = getCouponRoomType(
+                couponRegisterRequest.couponRoomTypes(), List.of(CouponRoomType.LODGE, CouponRoomType.TWO_NIGHT));
 
         Coupon savedCoupon = couponRepository.save(Coupon.from(
                 couponRegisterRequest.title(),
@@ -121,7 +121,8 @@ public class CouponService {
                 discountValue,
                 couponRegisterRequest.maximumDiscountPrice(),
                 ValuedEnum.of(CustomerType.class, couponRegisterRequest.customerType()),
-                ValuedEnum.of(CouponRoomType.class, couponRegisterRequest.couponRoomType()),
+                couponRoomTypeValue,
+                couponRoomStayTypeValue,
                 couponRegisterRequest.minimumReservationPrice(),
                 ValuedEnum.of(CouponUseDaysType.class, couponRegisterRequest.couponUseConditionDays()),
                 couponRegisterRequest.exposureStartDate(),
@@ -163,9 +164,10 @@ public class CouponService {
         CustomerType customerType = Optional.ofNullable(couponUpdateRequest.customerType())
                 .map(str -> ValuedEnum.of(CustomerType.class, str))
                 .orElse(null);
-        CouponRoomType couponRoomType = Optional.ofNullable(couponUpdateRequest.couponRoomType())
-                .map(str -> ValuedEnum.of(CouponRoomType.class, str))
-                .orElse(null);
+        CouponRoomType couponRoomTypeValue = getCouponRoomType(
+                couponUpdateRequest.couponRoomTypes(), List.of(CouponRoomType.RENTAL));
+        CouponRoomType couponRoomStayTypeValue = getCouponRoomType(
+                couponUpdateRequest.couponRoomTypes(), List.of(CouponRoomType.LODGE, CouponRoomType.TWO_NIGHT));
         CouponUseDaysType couponUseDays = Optional.ofNullable(couponUpdateRequest.couponUseConditionDays())
                 .map(str -> ValuedEnum.of(CouponUseDaysType.class, str))
                 .orElse(null);
@@ -175,13 +177,21 @@ public class CouponService {
                 discountValue,
                 couponUpdateRequest.maximumDiscountPrice(),
                 customerType,
-                couponRoomType,
+                couponRoomTypeValue,
+                couponRoomStayTypeValue,
                 couponUpdateRequest.minimumReservationPrice(),
                 couponUseDays,
                 rooms,
                 couponUpdateRequest.exposureStartDate(),
                 couponUpdateRequest.exposureEndDate()
         );
+    }
+
+    private CouponRoomType getCouponRoomType(List<String> request, List<CouponRoomType> couponRoomTypes) {
+        return request.stream()
+                .map(str -> ValuedEnum.of(CouponRoomType.class, str))
+                .filter(couponRoomTypes::contains)
+                .findFirst().orElse(null);
     }
 
     @Transactional
