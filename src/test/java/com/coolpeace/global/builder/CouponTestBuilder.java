@@ -65,8 +65,16 @@ public class CouponTestBuilder {
         }
 
         CustomerType customerType = CustomerType.values()[faker.random().nextInt(CustomerType.values().length)];
-        CouponRoomType couponRoomType = CouponRoomType.values()[faker.random().nextInt(CouponRoomType.values().length)];
-
+        boolean existCouponRoomType = faker.random().nextBoolean();
+        CouponRoomType couponRoomType = null;
+        if (existCouponRoomType) {
+            couponRoomType = CouponRoomType.values()[0];
+        }
+        boolean existCouponRoomStayType = faker.random().nextBoolean();
+        CouponRoomType couponRoomStayType = null;
+        if (existCouponRoomStayType) {
+            couponRoomStayType = CouponRoomType.values()[faker.random().nextInt(1, 2)];
+        }
         boolean checkMinReservationPrice = faker.random().nextBoolean();
         int minimumReservationPrice = checkMinReservationPrice ? faker.random().nextInt(1, 100) * 100 : 0;
 
@@ -87,6 +95,7 @@ public class CouponTestBuilder {
                 maximumDiscountPrice,
                 customerType,
                 couponRoomType,
+                couponRoomStayType,
                 minimumReservationPrice,
                 couponUseDays,
                 exposureStartDate,

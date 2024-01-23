@@ -200,8 +200,8 @@ public class Coupon extends BaseTimeEntity {
         this.discountValue = Optional.ofNullable(discountValue).orElse(this.discountValue);
         this.maximumDiscountPrice = Optional.ofNullable(maximumDiscountPrice).orElse(this.maximumDiscountPrice);
         this.customerType = Optional.ofNullable(customerType).orElse(this.customerType);
-        this.couponRoomType = Optional.ofNullable(couponRoomType).orElse(this.couponRoomType);
-        this.couponRoomStayType = Optional.ofNullable(couponRoomStayType).orElse(this.couponRoomStayType);
+        this.couponRoomType = couponRoomType;
+        this.couponRoomStayType = couponRoomStayType;
         this.minimumReservationPrice = Optional.ofNullable(minimumReservationPrice).orElse(this.minimumReservationPrice);
         this.couponUseDays = Optional.ofNullable(couponUseDays).orElse(this.couponUseDays);
         if (rooms != null) {
