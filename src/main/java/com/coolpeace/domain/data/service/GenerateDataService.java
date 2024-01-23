@@ -1,17 +1,39 @@
 package com.coolpeace.domain.data.service;
 
+import static com.coolpeace.domain.data.util.InfoGenerator.generateAccommodationName;
+import static com.coolpeace.domain.data.util.InfoGenerator.generateCouponTitle;
+import static com.coolpeace.domain.data.util.InfoGenerator.generateRoomNumber;
+import static com.coolpeace.domain.data.util.InfoGenerator.randomNum;
+
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.entity.Sido;
 import com.coolpeace.domain.accommodation.entity.Sigungu;
 import com.coolpeace.domain.accommodation.entity.type.AccommodationType;
+import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
 import com.coolpeace.domain.accommodation.repository.SidoRepository;
+import com.coolpeace.domain.coupon.entity.Coupon;
+import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
+import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
+import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
+import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
+import com.coolpeace.domain.coupon.entity.type.CustomerType;
+import com.coolpeace.domain.coupon.entity.type.DiscountType;
+import com.coolpeace.domain.coupon.repository.CouponRepository;
 import com.coolpeace.domain.data.dto.request.GenerateAccommodationRequest;
+import com.coolpeace.domain.data.dto.request.GenerateCouponRequest;
 import com.coolpeace.domain.data.util.InfoGenerator;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
+import com.coolpeace.domain.room.entity.Room;
+import com.coolpeace.domain.room.repository.RoomRepository;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +46,8 @@ public class GenerateDataService {
     private final SidoRepository sidoRepository;
     private final MemberRepository memberRepository;
     private final AccommodationRepository accommodationRepository;
+    private final CouponRepository couponRepository;
+    private final RoomRepository roomRepository;
     public Integer generateAccommodation(GenerateAccommodationRequest req) {
 
         Member member = memberRepository.findById(req.member())
@@ -38,7 +62,7 @@ public class GenerateDataService {
             AccommodationType type = AccommodationType.values()[(int) (Math.random() * AccommodationType.values().length)];
 
             Accommodation accommodation = new Accommodation(
-                InfoGenerator.generateName(type),
+                generateAccommodationName(type),
                 sido,
                 sigungu,
                 "테스트 상세 주소 " + new Random().nextInt(1000),
@@ -48,11 +72,130 @@ public class GenerateDataService {
             accommodation.setType(type);
 
 
+
             accommodations.add(accommodation);
         }
 
         accommodationRepository.saveAll(accommodations);
 
+        for(Accommodation accommodation : accommodations){
+            List<Room> rooms = generateRoom(req.room(), accommodation);
+        }
+
+
         return accommodations.size();
     }
+
+    public Integer generateCoupon(GenerateCouponRequest req) {
+
+        Member member = memberRepository.findById(req.member())
+            .orElseThrow(MemberNotFoundException::new);
+
+        List<Coupon> coupons = new ArrayList<>();
+
+        for(int i = 0 ; i < req.count() ; i++){
+
+            DiscountType discountType = Math.random() >= 0.5 ? DiscountType.FIXED_PRICE : DiscountType.FIXED_RATE;
+            Integer discountValue = discountType == DiscountType.FIXED_RATE ? randomNum(5, 30) : randomNum(1, 5) * 10000;
+            Integer maximunDiscountPrice = discountValue + (randomNum(2, 10) * 10000);
+            CustomerType customerType = CustomerType.values()[randomNum(0, CustomerType.values().length - 1)];
+            CouponRoomType couponRoomType = CouponRoomType.values()[randomNum(0, CouponRoomType.values().length - 1)];
+            CouponRoomType couponRoomStayType = CouponRoomType.values()[randomNum(0, CouponRoomType.values().length - 1)];
+            List<DayOfWeek> couponUserConditionDays = getRandomCondiionDays();
+            Integer minimumReservationPrice = randomNum(5, 10) * 10000;
+            CouponUseDaysType couponUseDays = CouponUseDaysType.values()[randomNum(0, CouponUseDaysType.values().length - 1)];
+            LocalDate exposureStartDate = getRandomDateInPeriod();
+            LocalDate exposureEndDate = exposureStartDate.plusDays(randomNum(1, 365));
+            Integer couponExpiration = randomNum(10, 365);
+            Integer downloadCount = randomNum(10, 5000);
+            Integer useCount = Math.abs(downloadCount - randomNum(10, 5000));
+            Accommodation accommodation = accommodationRepository.findById(req.accommodation())
+                .orElseThrow(AccommodationNotFoundException::new);
+
+
+            Coupon coupon = new Coupon(
+                generateCouponTitle(),
+                discountType,
+                discountValue,
+                maximunDiscountPrice,
+                customerType,
+                couponRoomType,
+                couponRoomStayType,
+                minimumReservationPrice,
+                couponUseDays,
+                exposureStartDate,
+                exposureEndDate,
+                accommodation,
+                accommodation.getRooms(),
+                member
+            );
+
+
+            coupons.add(coupon);
+
+        }
+
+        couponRepository.saveAll(coupons);
+
+        for(Coupon coupon : coupons){
+            coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+        }
+        couponRepository.saveAll(coupons);
+
+
+
+        return coupons.size();
+    }
+
+    private List<Room> generateRoom(Long roomCount, Accommodation accommodation) {
+
+        List<Room> rooms = new ArrayList<>();
+
+        List<String> namePool = InfoGenerator.getRoomNumberPool();
+
+        for(int i = 0 ; i < roomCount ; i++){
+
+            String roomNumber = generateRoomNumber(namePool);
+            String roomType = roomNumber;
+            int price = randomNum(5, 30) * 10000;
+            
+            Room room = new Room(
+                roomNumber,
+                roomType,
+                price,
+                accommodation
+            );
+
+            rooms.add(room);
+            
+        }
+
+        roomRepository.saveAll(rooms);
+
+        return rooms;
+    }
+
+
+
+    private List<DayOfWeek> getRandomCondiionDays(){
+
+        List<DayOfWeek> days = new ArrayList<>(List.of(DayOfWeek.values()));
+        Collections.shuffle(days);
+        Integer count = randomNum(0, days.size());
+        return days.subList(0, count);
+    }
+
+    public static LocalDate getRandomDateInPeriod() {
+        LocalDate startDate = LocalDate.of(2022, 1, 1);
+        LocalDate endDate = LocalDate.of(2022, 12, 31);
+
+        // 특정 기간 내에서 랜덤한 날짜 얻기
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+        Random random = new Random();
+        long randomDays = random.nextInt((int) daysBetween + 1); // 0부터 daysBetween 사이의 랜덤 값
+
+        return startDate.plusDays(randomDays);
+    }
+
+
 }

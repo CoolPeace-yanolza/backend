@@ -8,6 +8,8 @@ import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +21,8 @@ import java.util.stream.Stream;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 public class Coupon extends BaseTimeEntity {
 
     @Id
