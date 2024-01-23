@@ -2,6 +2,8 @@ package com.coolpeace.domain.accommodation.controller;
 
 import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
+import com.coolpeace.domain.accommodation.dto.response.WrapAccommodationResponse;
+import com.coolpeace.domain.accommodation.dto.response.WrapRoomResponse;
 import com.coolpeace.domain.accommodation.service.AccomodationService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
@@ -21,14 +23,14 @@ public class AccommodationController {
     private final AccomodationService accomodationService;
 
     @GetMapping
-    public ResponseEntity<List<AccommodationResponse>> accommodations(
+    public ResponseEntity<WrapAccommodationResponse> accommodations(
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
         return ResponseEntity.ok(accomodationService.getAccommodations(jwtPrincipal));
     }
 
     @GetMapping("/{accommodationId}")
-    public ResponseEntity<List<RoomResponse>> rooms(
+    public ResponseEntity<WrapRoomResponse> rooms(
         @AuthJwtPrincipal JwtPrincipal jwtPrincipal,
         @PathVariable Long accommodationId
     ) {
