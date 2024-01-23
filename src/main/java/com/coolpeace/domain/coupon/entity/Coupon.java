@@ -154,7 +154,7 @@ public class Coupon extends BaseTimeEntity {
     public List<String> getCouponRoomTypeStringsExcludingTwoNight() {
         return Stream.of(this.getCouponRoomType(), this.getCouponRoomStayType())
                 .filter(Objects::nonNull)
-                .filter(roomType -> roomType != CouponRoomType.TWO_NIGHT)
+                .map(roomType -> (roomType == CouponRoomType.TWO_NIGHT) ? CouponRoomType.LODGE : roomType)
                 .map(CouponRoomType::getValue).toList();
     }
 
