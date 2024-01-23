@@ -3,6 +3,7 @@ package com.coolpeace.domain.data.controller;
 import com.coolpeace.domain.data.dto.request.GenerateAccommodationRequest;
 import com.coolpeace.domain.data.dto.request.GenerateCouponRequest;
 import com.coolpeace.domain.data.dto.request.GenerateReservationRequest;
+import com.coolpeace.domain.data.dto.request.GenerateSettlementRequset;
 import com.coolpeace.domain.data.service.GenerateDataService;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,13 @@ public class GenerateDataController {
         @RequestBody GenerateReservationRequest req
     ){
         return ResponseEntity.ok(generateDataService.generateReservation(req));
+    }
+
+    @PostMapping("/settlement")
+    public ResponseEntity<Integer> generateSettlement(
+        @RequestBody GenerateSettlementRequset req
+    ){
+        return ResponseEntity.ok(generateDataService.generateSettlemnet(req));
     }
 
 
