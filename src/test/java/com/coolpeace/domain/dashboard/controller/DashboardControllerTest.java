@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
+import com.coolpeace.domain.dashboard.dto.response.WrapMonthlyDataResponse;
 import com.coolpeace.global.util.RoomTestUtil;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.response.CouponDailyResponse;
@@ -64,35 +65,36 @@ class DashboardControllerTest {
         List<MonthlyStatistics> monthlyStatistics = getMonthlyStatistics(member, accommodation);
         List<MonthlyDataResponse> monthlyDataResponses = monthlyStatistics.stream()
             .map(MonthlyDataResponse::from).toList();
+        WrapMonthlyDataResponse wrapMonthlyDataResponse = WrapMonthlyDataResponse.from(monthlyDataResponses);
 
-        given(dashboardService.monthlyData(any(), anyLong())).willReturn(monthlyDataResponses);
+        given(dashboardService.monthlyData(any(), anyLong())).willReturn(wrapMonthlyDataResponse);
         //when,then
         mockMvc.perform(get("/v1/dashboards/{accommodation_id}/reports/month", 1L))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].statistics_year").isNumber())
-            .andExpect(jsonPath("$[0].statistics_month").isNumber())
-            .andExpect(jsonPath("$[0].total_sales").isNumber())
-            .andExpect(jsonPath("$[0].coupon_total_sales").isNumber())
-            .andExpect(jsonPath("$[0].download_count").isNumber())
-            .andExpect(jsonPath("$[0].used_count").isNumber())
-            .andExpect(jsonPath("$[0].settlement_amount").isNumber())
-            .andExpect(jsonPath("$[0].conversion_rate").isNumber())
-            .andExpect(jsonPath("$[1].statistics_year").isNumber())
-            .andExpect(jsonPath("$[1].statistics_month").isNumber())
-            .andExpect(jsonPath("$[1].total_sales").isNumber())
-            .andExpect(jsonPath("$[1].coupon_total_sales").isNumber())
-            .andExpect(jsonPath("$[1].download_count").isNumber())
-            .andExpect(jsonPath("$[1].used_count").isNumber())
-            .andExpect(jsonPath("$[1].settlement_amount").isNumber())
-            .andExpect(jsonPath("$[1].conversion_rate").isNumber())
-            .andExpect(jsonPath("$[2].statistics_year").isNumber())
-            .andExpect(jsonPath("$[2].statistics_month").isNumber())
-            .andExpect(jsonPath("$[2].total_sales").isNumber())
-            .andExpect(jsonPath("$[2].coupon_total_sales").isNumber())
-            .andExpect(jsonPath("$[2].download_count").isNumber())
-            .andExpect(jsonPath("$[2].used_count").isNumber())
-            .andExpect(jsonPath("$[2].settlement_amount").isNumber())
-            .andExpect(jsonPath("$[2].conversion_rate").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].statistics_year").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].statistics_month").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].coupon_total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].download_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].used_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].settlement_amount").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[0].conversion_rate").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].statistics_year").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].statistics_month").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].coupon_total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].download_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].used_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].settlement_amount").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[1].conversion_rate").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].statistics_year").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].statistics_month").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].coupon_total_sales").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].download_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].used_count").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].settlement_amount").isNumber())
+            .andExpect(jsonPath("$.monthly_data_responses[2].conversion_rate").isNumber())
             .andDo(print());
     }
 

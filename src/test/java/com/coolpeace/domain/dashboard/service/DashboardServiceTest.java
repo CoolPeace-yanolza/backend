@@ -17,8 +17,8 @@ import com.coolpeace.domain.dashboard.dto.response.ByYearCumulativeDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.CouponCountAvgResponse;
 import com.coolpeace.domain.dashboard.dto.response.CumulativeDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.MonthlyCouponDownloadResponse;
-import com.coolpeace.domain.dashboard.dto.response.MonthlyDataResponse;
 import com.coolpeace.domain.dashboard.dto.response.WeeklyCouponResponse;
+import com.coolpeace.domain.dashboard.dto.response.WrapMonthlyDataResponse;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
@@ -30,7 +30,6 @@ import com.coolpeace.domain.statistics.repository.LocalCouponDownloadRepository;
 import com.coolpeace.domain.statistics.repository.MonthlyStatisticsRepository;
 import com.coolpeace.global.builder.AccommodationTestBuilder;
 import com.coolpeace.global.builder.MemberTestBuilder;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -143,15 +142,18 @@ class DashboardServiceTest {
             anyInt(), anyInt(), anyInt(), anyInt())).willReturn(monthlyStatisticsList);
 
         //when
-        List<MonthlyDataResponse> monthlyDataResponses = dashboardService.monthlyData("1", 1L);
+        WrapMonthlyDataResponse wrapMonthlyDataResponse = dashboardService.monthlyData("1", 1L);
 
         //then
-        assertThat(monthlyDataResponses).hasSize(3);
-        assertThat(monthlyDataResponses.get(0)).extracting("totalSales", "statisticsMonth","conversionRate")
+        assertThat(wrapMonthlyDataResponse.monthlyDataResponses()).hasSize(3);
+        assertThat(wrapMonthlyDataResponse.monthlyDataResponses().get(0))
+            .extracting("totalSales", "statisticsMonth","conversionRate")
             .containsExactly(10000000, 12,71);
-        assertThat(monthlyDataResponses.get(1)).extracting("totalSales", "statisticsMonth","conversionRate")
+        assertThat(wrapMonthlyDataResponse.monthlyDataResponses().get(1))
+            .extracting("totalSales", "statisticsMonth","conversionRate")
             .containsExactly(20000000, 11,71);
-        assertThat(monthlyDataResponses.get(2)).extracting("totalSales", "statisticsMonth","conversionRate")
+        assertThat(wrapMonthlyDataResponse.monthlyDataResponses().get(2))
+            .extracting("totalSales", "statisticsMonth","conversionRate")
             .containsExactly(30000000, 10,71);
 
     }
