@@ -109,10 +109,17 @@ public class CouponService {
             rooms = Collections.emptyList();
         }
 
+        DiscountType discountType = ValuedEnum.of(DiscountType.class, couponRegisterRequest.discountType());
+        Integer discountValue = switch (discountType) {
+            case FIXED_RATE -> couponRegisterRequest.discountFlatRate();
+            case FIXED_PRICE -> couponRegisterRequest.discountFlatValue();
+        };
+
         Coupon savedCoupon = couponRepository.save(Coupon.from(
                 couponRegisterRequest.title(),
-                ValuedEnum.of(DiscountType.class, couponRegisterRequest.discountType()),
-                couponRegisterRequest.discountValue(),
+                discountType,
+                discountValue,
+                couponRegisterRequest.maximumDiscountPrice(),
                 ValuedEnum.of(CustomerType.class, couponRegisterRequest.customerType()),
                 ValuedEnum.of(CouponRoomType.class, couponRegisterRequest.couponRoomType()),
                 couponRegisterRequest.minimumReservationPrice(),
@@ -140,9 +147,19 @@ public class CouponService {
         } else {
             rooms = Collections.emptyList();
         }
+
         DiscountType discountType = Optional.ofNullable(couponUpdateRequest.discountType())
                 .map(str -> ValuedEnum.of(DiscountType.class, str))
                 .orElse(null);
+
+        Integer discountValue = null;
+        if (discountType != null) {
+            discountValue = switch (discountType) {
+                case FIXED_RATE -> couponUpdateRequest.discountFlatRate();
+                case FIXED_PRICE -> couponUpdateRequest.discountFlatValue();
+            };
+        }
+
         CustomerType customerType = Optional.ofNullable(couponUpdateRequest.customerType())
                 .map(str -> ValuedEnum.of(CustomerType.class, str))
                 .orElse(null);
@@ -155,7 +172,8 @@ public class CouponService {
 
         storedCoupon.updateCoupon(
                 discountType,
-                couponUpdateRequest.discountValue(),
+                discountValue,
+                couponUpdateRequest.maximumDiscountPrice(),
                 customerType,
                 couponRoomType,
                 couponUpdateRequest.minimumReservationPrice(),
