@@ -88,13 +88,13 @@ public class AccommodationControllerTest extends RestDocsIntegrationTest {
                     .description("숙소 목록 조회 API")
                     .responseSchema(Schema.schema(AccommodationResponse.class.getSimpleName()))
                     .responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("숙소 ID"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("숙소명"),
-                        fieldWithPath("[].sido_id").type(JsonFieldType.NUMBER).description("시도ID"),
-                        fieldWithPath("[].sido").type(JsonFieldType.STRING).description("시도명"),
-                        fieldWithPath("[].sigungu_id").type(JsonFieldType.NUMBER).description("시군구ID"),
-                        fieldWithPath("[].sigungu").type(JsonFieldType.STRING).description("시군구명"),
-                        fieldWithPath("[].address").type(JsonFieldType.STRING).description("숙소 상세")
+                        fieldWithPath(".accommodation_responses[].id").type(JsonFieldType.NUMBER).description("숙소 ID"),
+                        fieldWithPath(".accommodation_responses[].name").type(JsonFieldType.STRING).description("숙소명"),
+                        fieldWithPath(".accommodation_responses[].sido_id").type(JsonFieldType.NUMBER).description("시도ID"),
+                        fieldWithPath(".accommodation_responses[].sido").type(JsonFieldType.STRING).description("시도명"),
+                        fieldWithPath(".accommodation_responses[].sigungu_id").type(JsonFieldType.NUMBER).description("시군구ID"),
+                        fieldWithPath(".accommodation_responses[].sigungu").type(JsonFieldType.STRING).description("시군구명"),
+                        fieldWithPath(".accommodation_responses[].address").type(JsonFieldType.STRING).description("숙소 상세")
                     )
                     .build()
                 )
@@ -123,10 +123,10 @@ public class AccommodationControllerTest extends RestDocsIntegrationTest {
                     .description("숙소의 객실 목록 조회 API")
                     .responseSchema(Schema.schema(RoomResponse.class.getSimpleName()))
                     .responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("방ID"),
-                        fieldWithPath("[].room_number").type(JsonFieldType.STRING).description("방번호"),
-                        fieldWithPath("[].room_type").type(JsonFieldType.STRING).description("방타입"),
-                        fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격")
+                        fieldWithPath(".room_responses[].id").type(JsonFieldType.NUMBER).description("방ID"),
+                        fieldWithPath(".room_responses[].room_number").type(JsonFieldType.STRING).description("방번호"),
+                        fieldWithPath(".room_responses[].room_type").type(JsonFieldType.STRING).description("방타입"),
+                        fieldWithPath(".room_responses[].price").type(JsonFieldType.NUMBER).description("가격")
                     )
                     .build()
             )));
