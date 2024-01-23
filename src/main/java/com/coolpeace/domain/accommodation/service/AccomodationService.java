@@ -2,6 +2,8 @@ package com.coolpeace.domain.accommodation.service;
 
 import com.coolpeace.domain.accommodation.dto.response.AccommodationResponse;
 import com.coolpeace.domain.accommodation.dto.response.RoomResponse;
+import com.coolpeace.domain.accommodation.dto.response.WrapAccommodationResponse;
+import com.coolpeace.domain.accommodation.dto.response.WrapRoomResponse;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
@@ -24,20 +26,21 @@ public class AccomodationService {
     private final RoomRepository roomRepository;
 
     @Cacheable(value = "accommodation", key = "#jwtPrincipal.toString()",cacheManager = "contentCacheManager")
-    public List<AccommodationResponse> getAccommodations(JwtPrincipal jwtPrincipal) {
+    public WrapAccommodationResponse getAccommodations(JwtPrincipal jwtPrincipal) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());
         Member member = memberRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
 
-        return accommodationRepository.findAllByMember(member)
-            .stream()
-            .map(AccommodationResponse::fromEntity)
-            .toList();
+        return WrapAccommodationResponse
+            .from(accommodationRepository.findAllByMember(member)
+                .stream()
+                .map(AccommodationResponse::fromEntity)
+                .toList());
     }
 
     @Cacheable(value = "rooms", key = "#accommodationId",cacheManager = "contentCacheManager")
-    public List<RoomResponse> getRooms(JwtPrincipal jwtPrincipal, Long accommodationId) {
+    public WrapRoomResponse getRooms(JwtPrincipal jwtPrincipal, Long accommodationId) {
 
         Long memberId = Long.parseLong(jwtPrincipal.getMemberId());
         Member member = memberRepository.findById(memberId)
@@ -46,9 +49,10 @@ public class AccomodationService {
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow(AccommodationNotFoundException::new);
 
-        return roomRepository.findAllByAccommodation(accommodation)
+        return WrapRoomResponse
+            .from(roomRepository.findAllByAccommodation(accommodation)
             .stream()
             .map(RoomResponse::fromEntity)
-            .toList();
+            .toList());
     }
 }
