@@ -8,6 +8,8 @@ import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +21,8 @@ import java.util.stream.Stream;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 public class Coupon extends BaseTimeEntity {
 
     @Id
@@ -67,13 +71,13 @@ public class Coupon extends BaseTimeEntity {
     private LocalDate exposureEndDate;
 
     @Column(nullable = false)
-    private final Integer couponExpiration = 14;
+    private Integer couponExpiration = 14;
 
     @Column(nullable = false)
-    private final Integer downloadCount = 0;
+    private Integer downloadCount = 0;
 
     @Column(nullable = false)
-    private final Integer useCount = 0;
+    private Integer useCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
@@ -218,5 +222,25 @@ public class Coupon extends BaseTimeEntity {
         this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
         updateCouponStatusByExposureDate();
+    }
+
+    public void addDownloadCount(){
+        this.downloadCount += 1;
+    }
+
+    public void setDownloadCount(Integer count){
+        this.downloadCount = count;
+    }
+
+    public void addUseCount(){
+        this.useCount += 1;
+    }
+
+    public void setUseCount(Integer count){
+        this.useCount = count;
+    }
+
+    public void setCouponExpiration(Integer couponExpiration){
+        this.couponExpiration = couponExpiration;
     }
 }

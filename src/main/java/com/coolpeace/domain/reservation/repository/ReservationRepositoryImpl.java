@@ -3,6 +3,7 @@ package com.coolpeace.domain.reservation.repository;
 import static com.coolpeace.domain.room.entity.QRoomReservation.roomReservation;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.data.dto.request.SettlementStatistic;
 import com.coolpeace.domain.reservation.entity.Reservation;
 import com.coolpeace.domain.room.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;

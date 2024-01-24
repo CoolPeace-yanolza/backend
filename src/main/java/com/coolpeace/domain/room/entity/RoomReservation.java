@@ -40,10 +40,13 @@ public class RoomReservation {
         this.room = room;
         this.reservation = reservation;
         this.coupon = coupon;
-        this.discountPrice = switch (coupon.getDiscountType()) {
-            case FIXED_RATE -> room.getPrice() * coupon.getDiscountValue();
-            case FIXED_PRICE -> coupon.getDiscountValue();
-        };
+        if(coupon != null){
+            this.discountPrice = switch (coupon.getDiscountType()) {
+                case FIXED_RATE -> room.getPrice() * coupon.getDiscountValue() / 100;
+                case FIXED_PRICE -> coupon.getDiscountValue();
+            };
+        }
+
     }
 
     public static RoomReservation from(Room room, Reservation reservation, Coupon coupon) {
