@@ -1,11 +1,23 @@
 # 쿨피스 팀 백엔드 레포지토리
 
-쿨피스 팀의 백엔드 레포지토리입니다. JAVA Spring Boot REST API 서버를 개발 중입니다.
+쿨피스 팀의 백엔드 레포지토리입니다. JAVA Spring Boot REST API 서버를 개발하였습니다.
 
-## 진행상황
-develop 브랜치에서 작업되고 있으며, 제출할 때엔 main 브랜치에 통합 후, 제출 할 예정입니다.
-RFP 상 요구되는 필수 기능은 전부 구현된 상태이고, API도 현재 서버단으로 띄워놓았습니다.
-백엔드 서버: https://coolpeace.store/swagger-ui/index.html#/
+## 조원
+
+
+| 이름 | 역할 |
+| --- | --- |
+| 권주환 | 팀장, 쿠폰 대시보드, Batch, 정산 관리  |
+| 김종훈 | 데이터 관리 & 생성, 숙박, 객실 , 인프라 |
+| 한상우 | 시큐리티(로그인,회원가입), 쿠폰 CRUD , 인프라|
+
+## 프로젝트 주제
+
+B2B Self-coupon Admin(Backoffice) 서비스
+
+
+## API 명세
+https://coolpeace.store/swagger-ui/index.html#/
 
 ## ✨실행환경 설정 방법
 
