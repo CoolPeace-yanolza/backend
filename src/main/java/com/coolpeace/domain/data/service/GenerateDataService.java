@@ -73,7 +73,7 @@ public class GenerateDataService {
 
         for(int i = 0 ; i < req.count() ; i++){
             Sido sido = sidoRepository.findById(1).orElseThrow();
-            Sigungu sigungu = sido.getSigungus().get((int) (Math.random() * 4) + 2);
+            Sigungu sigungu = sido.getSigungus().get((int) (Math.random() * 2) + 2);
 
             AccommodationType type = AccommodationType.values()[(int) (Math.random() * AccommodationType.values().length)];
 
@@ -124,7 +124,7 @@ public class GenerateDataService {
             LocalDate exposureEndDate = exposureStartDate.plusDays(randomNum(1, 365));
             Integer couponExpiration = randomNum(10, 365);
             Integer downloadCount = randomNum(10, 5000);
-            Integer useCount = Math.abs(downloadCount - randomNum(10, 5000));
+            Integer useCount = Math.abs(downloadCount - randomNum(5, downloadCount));
             Accommodation accommodation = accommodationRepository.findById(req.accommodation())
                 .orElseThrow(AccommodationNotFoundException::new);
 
@@ -269,11 +269,12 @@ public class GenerateDataService {
 
         for(SettlementStatistic ss : settlementStatistics){
 
-            Coupon coupon = null;
-            if(ss.getCouponId() != null){
-                coupon = couponRepository.findById(ss.getCouponId()).orElseThrow(
-                    CouponNotFoundException::new);
+            if(ss.getCouponId() == null){
+                continue;
             }
+
+            Coupon coupon = couponRepository.findById(ss.getCouponId()).orElseThrow(
+                    CouponNotFoundException::new);
 
 
             Accommodation accommodation = accommodationRepository.findById(ss.getAccommodationId())

@@ -87,7 +87,7 @@ public class InfoGenerator {
 
 
     public static Integer randomNum(int from, int to) {
-        return (int) (Math.random() * to) + from;
+        return (int) (Math.random() * (to-from)) + from;
     }
 
     private static List<String> roomNamePool = List.of(
