@@ -16,7 +16,6 @@ import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.CouponRooms;
 import com.coolpeace.domain.coupon.entity.type.CouponIssuerType;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
-import com.coolpeace.domain.coupon.entity.type.CouponStatusType;
 import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
@@ -26,13 +25,12 @@ import com.coolpeace.domain.data.dto.request.GenerateAccommodationRequest;
 import com.coolpeace.domain.data.dto.request.GenerateCouponRequest;
 import com.coolpeace.domain.data.dto.request.GenerateReservationRequest;
 import com.coolpeace.domain.data.dto.request.GenerateSettlementRequset;
-import com.coolpeace.domain.data.dto.request.SettlementQueryDto;
+import com.coolpeace.domain.data.dto.request.SettlementStatistic;
 import com.coolpeace.domain.data.util.InfoGenerator;
 import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.reservation.entity.Reservation;
-import com.coolpeace.domain.reservation.entity.type.ReservationStatusType;
 import com.coolpeace.domain.reservation.repository.ReservationRepository;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.entity.RoomReservation;
@@ -46,11 +44,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -263,53 +258,28 @@ public class GenerateDataService {
 
         List<Settlement> settlements = new ArrayList<>();
 
-        for(LocalDate date = req.start() ; date.isBefore(req.end().plusDays(1)) ; date = date.plusDays(1)){
+        List<SettlementStatistic> settlementStatistics = settlementRepository.statisticReservation(req.start(), req.end());
 
-            List<SettlementQueryDto> settlementQueryDtos = reservationRepository.findByDate(date);
-            Map<Long, List<SettlementQueryDto>> couponMap = new HashMap<>();
+        for(SettlementStatistic ss : settlementStatistics){
 
-            for(SettlementQueryDto settlementQueryDto : settlementQueryDtos){
+            Coupon coupon = couponRepository.findById(ss.getCouponId()).orElseThrow(
+                CouponNotFoundException::new);
 
-                Long couponId = settlementQueryDto.couponId();
-                if(!couponMap.containsKey(couponId)){
-                    couponMap.put(couponId, new ArrayList<>());
-                }
-                couponMap.get(couponId).add(settlementQueryDto);
+            Accommodation accommodation = accommodationRepository.findById(ss.getAccommodationId())
+                .orElseThrow(AccommodationNotFoundException::new);
 
-            }
+            Settlement settlement = Settlement.builder()
+                .coupon(coupon)
+                .accommodation(accommodation)
+                .couponUseDate(ss.getCouponUseDate())
+                .completeAt(ss.getCompleteAt())
+                .couponCount(ss.getCount())
+                .cancelPrice(ss.getCancelPrice())
+                .discountPrice(ss.getDiscountPrice())
+                .build();
 
-            LocalDate finalDate = date;
-            couponMap.forEach((aLong, reservations) -> {
-
-                Integer sumPrice = 0;
-                Integer discountPrice = 0;
-                Integer cancelPrice = 0;
-                Coupon coupon = null;
-                for(SettlementQueryDto reservation : reservations){
-                    sumPrice += reservation.totalPrice();
-                    discountPrice += reservation.discountPrice();
-                    if(reservation.reservationStatus() == ReservationStatusType.CANCELLED){
-                        cancelPrice += reservation.discountPrice();
-                    }
-                    coupon = couponRepository.findById(reservation.couponId()).orElseThrow(
-                        CouponNotFoundException::new);
-                }
-
-                Settlement settlement = Settlement.builder()
-                    .couponUseDate(finalDate)
-                    .couponCount(reservations.size())
-                    .discountPrice(discountPrice)
-                    .cancelPrice(cancelPrice)
-                    .sumPrice(sumPrice)
-                    .coupon(coupon)
-                    .build();
-
-                settlements.add(settlement);
-            });
-
-
+            settlements.add(settlement);
         }
-
 
         settlementRepository.saveAll(settlements);
 

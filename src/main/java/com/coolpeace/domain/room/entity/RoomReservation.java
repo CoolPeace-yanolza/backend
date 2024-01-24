@@ -41,7 +41,7 @@ public class RoomReservation {
         this.reservation = reservation;
         this.coupon = coupon;
         this.discountPrice = switch (coupon.getDiscountType()) {
-            case FIXED_RATE -> room.getPrice() * coupon.getDiscountValue();
+            case FIXED_RATE -> room.getPrice() * coupon.getDiscountValue() / 100;
             case FIXED_PRICE -> coupon.getDiscountValue();
         };
     }

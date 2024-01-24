@@ -71,13 +71,13 @@ public class Coupon extends BaseTimeEntity {
     private LocalDate exposureEndDate;
 
     @Column(nullable = false)
-    private final Integer couponExpiration = 14;
+    private Integer couponExpiration = 14;
 
     @Column(nullable = false)
-    private final Integer downloadCount = 0;
+    private Integer downloadCount = 0;
 
     @Column(nullable = false)
-    private final Integer useCount = 0;
+    private Integer useCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
@@ -222,5 +222,17 @@ public class Coupon extends BaseTimeEntity {
         this.exposureStartDate = Optional.ofNullable(exposureStartDate).orElse(this.exposureStartDate);
         this.exposureEndDate = Optional.ofNullable(exposureEndDate).orElse(this.exposureEndDate);
         updateCouponStatusByExposureDate();
+    }
+
+    public void addDownloadCount(){
+        this.downloadCount += 1;
+    }
+
+    public void addUseCount(){
+        this.useCount += 1;
+    }
+
+    public void setCouponExpiration(Integer couponExpiration){
+        this.couponExpiration = couponExpiration;
     }
 }
