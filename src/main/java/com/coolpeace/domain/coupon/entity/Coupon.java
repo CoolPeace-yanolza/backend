@@ -228,8 +228,16 @@ public class Coupon extends BaseTimeEntity {
         this.downloadCount += 1;
     }
 
+    public void setDownloadCount(Integer count){
+        this.downloadCount = count;
+    }
+
     public void addUseCount(){
         this.useCount += 1;
+    }
+
+    public void setUseCount(Integer count){
+        this.useCount = count;
     }
 
     public void setCouponExpiration(Integer couponExpiration){

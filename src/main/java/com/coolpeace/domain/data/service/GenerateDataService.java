@@ -31,6 +31,7 @@ import com.coolpeace.domain.member.entity.Member;
 import com.coolpeace.domain.member.exception.MemberNotFoundException;
 import com.coolpeace.domain.member.repository.MemberRepository;
 import com.coolpeace.domain.reservation.entity.Reservation;
+import com.coolpeace.domain.reservation.entity.type.ReservationStatusType;
 import com.coolpeace.domain.reservation.repository.ReservationRepository;
 import com.coolpeace.domain.room.entity.Room;
 import com.coolpeace.domain.room.entity.RoomReservation;
@@ -112,10 +113,10 @@ public class GenerateDataService {
 
             DiscountType discountType = Math.random() >= 0.5 ? DiscountType.FIXED_PRICE : DiscountType.FIXED_RATE;
             Integer discountValue = discountType == DiscountType.FIXED_RATE ? randomNum(5, 30) : randomNum(1, 5) * 10000;
-            Integer maximunDiscountPrice = discountValue + (randomNum(2, 10) * 10000);
+            Integer maximunDiscountPrice = discountType == DiscountType.FIXED_RATE ? (randomNum(2, 10) * 10000) : 0;
             CustomerType customerType = CustomerType.values()[randomNum(0, CustomerType.values().length - 1)];
-            CouponRoomType couponRoomType = CouponRoomType.values()[randomNum(0, CouponRoomType.values().length - 1)];
-            CouponRoomType couponRoomStayType = CouponRoomType.values()[randomNum(0, CouponRoomType.values().length - 1)];
+            CouponRoomType couponRoomType = Math.random() > 0.5 ? CouponRoomType.RENTAL : null;
+            CouponRoomType couponRoomStayType = Math.random() > 0.6 ? CouponRoomType.LODGE : Math.random() > 0.3 ? CouponRoomType.TWO_NIGHT : null;
             List<DayOfWeek> couponUserConditionDays = getRandomCondiionDays();
             Integer minimumReservationPrice = randomNum(5, 10) * 10000;
             CouponUseDaysType couponUseDays = CouponUseDaysType.values()[randomNum(0, CouponUseDaysType.values().length - 1)];
@@ -145,6 +146,10 @@ public class GenerateDataService {
                 member
             );
 
+            coupon.setDownloadCount(randomNum(10, 1000));
+            coupon.setUseCount(Math.abs(coupon.getDownloadCount() - randomNum(9, 990)));
+            coupon.setCouponExpiration(randomNum(10, 31));
+
 
             coupons.add(coupon);
 
@@ -154,6 +159,7 @@ public class GenerateDataService {
 
         for(Coupon coupon : coupons){
             coupon.generateCouponNumber(CouponIssuerType.OWNER, coupon.getId());
+            coupon.setCreatedAt(LocalDateTime.of(coupon.getExposureStartDate().minusDays(randomNum(1, 20)), LocalTime.of(0, 0)));
         }
         couponRepository.saveAll(coupons);
 
@@ -230,16 +236,13 @@ public class GenerateDataService {
                  LocalDateTime.of(date, LocalTime.of(15, 0)),
                 LocalDateTime.of(date.plusDays(randomNum(1, 3)), LocalTime.of(11, 0))
             );
-
-            reservationRepository.save(reservation);
+            reservation.updateReservation(Math.random() > 0.95 ? ReservationStatusType.CANCELLED : ReservationStatusType.PENDING);
 
             RoomReservation roomReservation = new RoomReservation(
                 room,
                 reservation,
-                coupon
+                Math.random() > 0.9 ? null : coupon
             );
-
-            roomReservationRepository.save(roomReservation);
 
             reservation.updateRoomReservationAndPrices(
                 List.of(roomReservation)
@@ -250,6 +253,10 @@ public class GenerateDataService {
             roomReservations.add(roomReservation);
 
         }
+
+        reservationRepository.saveAll(reservations);
+        roomReservationRepository.saveAll(roomReservations);
+
 
         return reservations.size();
     }
@@ -262,8 +269,12 @@ public class GenerateDataService {
 
         for(SettlementStatistic ss : settlementStatistics){
 
-            Coupon coupon = couponRepository.findById(ss.getCouponId()).orElseThrow(
-                CouponNotFoundException::new);
+            Coupon coupon = null;
+            if(ss.getCouponId() != null){
+                coupon = couponRepository.findById(ss.getCouponId()).orElseThrow(
+                    CouponNotFoundException::new);
+            }
+
 
             Accommodation accommodation = accommodationRepository.findById(ss.getAccommodationId())
                 .orElseThrow(AccommodationNotFoundException::new);
@@ -272,11 +283,13 @@ public class GenerateDataService {
                 .coupon(coupon)
                 .accommodation(accommodation)
                 .couponUseDate(ss.getCouponUseDate())
-                .completeAt(ss.getCompleteAt())
+                .completeAt(ss.getCouponUseDate().plusMonths(1).minusDays(ss.getCouponUseDate().getDayOfMonth()).plusDays(1) )
                 .couponCount(ss.getCount())
-                .cancelPrice(ss.getCancelPrice())
+                .cancelPrice(ss.getCancelPrice() * -1)
                 .discountPrice(ss.getDiscountPrice())
                 .build();
+
+            settlement.sumPrice();
 
             settlements.add(settlement);
         }
