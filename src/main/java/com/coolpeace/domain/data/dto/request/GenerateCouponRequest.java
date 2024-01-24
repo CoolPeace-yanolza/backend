@@ -4,7 +4,6 @@ public record GenerateCouponRequest (
 
     Long member,
     Long accommodation,
-    Long room,
     Integer count
 
 

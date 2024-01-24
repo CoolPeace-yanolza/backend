@@ -95,7 +95,7 @@ public class GenerateDataService {
         accommodationRepository.saveAll(accommodations);
 
         for(Accommodation accommodation : accommodations){
-            List<Room> rooms = generateRoom(req.room(), accommodation);
+            List<Room> rooms = generateRoom(randomNum(3, 6), accommodation);
         }
 
 
@@ -168,7 +168,7 @@ public class GenerateDataService {
         return coupons.size();
     }
 
-    private List<Room> generateRoom(Long roomCount, Accommodation accommodation) {
+    private List<Room> generateRoom(Integer roomCount, Accommodation accommodation) {
 
         List<Room> rooms = new ArrayList<>();
 
