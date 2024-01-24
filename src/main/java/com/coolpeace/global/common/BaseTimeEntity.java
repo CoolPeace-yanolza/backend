@@ -34,6 +34,10 @@ public abstract class BaseTimeEntity {
         return deletedAt != null;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt){
+        this.createdAt = createdAt;
+    }
+
     protected void restore() {
         deletedAt = null;
     }

@@ -33,6 +33,7 @@ public class Reservation extends BaseTimeEntity {
     private int discountPrice = 0;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ReservationStatusType reservationStatus = ReservationStatusType.PENDING;
 
     @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY,
@@ -53,7 +54,7 @@ public class Reservation extends BaseTimeEntity {
     public void updateRoomReservationAndPrices(List<RoomReservation> roomReservations, int roomTotalPrice) {
         this.roomReservations = roomReservations;
         this.discountPrice = this.roomReservations.stream().mapToInt(RoomReservation::getDiscountPrice).sum();
-        this.totalPrice = Math.max(0, roomTotalPrice - this.discountPrice);
+        this.totalPrice = Math.max(0, roomTotalPrice);
     }
 
     public void updateReservation(ReservationStatusType reservationStatus) {
