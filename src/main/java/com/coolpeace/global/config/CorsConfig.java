@@ -30,7 +30,7 @@ public class CorsConfig implements WebMvcConfigurer {
         // Spring Security Cors 설정
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedMethods(ALLOW_METHODS);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         config.setAllowedOriginPatterns(ALL_PERMIT_LIST);
         config.setAllowedHeaders(ALL_PERMIT_LIST);
         config.setExposedHeaders(ALL_PERMIT_LIST);
