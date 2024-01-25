@@ -22,13 +22,13 @@ public class CouponQueryService {
         Long memberId = Long.valueOf(jwtPrincipal);
 
         if (Boolean.TRUE.equals(couponRepository.noRegister(memberId, accommodationId))) {
-            return CouponDailyResponse.from(1,CouponDailyCondition.NO_REGISTER);
+            return CouponDailyResponse.from(3,CouponDailyCondition.NO_REGISTER);
         }
 
         List<Coupon> expiration3daysCoupons = couponRepository.expiration3days(memberId,
             accommodationId);
         if (!expiration3daysCoupons.isEmpty()) {
-            return CouponDailyResponse.from(3, CouponDailyCondition.EXPIRATION_3DAYS,
+            return CouponDailyResponse.from(1, CouponDailyCondition.EXPIRATION_3DAYS,
                 expiration3daysCoupons.stream().map(Coupon::getCouponTitle).toList());
         }
 
