@@ -81,13 +81,27 @@ public class SettlementService {
                     (PageRequest.of(page,pageSize), accommodation, startDate, endDate);
         };
 
+        int totalCouponCount = 0;
+        int totalDiscountPrice = 0;
+        int totalCancelPrice = 0;
+        int totalSumPrice = 0;
+
+
+        for (Settlement settlement : settlements) {
+            totalCouponCount += settlement.getCouponCount();
+            totalDiscountPrice += settlement.getDiscountPrice();
+            totalCancelPrice += settlement.getCancelPrice();
+            totalSumPrice += settlement.getSumPrice();
+        }
+
         long totalElements = settlements.getTotalElements();
         int totalPages = settlements.getTotalPages();
 
         List<SettlementResponse> settlementResponses =
             settlements.stream().map(SettlementResponse::from).toList();
 
-        return PageSettlementResponse.from(totalElements, totalPages, settlementResponses);
+        return PageSettlementResponse.from(totalElements, totalPages, totalCouponCount,
+            totalDiscountPrice,totalCancelPrice, totalSumPrice, settlementResponses);
 
     }
 

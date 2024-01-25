@@ -79,7 +79,8 @@ class SettlementControllerTest  {
         settlementResponseList.add(settlementResponse2);
 
         PageSettlementResponse pageSettlementResponse =
-            PageSettlementResponse.from(2L, 1, settlementResponseList);
+            PageSettlementResponse.from(2L, 1, 4,
+                30000, -1000, 30000, settlementResponseList);
 
         given(settlementService.searchSettlement(any(), anyLong(), any(SearchSettlementParams.class),
                 anyInt(),anyInt())).willReturn(pageSettlementResponse);
