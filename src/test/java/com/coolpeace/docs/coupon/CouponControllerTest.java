@@ -363,7 +363,7 @@ public class CouponControllerTest extends RestDocsIntegrationTest {
                                 fieldWithPath("coupon_room_types").type(JsonFieldType.ARRAY).description("객실의 유형"),
                                 fieldWithPath("minimum_reservation_price").type(JsonFieldType.NUMBER).description("최소 예약 가격"),
                                 fieldWithPath("coupon_use_condition_days").type(JsonFieldType.STRING).description("쿠폰 사용 가능 일자"),
-                                fieldWithPath("coupon_use_condition_day_of_week").type(JsonFieldType.STRING).description("쿠폰 사용 가능 요일"),
+                                fieldWithPath("coupon_use_condition_day_of_week").type(JsonFieldType.STRING).description("쿠폰 사용 가능 요일").optional(),
                                 fieldWithPath("exposure_start_date").type(JsonFieldType.STRING).description("노출 시작 날짜"),
                                 fieldWithPath("exposure_end_date").type(JsonFieldType.STRING).description("노출 종료 날짜"),
                                 fieldWithPath("coupon_expiration").type(JsonFieldType.NUMBER).description("쿠폰 만료 일자"),
