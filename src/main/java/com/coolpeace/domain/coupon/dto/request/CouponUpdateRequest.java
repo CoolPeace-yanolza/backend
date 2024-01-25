@@ -1,6 +1,7 @@
 package com.coolpeace.domain.coupon.dto.request;
 
-import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.global.common.validator.ValidEnum;
@@ -22,12 +23,13 @@ public record CouponUpdateRequest(
         Integer discountFlatRate,
         Integer maximumDiscountPrice,
         List<String> couponRoomTypes,
-        Boolean couponRoomStayMore,
         Boolean registerAllRoom,
         List<String> registerRooms,
         Integer minimumReservationPrice,
-        @ValidEnum(enumClass = CouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.", required = false)
+        @ValidEnum(enumClass = DtoCouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.", required = false)
         String couponUseConditionDays,
+        @ValidEnum(enumClass = DtoCouponUseDayOfWeekType.class, message = "올바르지 않은 사용 조건의 요일입니다.", required = false)
+        String couponUseConditionDayOfWeek,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate exposureStartDate,
         @JsonFormat(pattern = "yyyy-MM-dd")

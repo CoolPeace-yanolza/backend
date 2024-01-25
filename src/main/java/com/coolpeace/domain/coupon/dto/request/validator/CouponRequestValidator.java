@@ -1,5 +1,6 @@
 package com.coolpeace.domain.coupon.dto.request.validator;
 
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.global.common.ValuedEnum;
@@ -52,6 +53,16 @@ public abstract class CouponRequestValidator implements Validator {
             } catch (IllegalArgumentException e) {
                 errors.reject("couponRoomTypes.invalid", "올바르지 않은 객실 유형입니다.");
             }
+        }
+    }
+
+    protected static void validateCouponRoomConditionDays(Errors errors,
+                                                  String couponUseConditionDays) {
+        if (ValuedEnum.of(DtoCouponUseDaysType.class, couponUseConditionDays).equals(DtoCouponUseDaysType.ONEDAY)) {
+            ValidationUtils.rejectIfEmpty(errors,
+                    "couponUseConditionDayOfWeek",
+                    "couponUseConditionDayOfWeek.empty",
+                    "사용 조건의 요일을 선택해야 합니다.");
         }
     }
 }

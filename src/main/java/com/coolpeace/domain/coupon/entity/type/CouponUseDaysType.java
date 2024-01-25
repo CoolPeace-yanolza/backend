@@ -15,8 +15,11 @@ public enum CouponUseDaysType implements ValuedEnum {
     SATURDAY("토"),
     SUNDAY("일"),
     WEEKDAY("평일"),
-    WEEKEND("주말"),
-    ALL("전체");
+    WEEKEND("주말");
 
     private final String value;
+
+    public boolean isOneDay() {
+        return !this.equals(WEEKDAY) && !this.equals(WEEKEND);
+    }
 }

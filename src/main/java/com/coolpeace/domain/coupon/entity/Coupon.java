@@ -62,7 +62,7 @@ public class Coupon extends BaseTimeEntity {
     private final List<DayOfWeek> couponUseConditionDays = Collections.emptyList();
 
     @Enumerated(EnumType.STRING)
-    private CouponUseDaysType couponUseDays = CouponUseDaysType.ALL;
+    private CouponUseDaysType couponUseDays = CouponUseDaysType.WEEKEND;
 
     @Column(nullable = false)
     private LocalDate exposureStartDate;
@@ -155,11 +155,16 @@ public class Coupon extends BaseTimeEntity {
         );
     }
 
-    public List<String> getCouponRoomTypeStringsExcludingTwoNight() {
+    public List<String> getCouponRoomTypeStrings() {
         return Stream.of(this.getCouponRoomType(), this.getCouponRoomStayType())
                 .filter(Objects::nonNull)
-                .map(roomType -> (roomType == CouponRoomType.TWO_NIGHT) ? CouponRoomType.LODGE : roomType)
-                .map(CouponRoomType::getValue).toList();
+                .flatMap(roomType -> {
+                    if (roomType.equals(CouponRoomType.TWO_NIGHT)) {
+                        return Stream.of(CouponRoomType.LODGE.getValue(), CouponRoomType.TWO_NIGHT.getValue());
+                    } else {
+                        return Stream.of(roomType.getValue());
+                    }
+                }).toList();
     }
 
     public String getCouponTitle() {

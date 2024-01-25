@@ -1,8 +1,9 @@
 package com.coolpeace.domain.coupon.dto.response;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.coupon.dto.DtoCouponUtil;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
 import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.domain.coupon.entity.type.CouponRoomType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 
 import java.time.LocalDate;
@@ -20,9 +21,9 @@ public record CouponResponse(
         Integer maximumDiscountPrice,
         String customerType,
         List<String> couponRoomTypes,
-        Boolean couponRoomStayMore,
         Integer minimumReservationPrice,
         String couponUseConditionDays,
+        String couponUseConditionDayOfWeek,
         LocalDate exposureStartDate,
         LocalDate exposureEndDate,
         Integer couponExpiration,
@@ -44,10 +45,11 @@ public record CouponResponse(
                 coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
                 coupon.getMaximumDiscountPrice(),
                 coupon.getCustomerType().getValue(),
-                coupon.getCouponRoomTypeStringsExcludingTwoNight(),
-                coupon.getCouponRoomStayType() != null && coupon.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
+                coupon.getCouponRoomTypeStrings(),
                 coupon.getMinimumReservationPrice(),
-                coupon.getCouponUseDays().getValue(),
+                DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()).getValue(),
+                Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()))
+                        .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate(),
                 coupon.getCouponExpiration(),

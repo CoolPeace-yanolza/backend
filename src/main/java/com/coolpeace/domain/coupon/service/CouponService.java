@@ -7,6 +7,8 @@ import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.dto.response.CouponCategoryResponse;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
 import com.coolpeace.domain.coupon.entity.Coupon;
@@ -51,23 +53,23 @@ public class CouponService {
 
     @Transactional(readOnly = true)
     public Page<CouponResponse> searchCoupons(Long memberId, Long accommodationId,
-        SearchCouponParams searchCouponParams, Pageable pageable) {
+                                              SearchCouponParams searchCouponParams, Pageable pageable) {
         return couponRepository.findAllCoupons(memberId, accommodationId, searchCouponParams,
-                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                    pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
-            .map(CouponResponse::from);
+                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt"))))
+                .map(CouponResponse::from);
     }
 
     @Transactional(readOnly = true)
     public CouponCategoryResponse getCouponCategories(Long memberId, Long accommodationId) {
         Map<CouponStatusType, Long> counts = couponRepository.countCouponsByCouponStatus(memberId,
-            accommodationId);
+                accommodationId);
 
         long all = counts.values().stream().mapToLong(Long::longValue).sum()
-            - counts.getOrDefault(CouponStatusType.DELETED, 0L);
+                - counts.getOrDefault(CouponStatusType.DELETED, 0L);
         long exposureOn = counts.getOrDefault(CouponStatusType.EXPOSURE_ON, 0L);
         long exposureOff = counts.getOrDefault(CouponStatusType.EXPOSURE_OFF, 0L)
-            + counts.getOrDefault(CouponStatusType.EXPOSURE_WAIT, 0L);
+                + counts.getOrDefault(CouponStatusType.EXPOSURE_WAIT, 0L);
         long expired = counts.getOrDefault(CouponStatusType.EXPOSURE_END, 0L);
 
         return CouponCategoryResponse.from(all, exposureOn, exposureOff, expired);
@@ -77,23 +79,23 @@ public class CouponService {
     public Coupon getCouponByCouponNumber(Long memberId, String couponNumber) {
         validateMemberHasCoupon(memberId, couponNumber);
         return couponRepository.findByCouponNumber(couponNumber)
-            .orElseThrow(CouponNotFoundException::new);
+                .orElseThrow(CouponNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public List<CouponResponse> getRecentHistory(Long memberId) {
         return couponRepository.findRecentCouponByMemberId(memberId)
-            .stream().map(CouponResponse::from).toList();
+                .stream().map(CouponResponse::from).toList();
     }
 
     @Transactional
     @CacheEvict(value = "dailyReport", key = "#couponRegisterRequest.accommodationId()", cacheManager = "contentCacheManager")
     public void register(Long memberId, CouponRegisterRequest couponRegisterRequest) {
         Member storedMember = memberRepository.findById(memberId)
-            .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(MemberNotFoundException::new);
         Accommodation accommodation = accommodationRepository.findById(
-                couponRegisterRequest.accommodationId())
-            .orElseThrow(AccommodationNotFoundException::new);
+                        couponRegisterRequest.accommodationId())
+                .orElseThrow(AccommodationNotFoundException::new);
 
         List<Room> rooms;
         if (!couponRegisterRequest.registerAllRoom()) {
@@ -101,64 +103,77 @@ public class CouponService {
                 throw new RegisterRoomsEmptyException();
             }
             rooms = couponRegisterRequest.registerRooms()
-                .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
-                    .orElseThrow(RoomNotFoundException::new))
-                .toList();
+                    .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
+                            .orElseThrow(RoomNotFoundException::new))
+                    .toList();
         } else {
             rooms = Collections.emptyList();
         }
 
         DiscountType discountType = ValuedEnum.of(DiscountType.class,
-            couponRegisterRequest.discountType());
+                couponRegisterRequest.discountType());
         Integer discountValue = switch (discountType) {
             case FIXED_RATE -> couponRegisterRequest.discountFlatRate();
             case FIXED_PRICE -> couponRegisterRequest.discountFlatValue();
         };
 
         CouponRoomType couponRoomTypeValue = getCouponRoomType(
-            couponRegisterRequest.couponRoomTypes(), CouponRoomType.RENTAL);
+                couponRegisterRequest.couponRoomTypes(), CouponRoomType.RENTAL);
         CouponRoomType couponRoomStayTypeValue = getCouponRoomStayTypeValue(
-            couponRegisterRequest.couponRoomTypes(),
-            couponRoomTypeValue, couponRegisterRequest.couponRoomStayMore());
+                couponRegisterRequest.couponRoomTypes(), couponRoomTypeValue);
+
+        CouponUseDaysType couponUseDays = getCouponUseDays(
+                couponRegisterRequest.couponUseConditionDays(),
+                couponRegisterRequest.couponUseConditionDayOfWeek());
 
         Coupon savedCoupon = couponRepository.save(Coupon.from(
-            couponRegisterRequest.title(),
-            discountType,
-            discountValue,
-            couponRegisterRequest.maximumDiscountPrice(),
-            ValuedEnum.of(CustomerType.class, couponRegisterRequest.customerType()),
-            couponRoomTypeValue,
-            couponRoomStayTypeValue,
-            couponRegisterRequest.minimumReservationPrice(),
-            ValuedEnum.of(CouponUseDaysType.class, couponRegisterRequest.couponUseConditionDays()),
-            couponRegisterRequest.exposureStartDate(),
-            couponRegisterRequest.exposureEndDate(),
-            accommodation,
-            rooms,
-            storedMember
+                couponRegisterRequest.title(),
+                discountType,
+                discountValue,
+                couponRegisterRequest.maximumDiscountPrice(),
+                ValuedEnum.of(CustomerType.class, couponRegisterRequest.customerType()),
+                couponRoomTypeValue,
+                couponRoomStayTypeValue,
+                couponRegisterRequest.minimumReservationPrice(),
+                couponUseDays,
+                couponRegisterRequest.exposureStartDate(),
+                couponRegisterRequest.exposureEndDate(),
+                accommodation,
+                rooms,
+                storedMember
         ));
         savedCoupon.generateCouponNumber(CouponIssuerType.OWNER, savedCoupon.getId());
     }
 
+    private CouponUseDaysType getCouponUseDays(String couponUseDaysStr, String couponUseDayOfWeekStr) {
+        DtoCouponUseDaysType dtoCouponUseDaysType = ValuedEnum.of(DtoCouponUseDaysType.class, couponUseDaysStr);
+        return switch (dtoCouponUseDaysType) {
+            case ONEDAY -> CouponUseDaysType.valueOf(
+                    ValuedEnum.of(DtoCouponUseDayOfWeekType.class, couponUseDayOfWeekStr).name());
+            case WEEKDAY -> CouponUseDaysType.WEEKDAY;
+            case WEEKEND -> CouponUseDaysType.WEEKEND;
+        };
+    }
+
     @Transactional
     public void updateCoupon(Long memberId, String couponNumber,
-        CouponUpdateRequest couponUpdateRequest) {
+                             CouponUpdateRequest couponUpdateRequest) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
-            .orElseThrow(CouponNotFoundException::new);
+                .orElseThrow(CouponNotFoundException::new);
         List<Room> rooms;
         if (couponUpdateRequest.registerRooms() != null) {
             rooms = couponUpdateRequest.registerRooms()
-                .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
-                    .orElseThrow(RoomNotFoundException::new))
-                .toList();
+                    .stream().map(roomNumber -> roomRepository.findByRoomNumber(roomNumber)
+                            .orElseThrow(RoomNotFoundException::new))
+                    .toList();
         } else {
             rooms = Collections.emptyList();
         }
 
         DiscountType discountType = Optional.ofNullable(couponUpdateRequest.discountType())
-            .map(str -> ValuedEnum.of(DiscountType.class, str))
-            .orElse(null);
+                .map(str -> ValuedEnum.of(DiscountType.class, str))
+                .orElse(null);
 
         Integer discountValue = null;
         if (discountType != null) {
@@ -169,64 +184,66 @@ public class CouponService {
         }
 
         CustomerType customerType = Optional.ofNullable(couponUpdateRequest.customerType())
-            .map(str -> ValuedEnum.of(CustomerType.class, str))
-            .orElse(null);
+                .map(str -> ValuedEnum.of(CustomerType.class, str))
+                .orElse(null);
 
         CouponRoomType couponRoomTypeValue = getCouponRoomType(
-            couponUpdateRequest.couponRoomTypes(), CouponRoomType.RENTAL);
+                couponUpdateRequest.couponRoomTypes(), CouponRoomType.RENTAL);
         CouponRoomType couponRoomStayTypeValue = getCouponRoomStayTypeValue(
-            couponUpdateRequest.couponRoomTypes(),
-            couponRoomTypeValue, couponUpdateRequest.couponRoomStayMore());
+                couponUpdateRequest.couponRoomTypes(), couponRoomTypeValue);
 
-        CouponUseDaysType couponUseDays = Optional.ofNullable(
-                couponUpdateRequest.couponUseConditionDays())
-            .map(str -> ValuedEnum.of(CouponUseDaysType.class, str))
-            .orElse(null);
+        CouponUseDaysType couponUseDays = Optional.ofNullable(couponUpdateRequest.couponUseConditionDays())
+                .map(str -> getCouponUseDays(
+                        couponUpdateRequest.couponUseConditionDays(),
+                        couponUpdateRequest.couponUseConditionDayOfWeek()))
+                .orElse(null);
 
         storedCoupon.updateCoupon(
-            discountType,
-            discountValue,
-            couponUpdateRequest.maximumDiscountPrice(),
-            customerType,
-            couponRoomTypeValue,
-            couponRoomStayTypeValue,
-            couponUpdateRequest.minimumReservationPrice(),
-            couponUseDays,
-            rooms,
-            couponUpdateRequest.exposureStartDate(),
-            couponUpdateRequest.exposureEndDate()
+                discountType,
+                discountValue,
+                couponUpdateRequest.maximumDiscountPrice(),
+                customerType,
+                couponRoomTypeValue,
+                couponRoomStayTypeValue,
+                couponUpdateRequest.minimumReservationPrice(),
+                couponUseDays,
+                rooms,
+                couponUpdateRequest.exposureStartDate(),
+                couponUpdateRequest.exposureEndDate()
         );
     }
 
     private CouponRoomType getCouponRoomStayTypeValue(List<String> couponRoomTypeStrings,
-        CouponRoomType couponRoomTypeValue,
-        boolean CouponRoomStayMore) {
-        if (CouponRoomStayMore && couponRoomTypeValue != null && couponRoomTypeValue.equals(
-            CouponRoomType.LODGE)) {
-            return CouponRoomType.TWO_NIGHT;
+                                                      CouponRoomType couponRoomTypeRentalValue) {
+        if (couponRoomTypeRentalValue != null) {
+            return null;
         }
-        return getCouponRoomType(couponRoomTypeStrings, CouponRoomType.LODGE);
+        CouponRoomType couponRoomType = getCouponRoomType(couponRoomTypeStrings, CouponRoomType.LODGE);
+        if (couponRoomType == null) {
+            return getCouponRoomType(couponRoomTypeStrings, CouponRoomType.TWO_NIGHT);
+        }
+        return couponRoomType;
     }
 
     private CouponRoomType getCouponRoomType(List<String> request, CouponRoomType couponRoomType) {
         return request.stream()
-            .map(str -> ValuedEnum.of(CouponRoomType.class, str))
-            .filter(roomType -> roomType.equals(couponRoomType))
-            .findFirst().orElse(null);
+                .map(str -> ValuedEnum.of(CouponRoomType.class, str))
+                .filter(roomType -> roomType.equals(couponRoomType))
+                .findFirst().orElse(null);
     }
 
     @Transactional
     public void exposeCoupon(Long memberId, String couponNumber,
-        CouponExposeRequest couponExposeRequest) {
+                             CouponExposeRequest couponExposeRequest) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
-            .orElseThrow(CouponNotFoundException::new);
+                .orElseThrow(CouponNotFoundException::new);
 
         // 노출 ON/노출 OFF 외의 요청을 한 경우 예외처리
         boolean isONOFFRequest =
-            couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON.getValue())
-                || couponExposeRequest.couponStatus()
-                .equals(CouponStatusType.EXPOSURE_OFF.getValue());
+                couponExposeRequest.couponStatus().equals(CouponStatusType.EXPOSURE_ON.getValue())
+                        || couponExposeRequest.couponStatus()
+                        .equals(CouponStatusType.EXPOSURE_OFF.getValue());
         if (!isONOFFRequest) {
             throw new CouponUpdateLimitExposureStateException();
         }
@@ -237,14 +254,14 @@ public class CouponService {
         }
 
         storedCoupon.changeCouponStatus(
-            ValuedEnum.of(CouponStatusType.class, couponExposeRequest.couponStatus()));
+                ValuedEnum.of(CouponStatusType.class, couponExposeRequest.couponStatus()));
     }
 
     @Transactional
     public void deleteCoupon(Long memberId, String couponNumber) {
         validateMemberHasCoupon(memberId, couponNumber);
         Coupon storedCoupon = couponRepository.findByCouponNumber(couponNumber)
-            .orElseThrow(CouponNotFoundException::new);
+                .orElseThrow(CouponNotFoundException::new);
         storedCoupon.changeCouponStatus(CouponStatusType.DELETED);
     }
 
