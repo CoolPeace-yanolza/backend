@@ -49,8 +49,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 case EXPOSURE_ON -> coupon.couponStatus.eq(EXPOSURE_ON);
                 case EXPOSURE_OFF -> coupon.couponStatus.eq(EXPOSURE_OFF)
                         .or(coupon.couponStatus.eq(EXPOSURE_WAIT));
-                case EXPIRED -> coupon.couponStatus.eq(EXPOSURE_END)
-                        .or(coupon.couponStatus.eq(DELETED));
+                case EXPIRED -> coupon.couponStatus.eq(EXPOSURE_END);
                 case All -> coupon.couponStatus.ne(DELETED);
             });
         } else {
