@@ -95,3 +95,13 @@ LOCAL_REDIS_PORT=6379 # 개인 개발 환경에서 사용할 REDIS PORT
 ```bash
 docker compose up -d
 ```
+
+## 인프라 CI/CD 구성
+![infra.png](resources/img/infra.png)
+
+
+## ERD 구성
+![erd.png](resources/img/erd.png)
+
+
+
