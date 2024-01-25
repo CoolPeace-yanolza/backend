@@ -1,6 +1,7 @@
 package com.coolpeace.domain.coupon.dto.request;
 
-import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.CustomerType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 import com.coolpeace.global.common.validator.ValidEnum;
@@ -16,6 +17,7 @@ public record CouponRegisterRequest(
         @NotBlank(message = "쿠폰의 이름을 입력해야 합니다.")
         @Size(max = 20, message = "쿠폰의 이름은 20자 내외로 입력해야 합니다.")
         String title,
+
         @NotNull(message = "고객의 유형을 선택해야 합니다.")
         @ValidEnum(enumClass = CustomerType.class, message = "올바르지 않은 고객의 유형입니다.")
         String customerType,
@@ -30,7 +32,6 @@ public record CouponRegisterRequest(
 
         // 객실 유형
         List<String> couponRoomTypes,
-        Boolean couponRoomStayMore,
 
         // 숙소 ID
         @NotNull(message = "숙박업체의 ID를 입력해야 합니다.")
@@ -43,8 +44,10 @@ public record CouponRegisterRequest(
 
         // 쿠폰 사용 조건
         Integer minimumReservationPrice,
-        @ValidEnum(enumClass = CouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.", required = false)
+        @ValidEnum(enumClass = DtoCouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.")
         String couponUseConditionDays,
+        @ValidEnum(enumClass = DtoCouponUseDayOfWeekType.class, message = "올바르지 않은 사용 조건의 요일입니다.", required = false)
+        String couponUseConditionDayOfWeek,
 
         // 노출 날짜
         @NotNull(message = "노출 시작 날짜를 입력해야 합니다.")
