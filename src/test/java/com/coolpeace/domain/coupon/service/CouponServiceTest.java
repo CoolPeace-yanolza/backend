@@ -3,10 +3,12 @@ package com.coolpeace.domain.coupon.service;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.accommodation.exception.AccommodationNotFoundException;
 import com.coolpeace.domain.accommodation.repository.AccommodationRepository;
+import com.coolpeace.domain.coupon.dto.DtoCouponUtil;
 import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
@@ -321,14 +323,14 @@ class CouponServiceTest {
                     coupon.getDiscountType().equals(DiscountType.FIXED_PRICE) ? coupon.getDiscountValue() : null,
                     coupon.getDiscountType().equals(DiscountType.FIXED_RATE) ? coupon.getDiscountValue() : null,
                     coupon.getMaximumDiscountPrice(),
-                    coupon.getCouponRoomTypeStringsExcludingTwoNight(),
-                    coupon.getCouponRoomStayType() != null &&
-                    coupon.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
+                    coupon.getCouponRoomTypeStrings(),
                     accommodation.getId(),
                     registerAllRoom,
                     !registerAllRoom ? registerRoomNumbers : null,
                     coupon.getMinimumReservationPrice(),
-                    coupon.getCouponUseDays().getValue(),
+                    DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()).getValue(),
+                    Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()))
+                            .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                     coupon.getExposureStartDate(),
                     coupon.getExposureEndDate()
             );
@@ -351,7 +353,7 @@ class CouponServiceTest {
                     CouponRoomType.LODGE,
                     null,
                     0,
-                    CouponUseDaysType.ALL,
+                    CouponUseDaysType.WEEKDAY,
                     LocalDate.now().plusDays(100),
                     LocalDate.now().plusDays(130),
                     accommodation,
@@ -370,7 +372,7 @@ class CouponServiceTest {
                     null,
                     CouponRoomType.TWO_NIGHT,
                     1000,
-                    CouponUseDaysType.WEEKDAY,
+                    CouponUseDaysType.FRIDAY,
                     LocalDate.now().plusDays(30),
                     LocalDate.now().plusDays(60),
                     accommodation,
@@ -394,13 +396,13 @@ class CouponServiceTest {
                     null,
                     null,
                     null,
-                    couponB.getCouponRoomTypeStringsExcludingTwoNight(),
-                    couponB.getCouponRoomStayType() != null &&
-                            couponB.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
+                    couponB.getCouponRoomTypeStrings(),
                     null,
                     null,
                     couponB.getMinimumReservationPrice(),
-                    couponB.getCouponUseDays().getValue(),
+                    DtoCouponUtil.filteringCouponUseConditionDays(couponB.getCouponUseDays()).getValue(),
+                    Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(couponB.getCouponUseDays()))
+                            .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                     couponB.getExposureStartDate(),
                     couponB.getExposureEndDate()
             ));
@@ -427,9 +429,8 @@ class CouponServiceTest {
                     couponB.getDiscountType().equals(DiscountType.FIXED_PRICE) ? couponB.getDiscountValue() : null,
                     couponB.getDiscountType().equals(DiscountType.FIXED_RATE) ? couponB.getDiscountValue() : null,
                     couponB.getMaximumDiscountPrice(),
-                    couponB.getCouponRoomTypeStringsExcludingTwoNight(),
-                    couponB.getCouponRoomStayType() != null &&
-                            couponB.getCouponRoomStayType().equals(CouponRoomType.TWO_NIGHT),
+                    couponB.getCouponRoomTypeStrings(),
+                    null,
                     null,
                     null,
                     null,
