@@ -96,7 +96,7 @@ public class DashboardService {
         return getCouponCountAvgResponse(type, localCouponDownload, address);
     }
 
-    @Cacheable(value = "byYearCumulativeData", key = "#accommodationId", cacheManager = "contentCacheManager")
+    @Cacheable(value = "byYearCumulativeData", key = "#accommodationId+#year", cacheManager = "contentCacheManager")
     public ByYearCumulativeDataResponse byYearCumulativeData(int year, String memberId, Long accommodationId) {
         Accommodation accommodation = checkAccommodationMatchMember(memberId, accommodationId);
         List<MonthlyStatistics> monthlyStatisticsList = monthlyStatisticsRepository
