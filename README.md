@@ -5,7 +5,7 @@
     <img src="./docs/images/logo.png" alt="Logo">
   </a>
 
-<h3 align="center">사장님 비서 yA</h3>
+<h3 align="center">사장님 비서 ya</h3>
 
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/coolPeace-yanolza/backend">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/coolPeace-yanolza/backend/CD.yml">
