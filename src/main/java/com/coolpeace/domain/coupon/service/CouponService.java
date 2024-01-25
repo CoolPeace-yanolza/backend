@@ -66,8 +66,7 @@ public class CouponService {
         long exposureOn = counts.getOrDefault(CouponStatusType.EXPOSURE_ON, 0L);
         long exposureOff = counts.getOrDefault(CouponStatusType.EXPOSURE_OFF, 0L)
                 + counts.getOrDefault(CouponStatusType.EXPOSURE_WAIT, 0L);
-        long expired = counts.getOrDefault(CouponStatusType.EXPOSURE_END, 0L)
-                + counts.getOrDefault(CouponStatusType.DELETED, 0L);
+        long expired = counts.getOrDefault(CouponStatusType.EXPOSURE_END, 0L);
 
         return CouponCategoryResponse.from(all, exposureOn, exposureOff, expired);
     }
