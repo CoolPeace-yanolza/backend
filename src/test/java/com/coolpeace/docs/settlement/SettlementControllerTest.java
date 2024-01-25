@@ -52,8 +52,9 @@ class SettlementControllerTest extends RestDocsUnitTest {
         given(settlementService.sumSettlement(any(), anyLong())).willReturn(settlementResponse);
 
         //when,then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}/summary",1)
-                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
+        mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}/summary", 1)
+                    .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-summary",
                 resource(ResourceSnippetParameters.builder()
@@ -61,8 +62,10 @@ class SettlementControllerTest extends RestDocsUnitTest {
                     .description("정산 요약 조회 API")
                     .responseSchema(Schema.schema(SumSettlementResponse.class.getSimpleName()))
                     .responseFields(
-                        fieldWithPath("this_month_settlement_amount").type(JsonFieldType.NUMBER).description("오늘까지 정산 내역"),
-                        fieldWithPath("last_month_settlement_amount").type(JsonFieldType.NUMBER).description("지난달 정산 내역")
+                        fieldWithPath("this_month_settlement_amount").type(JsonFieldType.NUMBER)
+                            .description("오늘까지 정산 내역"),
+                        fieldWithPath("last_month_settlement_amount").type(JsonFieldType.NUMBER)
+                            .description("지난달 정산 내역")
                     )
                     .build()
                 )));
@@ -86,40 +89,63 @@ class SettlementControllerTest extends RestDocsUnitTest {
         settlementResponseList.add(settlementResponse1);
         settlementResponseList.add(settlementResponse2);
         PageSettlementResponse pageSettlementResponse =
-            PageSettlementResponse.from(2L, 1, settlementResponseList);
+            PageSettlementResponse.from(2L, 1, 4,
+                30000, -1000, 30000, settlementResponseList);
 
-        given(settlementService.searchSettlement(any(), anyLong(), any(SearchSettlementParams.class),
-            anyInt(),anyInt())).willReturn(pageSettlementResponse);
+        given(
+            settlementService.searchSettlement(any(), anyLong(), any(SearchSettlementParams.class),
+                anyInt(), anyInt())).willReturn(pageSettlementResponse);
         //when,then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}", 1)
-                .queryParam("start","2023-09-27")
-                .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
-                .queryParam("end","2023-12-03")
-                .header("Authorization", MOCK_AUTHORIZATION_HEADER))
+        mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/v1/settlements/{accommodation_id}", 1)
+                    .queryParam("start", "2023-09-27")
+                    .queryParam("order", String.valueOf(OrderBy.COUPON_USE_DATE))
+                    .queryParam("end", "2023-12-03")
+                    .header("Authorization", MOCK_AUTHORIZATION_HEADER))
             .andExpect(status().isOk())
             .andDo(document("settlement-search",
                 resource(ResourceSnippetParameters.builder()
                     .tag("정산")
                     .description("지난 정산 조회 API")
                     .queryParameters(
-                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 수").optional(),
-                        parameterWithName("page_size").type(SimpleType.INTEGER).description("페이지 사이즈").optional(),
+                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 수")
+                            .optional(),
+                        parameterWithName("page_size").type(SimpleType.INTEGER)
+                            .description("페이지 사이즈").optional(),
                         parameterWithName("start").type(SimpleType.STRING).description("검색 시작일"),
                         parameterWithName("end").type(SimpleType.STRING).description("검색 종료일"),
                         parameterWithName("order").type(SimpleType.STRING).description("정렬 기준")
                     )
                     .responseSchema(Schema.schema(SettlementResponse.class.getSimpleName()))
                     .responseFields(
-                        fieldWithPath(".total_settlement_count").type(JsonFieldType.NUMBER).description("검색결과 총 개수"),
-                        fieldWithPath(".total_page_count").type(JsonFieldType.NUMBER).description("검색결과 페이지 총 개수"),
-                        fieldWithPath(".settlement_responses[].coupon_use_date").type(JsonFieldType.STRING).description("쿠폰 사용일"),
-                        fieldWithPath(".settlement_responses[].coupon_number").type(JsonFieldType.STRING).description("쿠폰 번호"),
-                        fieldWithPath(".settlement_responses[].coupon_name").type(JsonFieldType.STRING).description("관리 쿠폰명"),
-                        fieldWithPath(".settlement_responses[].coupon_count").type(JsonFieldType.NUMBER).description("사용건수"),
-                        fieldWithPath(".settlement_responses[].discount_price").type(JsonFieldType.NUMBER).description("쿠폰할인금액"),
-                        fieldWithPath(".settlement_responses[].cancel_price").type(JsonFieldType.NUMBER).description("쿠폰취소금액"),
-                        fieldWithPath(".settlement_responses[].sum_price").type(JsonFieldType.NUMBER).description("정산 금액"),
-                        fieldWithPath(".settlement_responses[].complete_at").type(JsonFieldType.STRING).description("정산 완료일")
+                        fieldWithPath(".total_settlement_count").type(JsonFieldType.NUMBER)
+                            .description("검색결과 총 개수"),
+                        fieldWithPath(".total_page_count").type(JsonFieldType.NUMBER)
+                            .description("검색결과 페이지 총 개수"),
+                        fieldWithPath(".total_coupon_count").type(JsonFieldType.NUMBER)
+                            .description("총 사용된 쿠폰 건수"),
+                        fieldWithPath(".total_discount_price").type(JsonFieldType.NUMBER)
+                            .description("총 쿠폰 할인 금액 "),
+                        fieldWithPath(".total_cancel_price").type(JsonFieldType.NUMBER)
+                            .description("총 쿠폰 취소 금액"),
+                        fieldWithPath(".total_sum_price").type(JsonFieldType.NUMBER)
+                            .description("총 정산 금액"),
+                        fieldWithPath(".settlement_responses[].coupon_use_date").type(
+                            JsonFieldType.STRING).description("쿠폰 사용일"),
+                        fieldWithPath(".settlement_responses[].coupon_number").type(
+                            JsonFieldType.STRING).description("쿠폰 번호"),
+                        fieldWithPath(".settlement_responses[].coupon_name").type(
+                            JsonFieldType.STRING).description("관리 쿠폰명"),
+                        fieldWithPath(".settlement_responses[].coupon_count").type(
+                            JsonFieldType.NUMBER).description("사용건수"),
+                        fieldWithPath(".settlement_responses[].discount_price").type(
+                            JsonFieldType.NUMBER).description("쿠폰할인금액"),
+                        fieldWithPath(".settlement_responses[].cancel_price").type(
+                            JsonFieldType.NUMBER).description("쿠폰취소금액"),
+                        fieldWithPath(".settlement_responses[].sum_price").type(
+                            JsonFieldType.NUMBER).description("정산 금액"),
+                        fieldWithPath(".settlement_responses[].complete_at").type(
+                            JsonFieldType.STRING).description("정산 완료일")
                     )
                     .build()
                 )));
