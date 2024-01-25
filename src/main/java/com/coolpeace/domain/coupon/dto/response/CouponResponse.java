@@ -1,10 +1,9 @@
 package com.coolpeace.domain.coupon.dto.response;
 
 import com.coolpeace.domain.accommodation.entity.Accommodation;
+import com.coolpeace.domain.coupon.dto.DtoCouponUtil;
 import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
-import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.Coupon;
-import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 
 import java.time.LocalDate;
@@ -48,8 +47,9 @@ public record CouponResponse(
                 coupon.getCustomerType().getValue(),
                 coupon.getCouponRoomTypeStrings(),
                 coupon.getMinimumReservationPrice(),
-                filteringCouponUseConditionDays(coupon.getCouponUseDays()),
-                filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()),
+                DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()).getValue(),
+                Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()))
+                        .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                 coupon.getExposureStartDate(),
                 coupon.getExposureEndDate(),
                 coupon.getCouponExpiration(),
@@ -59,19 +59,5 @@ public record CouponResponse(
                 coupon.getCouponRooms().stream().map(couponRooms -> couponRooms.getRoom().getRoomNumber()).toList(),
                 coupon.getCreatedAt().toLocalDate()
         );
-    }
-
-    private static String filteringCouponUseConditionDays(CouponUseDaysType couponUseDays) {
-        if (couponUseDays.isOneDay()) {
-            return DtoCouponUseDaysType.ONEDAY.getValue();
-        }
-        return couponUseDays.getValue();
-    }
-
-    private static String filteringCouponUseConditionDayOfWeek(CouponUseDaysType couponUseDays) {
-        if (couponUseDays.isOneDay()) {
-            return DtoCouponUseDayOfWeekType.valueOf(couponUseDays.name()).getValue();
-        }
-        return null;
     }
 }

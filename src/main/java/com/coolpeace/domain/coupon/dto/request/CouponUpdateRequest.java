@@ -23,7 +23,6 @@ public record CouponUpdateRequest(
         Integer discountFlatRate,
         Integer maximumDiscountPrice,
         List<String> couponRoomTypes,
-        Boolean couponRoomStayMore,
         Boolean registerAllRoom,
         List<String> registerRooms,
         Integer minimumReservationPrice,
