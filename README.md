@@ -133,5 +133,3 @@ API 문서는 [데모 웹사이트 API 서버](https://coolpeace.store/swagger-u
 ## 🏗 인프라 구조
 
 ![infra.png](./docs/images/infra.png)
-
-
