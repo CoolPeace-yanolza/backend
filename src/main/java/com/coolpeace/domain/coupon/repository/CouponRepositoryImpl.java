@@ -186,7 +186,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     public List<Coupon> startExposureCoupons(LocalDate nowDate) {
         return jpaQueryFactory.selectFrom(coupon)
             .where(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT)
-                .and((coupon.exposureStartDate.after(nowDate))
+                .and((coupon.exposureStartDate.before(nowDate))
                     .or(coupon.exposureStartDate.eq(nowDate)))).fetch();
     }
 }
