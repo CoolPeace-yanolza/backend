@@ -17,7 +17,6 @@ public class CouponQueryService {
 
     private final CouponRepository couponRepository;
 
-    @Cacheable(value = "dailyReport", key = "#accommodationId",cacheManager = "contentCacheManager")
     public CouponDailyResponse dailyReport(String jwtPrincipal, Long accommodationId) {
         Long memberId = Long.valueOf(jwtPrincipal);
 

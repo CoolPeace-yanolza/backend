@@ -89,7 +89,6 @@ public class CouponService {
     }
 
     @Transactional
-    @CacheEvict(value = "dailyReport", key = "#couponRegisterRequest.accommodationId()", cacheManager = "contentCacheManager")
     public void register(Long memberId, CouponRegisterRequest couponRegisterRequest) {
         Member storedMember = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
