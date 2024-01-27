@@ -28,6 +28,8 @@ public class StatisticsController {
             dailyStatisticsService.updateSales(year,month,day);
             dailyStatisticsService.updateCoupon(year,month,day);
             dailyStatisticsService.updateSettlement(year,month,day);
+            dailyStatisticsService.updateCouponStatusStartExposure();
+
 
 
         return ResponseEntity.created(URI.create("/")).build();
