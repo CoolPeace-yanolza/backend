@@ -64,15 +64,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         }
 
         // 쿠폰 날짜
-        if (params.date() != null) {
-            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponDateFilterType.class, params.date())) {
-                case THREE_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(3));
-                case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
-                case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
-            });
-        } else {
-            searchCouponPredicate.and(coupon.createdAt.after(LocalDateTime.now().minusYears(1)));
-        }
+        putSearchCouponParamsDatePredicate(params, searchCouponPredicate);
 
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
@@ -80,8 +72,6 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .where(searchCouponPredicate);
 
         JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count()).from(coupon)
-                .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
-                .leftJoin(couponRooms.room, room).fetchJoin()
                 .where(searchCouponPredicate);
 
         List<Coupon> coupons = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, couponJPAQuery).fetch();
@@ -89,12 +79,17 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId) {
+    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId,
+                                                                  SearchCouponParams params) {
+        BooleanBuilder searchCouponPredicate = new BooleanBuilder(
+                coupon.accommodation.id.eq(accommodationId).and(coupon.member.id.eq(memberId))
+        );
+
+        putSearchCouponParamsDatePredicate(params, searchCouponPredicate);
 
         List<Tuple> results = jpaQueryFactory
                 .select(coupon.couponStatus, coupon.count())
-                .where(coupon.member.id.eq(memberId)
-                        .and(coupon.accommodation.id.eq(accommodationId)))
+                .where(searchCouponPredicate)
                 .from(coupon)
                 .groupBy(coupon.couponStatus)
                 .fetch();
@@ -104,6 +99,18 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         tuple -> tuple.get(coupon.couponStatus),
                         tuple -> Optional.ofNullable(tuple.get(coupon.count())).orElse(0L)
                 ));
+    }
+
+    private static void putSearchCouponParamsDatePredicate(SearchCouponParams params, BooleanBuilder searchCouponPredicate) {
+        if (params.date() != null) {
+            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponDateFilterType.class, params.date())) {
+                case THREE_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(3));
+                case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
+                case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
+            });
+        } else {
+            searchCouponPredicate.and(coupon.createdAt.after(LocalDateTime.now().minusYears(1)));
+        }
     }
 
     @Override

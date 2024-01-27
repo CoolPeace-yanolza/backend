@@ -61,10 +61,10 @@ public class CouponService {
     }
 
     @Transactional(readOnly = true)
-    public CouponCategoryResponse getCouponCategories(Long memberId, Long accommodationId) {
+    public CouponCategoryResponse getCouponCategories(Long memberId, Long accommodationId,
+                                                      SearchCouponParams searchCouponParams) {
         Map<CouponStatusType, Long> counts = couponRepository.countCouponsByCouponStatus(memberId,
-                accommodationId);
-
+                accommodationId, searchCouponParams);
         long all = counts.values().stream().mapToLong(Long::longValue).sum()
                 - counts.getOrDefault(CouponStatusType.DELETED, 0L);
         long exposureOn = counts.getOrDefault(CouponStatusType.EXPOSURE_ON, 0L);
