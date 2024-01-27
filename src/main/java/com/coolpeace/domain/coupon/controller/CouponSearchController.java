@@ -32,7 +32,7 @@ public class CouponSearchController {
         Page<CouponResponse> couponResponses = couponService.searchCoupons(
                 Long.valueOf(jwtPrincipal.getMemberId()), accommodationId, searchCouponParams, pageable);
         CouponCategoryResponse categoryResponse = couponService.getCouponCategories(
-                Long.valueOf(jwtPrincipal.getMemberId()), accommodationId);
+                Long.valueOf(jwtPrincipal.getMemberId()), accommodationId, searchCouponParams);
         return ResponseEntity.ok(CouponSearchResponse.from(couponResponses, categoryResponse));
     }
 }
