@@ -3,6 +3,7 @@ package com.coolpeace.domain.coupon.dto.response;
 import com.coolpeace.domain.accommodation.entity.Accommodation;
 import com.coolpeace.domain.coupon.dto.DtoCouponUtil;
 import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.entity.Coupon;
 import com.coolpeace.domain.coupon.entity.type.DiscountType;
 
@@ -47,7 +48,8 @@ public record CouponResponse(
                 coupon.getCustomerType().getValue(),
                 coupon.getCouponRoomTypeStrings(),
                 coupon.getMinimumReservationPrice(),
-                DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()).getValue(),
+                Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()))
+                        .map(DtoCouponUseDaysType::getValue).orElse(null),
                 Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()))
                         .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                 coupon.getExposureStartDate(),

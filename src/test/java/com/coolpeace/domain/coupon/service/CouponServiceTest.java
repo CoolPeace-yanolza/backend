@@ -9,6 +9,7 @@ import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.request.SearchCouponParams;
 import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDayOfWeekType;
+import com.coolpeace.domain.coupon.dto.request.type.DtoCouponUseDaysType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponDateFilterType;
 import com.coolpeace.domain.coupon.dto.request.type.SearchCouponStatusFilterType;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
@@ -328,7 +329,8 @@ class CouponServiceTest {
                     registerAllRoom,
                     !registerAllRoom ? registerRoomNumbers : null,
                     coupon.getMinimumReservationPrice(),
-                    DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()).getValue(),
+                    Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDays(coupon.getCouponUseDays()))
+                            .map(DtoCouponUseDaysType::getValue).orElse(null),
                     Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(coupon.getCouponUseDays()))
                             .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                     coupon.getExposureStartDate(),
@@ -400,7 +402,8 @@ class CouponServiceTest {
                     null,
                     null,
                     couponB.getMinimumReservationPrice(),
-                    DtoCouponUtil.filteringCouponUseConditionDays(couponB.getCouponUseDays()).getValue(),
+                    Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDays(couponB.getCouponUseDays()))
+                            .map(DtoCouponUseDaysType::getValue).orElse(null),
                     Optional.ofNullable(DtoCouponUtil.filteringCouponUseConditionDayOfWeek(couponB.getCouponUseDays()))
                             .map(DtoCouponUseDayOfWeekType::getValue).orElse(null),
                     couponB.getExposureStartDate(),

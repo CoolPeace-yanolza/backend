@@ -62,7 +62,7 @@ public class Coupon extends BaseTimeEntity {
     private final List<DayOfWeek> couponUseConditionDays = Collections.emptyList();
 
     @Enumerated(EnumType.STRING)
-    private CouponUseDaysType couponUseDays = CouponUseDaysType.WEEKEND;
+    private CouponUseDaysType couponUseDays = CouponUseDaysType.ALL;
 
     @Column(nullable = false)
     private LocalDate exposureStartDate;

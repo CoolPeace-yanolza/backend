@@ -44,7 +44,7 @@ public record CouponRegisterRequest(
 
         // 쿠폰 사용 조건
         Integer minimumReservationPrice,
-        @ValidEnum(enumClass = DtoCouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.")
+        @ValidEnum(enumClass = DtoCouponUseDaysType.class, message = "올바르지 않은 사용 조건의 날짜 유형입니다.", required = false)
         String couponUseConditionDays,
         @ValidEnum(enumClass = DtoCouponUseDayOfWeekType.class, message = "올바르지 않은 사용 조건의 요일입니다.", required = false)
         String couponUseConditionDayOfWeek,
