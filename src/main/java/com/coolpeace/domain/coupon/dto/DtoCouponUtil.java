@@ -6,6 +6,9 @@ import com.coolpeace.domain.coupon.entity.type.CouponUseDaysType;
 public class DtoCouponUtil {
 
     public static DtoCouponUseDaysType filteringCouponUseConditionDays(CouponUseDaysType couponUseDays) {
+        if (couponUseDays.equals(CouponUseDaysType.ALL)) {
+            return null;
+        }
         if (couponUseDays.isOneDay()) {
             return DtoCouponUseDaysType.ONEDAY;
         }

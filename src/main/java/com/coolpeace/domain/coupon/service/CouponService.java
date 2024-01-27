@@ -27,7 +27,6 @@ import com.coolpeace.domain.room.exception.RoomNotFoundException;
 import com.coolpeace.domain.room.repository.RoomRepository;
 import com.coolpeace.global.common.ValuedEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -145,6 +145,9 @@ public class CouponService {
     }
 
     private CouponUseDaysType getCouponUseDays(String couponUseDaysStr, String couponUseDayOfWeekStr) {
+        if (!StringUtils.hasText(couponUseDaysStr)) {
+            return CouponUseDaysType.ALL;
+        }
         DtoCouponUseDaysType dtoCouponUseDaysType = ValuedEnum.of(DtoCouponUseDaysType.class, couponUseDaysStr);
         return switch (dtoCouponUseDaysType) {
             case ONEDAY -> CouponUseDaysType.valueOf(
