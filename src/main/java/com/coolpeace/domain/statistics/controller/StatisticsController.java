@@ -29,6 +29,7 @@ public class StatisticsController {
             dailyStatisticsService.updateCoupon(year,month,day);
             dailyStatisticsService.updateSettlement(year,month,day);
             dailyStatisticsService.updateCouponStatusStartExposure();
+            dailyStatisticsService.updateCouponStatusEndExposure();
 
 
 
