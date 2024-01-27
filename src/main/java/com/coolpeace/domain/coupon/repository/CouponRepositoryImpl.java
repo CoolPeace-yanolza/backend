@@ -41,7 +41,9 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     @Override
     public Page<Coupon> findAllCoupons(Long memberId, Long accommodationId, SearchCouponParams params, PageRequest pageable) {
         // 검색 필터링
-        BooleanBuilder searchCouponPredicate = new BooleanBuilder(coupon.member.id.eq(memberId));
+        BooleanBuilder searchCouponPredicate = new BooleanBuilder(
+                coupon.accommodation.id.eq(accommodationId).and(coupon.member.id.eq(memberId))
+        );
 
         // 쿠폰 상태
         if (params.status() != null) {
@@ -62,24 +64,14 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
         }
 
         // 쿠폰 날짜
-        if (params.date() != null) {
-            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponDateFilterType.class, params.date())) {
-                case THREE_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(3));
-                case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
-                case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
-            });
-        } else {
-            searchCouponPredicate.and(coupon.createdAt.after(LocalDateTime.now().minusYears(1)));
-        }
+        putSearchCouponParamsDatePredicate(params, searchCouponPredicate);
 
         JPAQuery<Coupon> couponJPAQuery = jpaQueryFactory.selectFrom(coupon)
                 .leftJoin(coupon.couponRooms, couponRooms).fetchJoin()
                 .leftJoin(couponRooms.room, room).fetchJoin()
-                .where(coupon.accommodation.id.eq(accommodationId))
                 .where(searchCouponPredicate);
 
         JPAQuery<Long> totalQuery = jpaQueryFactory.select(coupon.count()).from(coupon)
-                .where(coupon.accommodation.id.eq(accommodationId))
                 .where(searchCouponPredicate);
 
         List<Coupon> coupons = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, couponJPAQuery).fetch();
@@ -87,12 +79,17 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     @Override
-    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId) {
+    public Map<CouponStatusType, Long> countCouponsByCouponStatus(Long memberId, Long accommodationId,
+                                                                  SearchCouponParams params) {
+        BooleanBuilder searchCouponPredicate = new BooleanBuilder(
+                coupon.accommodation.id.eq(accommodationId).and(coupon.member.id.eq(memberId))
+        );
+
+        putSearchCouponParamsDatePredicate(params, searchCouponPredicate);
 
         List<Tuple> results = jpaQueryFactory
                 .select(coupon.couponStatus, coupon.count())
-                .where(coupon.member.id.eq(memberId)
-                        .and(coupon.accommodation.id.eq(accommodationId)))
+                .where(searchCouponPredicate)
                 .from(coupon)
                 .groupBy(coupon.couponStatus)
                 .fetch();
@@ -102,6 +99,18 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         tuple -> tuple.get(coupon.couponStatus),
                         tuple -> Optional.ofNullable(tuple.get(coupon.count())).orElse(0L)
                 ));
+    }
+
+    private static void putSearchCouponParamsDatePredicate(SearchCouponParams params, BooleanBuilder searchCouponPredicate) {
+        if (params.date() != null) {
+            searchCouponPredicate.and(switch (ValuedEnum.of(SearchCouponDateFilterType.class, params.date())) {
+                case THREE_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(3));
+                case SIX_MONTHS -> coupon.createdAt.after(LocalDateTime.now().minusMonths(6));
+                case YEAR -> coupon.createdAt.after(LocalDateTime.now().minusYears(1));
+            });
+        } else {
+            searchCouponPredicate.and(coupon.createdAt.after(LocalDateTime.now().minusYears(1)));
+        }
     }
 
     @Override
@@ -162,31 +171,31 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .where(coupon.member.id.eq(memberId)
                         .and(coupon.accommodation.id.eq(accommodationId))
                         .and(coupon.couponStatus.ne(DELETED))
-                    .and(coupon.exposureEndDate.between(LocalDate.now().minusDays(1),
-                        LocalDate.now().plusDays(4))))
+                        .and(coupon.exposureEndDate.between(LocalDate.now().minusDays(1),
+                                LocalDate.now().plusDays(4))))
                 .fetch();
     }
 
     @Override
     public List<Coupon> findAllByExposureDate(Accommodation accommodation, LocalDate localDate) {
         return jpaQueryFactory.selectFrom(coupon)
-            .where(coupon.accommodation.eq(accommodation)
-                .and(coupon.exposureStartDate.before(localDate))
-                .and(coupon.exposureEndDate.after(localDate))).fetch();
+                .where(coupon.accommodation.eq(accommodation)
+                        .and(coupon.exposureStartDate.before(localDate))
+                        .and(coupon.exposureEndDate.after(localDate))).fetch();
     }
 
     @Override
     public List<Coupon> endExposureCoupons(LocalDate nowDate) {
         return jpaQueryFactory.selectFrom(coupon)
-            .where(coupon.couponStatus.ne(CouponStatusType.DELETED)
-                .and(coupon.exposureEndDate.before(nowDate))).fetch();
+                .where(coupon.couponStatus.ne(CouponStatusType.DELETED)
+                        .and(coupon.exposureEndDate.before(nowDate))).fetch();
     }
 
     @Override
     public List<Coupon> startExposureCoupons(LocalDate nowDate) {
         return jpaQueryFactory.selectFrom(coupon)
-            .where(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT)
-                .and((coupon.exposureStartDate.before(nowDate))
-                    .or(coupon.exposureStartDate.eq(nowDate)))).fetch();
+                .where(coupon.couponStatus.eq(CouponStatusType.EXPOSURE_WAIT)
+                        .and((coupon.exposureStartDate.before(nowDate))
+                                .or(coupon.exposureStartDate.eq(nowDate)))).fetch();
     }
 }
