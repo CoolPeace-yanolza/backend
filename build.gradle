@@ -2,10 +2,17 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.7'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
+
+ext {
+    JJWT_VERSION = "0.12.3"
+    RESTDOCS_API_SPEC_VERSION = "0.18.2"
+}
 
 java {
     sourceCompatibility = '17'
@@ -15,6 +22,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -23,13 +31,38 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+
+    implementation "io.jsonwebtoken:jjwt-api:${JJWT_VERSION}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${JJWT_VERSION}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
+
+    // queryDsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // RestDocs
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${RESTDOCS_API_SPEC_VERSION}"
+
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
 }
 
 tasks.named('bootBuildImage') {
@@ -37,5 +70,58 @@ tasks.named('bootBuildImage') {
 }
 
 tasks.named('test') {
+    systemProperty "spring.profiles.active", "test"
     useJUnitPlatform()
 }
+
+// QueryDSL 설정
+def querydslDir = "build/generated/querydsl"
+
+tasks.withType(JavaCompile).configureEach {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+def isProd = project.hasProperty('prod')
+
+// Swagger UI 설정
+openapi3 {
+    server = isProd ? "https://coolpeace.store" : "http://localhost:8080"
+    title = "CoolPeace API"
+    description = "CoolPeace API Document"
+    version = "0.0.1"
+    format = "yaml"
+}
+
+def openapi3Path = "build/api-spec/openapi3.yaml"
+def srcStaticDirPath = "src/main/resources/static/swagger-ui/"
+
+tasks.register("copyToSwaggerUI") {
+    dependsOn "openapi3"
+    doLast {
+        copy {
+            from openapi3Path
+            into srcStaticDirPath
+        }
+    }
+}
+
+tasks.register("copyTextToSecurity") {
+    dependsOn copyToSwaggerUI
+    doLast {
+        def openapi3File = file(openapi3Path)
+        def securityFile = file("src/test/resources/security.yaml")
+        if (!openapi3File.text.contains("securitySchemes")) {
+            openapi3File.append securityFile.text
+        }
+    }
+}
+
+clean {
+    delete "$srcStaticDirPath/openapi3.yaml"
+}
+
+test.finalizedBy copyTextToSecurity

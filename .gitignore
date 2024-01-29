@@ -36,3 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 .yaml
+
+### Private Files ###
+.env
+**/static/swagger-ui/openapi3.**

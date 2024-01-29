@@ -1,0 +1,3 @@
+### 쿠폰 검색
+GET http://localhost:8080/v1/coupons?status=노출%20ON&page=1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIxMSIsImNsaWVudF9lbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpc3MiOiJjb29scGVhY2UiLCJpYXQiOjE3MDU1NzkwODIsImV4cCI6MTcwNTYxNTA4Mn0.e-1gRJj6ddKKDtfFIUmLz4iUJb0jVW6JzsoMB6Rt1ty9-gJNoDGesmc831fO_3HwbD3OC1_CDG6itzHHtgAcIg

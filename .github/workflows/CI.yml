@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 레포 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Redis 셋업
+        uses: supercharge/redis-github-action@1.7.0
+        with:
+          redis-version: 7.2
+
+      - name: JAVA 17 셋업
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: .env.example 파일을 .env로 복사
+        run: cp .env.example .env
+        shell: bash
+
+      - name: gradlew에 실행권한 부여
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Gradle 빌드 및 테스트 실행
+        run: ./gradlew build
+        shell: bash
+
+      - name: .env 파일 제거
+        run: rm .env
+        shell: bash

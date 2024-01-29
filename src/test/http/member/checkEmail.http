@@ -1,0 +1,3 @@
+### 이메일 체크
+GET http://localhost:8080/v1/member/register/check/email?email=test@test.com
+Content-Type: application/json

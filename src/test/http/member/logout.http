@@ -1,0 +1,3 @@
+### 로그아웃
+POST http://localhost:8080/v1/member/logout
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfaWQiOiIxIiwiY2xpZW50X2VtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlzcyI6ImNvb2xwZWFjZSIsImlhdCI6MTcwNDIwMDQ0MywiZXhwIjoxNzA0MjM2NDQzfQ.jEuoGTsvs0O3qGP0kT7rMlWtDuOAZSPfFvXuDDm6FFi9IPVxeY68gAW2oNLcfRWKAC1LBj0p-RJuDIO-LmRwhw
