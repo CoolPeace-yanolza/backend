@@ -17,7 +17,7 @@
     <br />
     <a href="https://coolpeace.store/swagger-ui/index.html">배포된 API 서버</a>
     /
-    <a href="https://cool-peace-dev.vercel.app/login">데모 웹사이트</a>
+    <a href="https://sajangnim-ya.vercel.app/login">데모 웹사이트</a>
   </p>
 </div>
 
