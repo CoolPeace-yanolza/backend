@@ -1,6 +1,7 @@
 package com.coolpeace.global.jwt.security;
 
 import com.coolpeace.domain.member.entity.Member;
+import com.coolpeace.domain.member.entity.type.RoleType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -18,13 +19,16 @@ public class JwtPrincipal implements UserDetails {
     private final String memberId;
     private final String memberEmail;
     private final boolean enabled;
+    private final boolean isGuestUser;
     private final List<GrantedAuthority> authorities;
 
-    public JwtPrincipal(String memberId, String memberEmail, boolean enabled, List<GrantedAuthority> authorities) {
+    public JwtPrincipal(String memberId, String memberEmail, boolean enabled,
+                        List<GrantedAuthority> authorities, boolean isGuestUser) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.enabled = enabled;
         this.authorities = authorities;
+        this.isGuestUser = isGuestUser;
     }
 
     public static JwtPrincipal from(Member member) {
@@ -35,11 +39,12 @@ public class JwtPrincipal implements UserDetails {
                 String.valueOf(member.getId()),
                 member.getEmail(),
                 !member.isDeleted(),
-                AuthorityUtils.createAuthorityList(roles)
+                AuthorityUtils.createAuthorityList(roles),
+                roles.contains(RoleType.USER.getValue())
         );
     }
     public static JwtPrincipal emptyPrincipal() {
-        return new JwtPrincipal(null, null, false, AuthorityUtils.NO_AUTHORITIES);
+        return new JwtPrincipal(null, null, false, AuthorityUtils.NO_AUTHORITIES, false);
     }
 
     @Override
