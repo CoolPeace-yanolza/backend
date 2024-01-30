@@ -4,6 +4,7 @@ import com.coolpeace.domain.coupon.dto.request.CouponExposeRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponRegisterRequest;
 import com.coolpeace.domain.coupon.dto.request.CouponUpdateRequest;
 import com.coolpeace.domain.coupon.dto.response.CouponResponse;
+import com.coolpeace.domain.coupon.service.CouponGuestService;
 import com.coolpeace.domain.coupon.service.CouponService;
 import com.coolpeace.global.jwt.security.JwtPrincipal;
 import com.coolpeace.global.resolver.AuthJwtPrincipal;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;
+    private final CouponGuestService couponGuestService;
 
     @GetMapping("/{coupon_number}")
     public ResponseEntity<CouponResponse> getCouponByCouponNumber(
@@ -45,7 +47,11 @@ public class CouponController {
             @Valid @RequestBody CouponRegisterRequest couponRegisterRequest,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        couponService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
+        if (jwtPrincipal.isGuestUser()) {
+            couponGuestService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
+        } else {
+            couponService.register(Long.valueOf(jwtPrincipal.getMemberId()), couponRegisterRequest);
+        }
         return ResponseEntity.created(URI.create("/")).build();
     }
 
@@ -54,8 +60,13 @@ public class CouponController {
             @PathVariable("coupon_number") String couponNumber,
             @Valid @RequestBody CouponUpdateRequest couponUpdateRequest,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal) {
-        couponService.updateCoupon(
-                Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
+        if (jwtPrincipal.isGuestUser()) {
+            couponGuestService.updateCoupon(
+                    Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
+        } else {
+            couponService.updateCoupon(
+                    Long.valueOf(jwtPrincipal.getMemberId()), couponNumber, couponUpdateRequest);
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -75,7 +86,11 @@ public class CouponController {
             @PathVariable("coupon_number") String couponNumber,
             @AuthJwtPrincipal JwtPrincipal jwtPrincipal
     ) {
-        couponService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), couponNumber);
+        if (jwtPrincipal.isGuestUser()) {
+            couponGuestService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), couponNumber);
+        } else {
+            couponService.deleteCoupon(Long.valueOf(jwtPrincipal.getMemberId()), couponNumber);
+        }
         return ResponseEntity.ok().build();
     }
 }
