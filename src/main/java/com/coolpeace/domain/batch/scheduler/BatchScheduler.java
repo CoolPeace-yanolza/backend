@@ -40,7 +40,7 @@ public class BatchScheduler {
             dailyStatisticsConfig.dailyStatisticsJob(jobRepository, platformTransactionManager),
             jobParameters);
     }
-    @Scheduled(cron = "0 0 0 10 * *")
+    @Scheduled(cron = "0 0 0 1 * *")
     public void runMonthlyJob() throws Exception {
         log.info("---------{}---------", LocalDateTime.now());
         log.info("monthly scheduler start");
